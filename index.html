@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ITリテラシー入門 講義一覧</title>
+    <style>
+        :root {
+            --primary-color: #003366; /* 濃い紺色 */
+            --secondary-color: #336699; /* やや明るい青 */
+            --accent-color: #e60033; /* 赤色のアクセント */
+            --background-color: #f4f8fa; /* 薄い青みがかった背景 */
+            --text-color: #333;
+            --white-color: #ffffff;
+            --quiz-accent-color: #4a2e6b; /* 紫系 */
+            --quiz-accent-hover-color: #7b5aa6;
+        }
+
+        body {
+            font-family: 'Yu Gothic UI', 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+            line-height: 1.8;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 2.2em;
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--secondary-color);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            position: relative;
+            text-align: center;
+        }
+        
+        h1::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: -3px;
+            width: 80px;
+            border-bottom: 3px solid var(--primary-color);
+        }
+
+        .intro-text {
+            text-align: center;
+            font-size: 1.1em;
+            color: #555;
+            margin-bottom: 40px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .lecture-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .lecture-card {
+            display: flex;
+            flex-direction: column;
+            background-color: var(--white-color);
+            border: 1px solid #ddd;
+            border-left: 5px solid var(--secondary-color);
+            border-radius: 8px;
+            padding: 20px;
+            text-decoration: none;
+            color: var(--text-color);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .lecture-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            border-left-color: var(--primary-color);
+        }
+
+        .lecture-header {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .lecture-number {
+            font-size: 1em;
+            font-weight: bold;
+            color: var(--primary-color);
+            background-color: #e7f3ff;
+            padding: 2px 8px;
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+
+        .lecture-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin: 0;
+        }
+
+        .lecture-summary {
+            font-size: 0.95em;
+            line-height: 1.7;
+            color: #555;
+            flex-grow: 1; /* これでカードの高さを揃える */
+        }
+
+        .quiz-card {
+            border-left-color: var(--quiz-accent-color);
+        }
+
+        .quiz-card:hover {
+            border-left-color: var(--quiz-accent-hover-color);
+        }
+
+        .quiz-card .lecture-number {
+            background-color: #f9f7fc;
+            color: var(--quiz-accent-color);
+        }
+        
+        .quiz-card .lecture-title {
+            color: var(--quiz-accent-color);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            h1 { font-size: 1.8em; }
+            .lecture-list {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ITリテラシー入門 講義一覧</h1>
+        <p class="intro-text">
+            デジタル社会を生き抜くための必須知識「ITリテラシー」を学びましょう。<br>各講座を選択して学習を進め、最後に総復習テストで理解度をチェック！
+        </p>
+
+        <div class="lecture-list">
+            
+            <a href="page1.html" class="lecture-card">
+                <div class="lecture-header">
+                    <span class="lecture-number">第1回</span>
+                    <h2 class="lecture-title">なぜITを学ぶのか</h2>
+                </div>
+                <p class="lecture-summary">ITを学ぶ意義、Society5.0、フェイクニュース、PDCAサイクルなど、情報社会を生き抜くための基礎知識を探求します。</p>
+            </a>
+            
+            <a href="page2.html" class="lecture-card">
+                <div class="lecture-header">
+                    <span class="lecture-number">第2回</span>
+                    <h2 class="lecture-title">生活の中のインターネット</h2>
+                </div>
+                <p class="lecture-summary">WebサービスやSNS、インターネットの歴史から、知的財産権やサイバー犯罪まで、生活に密着したネットの光と影を学びます。</p>
+            </a>
+
+            <a href="page3.html" class="lecture-card">
+                <div class="lecture-header">
+                    <span class="lecture-number">第3回</span>
+                    <h2 class="lecture-title">AIとデータサイエンス</h2>
+                </div>
+                <p class="lecture-summary">AI、機械学習、ディープラーニングの仕組みから、データサイエンスの基礎、統計の考え方まで、データ活用の最前線に触れます。</p>
+            </a>
+
+            <a href="page4.html" class="lecture-card">
+                <div class="lecture-header">
+                    <span class="lecture-number">第4回</span>
+                    <h2 class="lecture-title">メディア</h2>
+                </div>
+                <p class="lecture-summary">アナログとデジタルの違い、データ圧縮、そして音声・画像・動画がデジタルデータに変わる仕組みを解き明かします。</p>
+            </a>
+
+            <a href="page5.html" class="lecture-card">
+                <div class="lecture-header">
+                    <span class="lecture-number">第5回</span>
+                    <h2 class="lecture-title">デジタル・シティズンシップ教育</h2>
+                </div>
+                <p class="lecture-summary">危険を避けるだけでなく、より良い社会を創るための「デジタル・シティズンシップ」。メディアとの健全な付き合い方を学びます。</p>
+            </a>
+
+            <a href="page6.html" class="lecture-card">
+                <div class="lecture-header">
+                    <span class="lecture-number">第6回</span>
+                    <h2 class="lecture-title">アルゴリズムとプログラミング言語</h2>
+                </div>
+                <p class="lecture-summary">コンピューターを動かす手順「アルゴリズム」と、それを記述する「プログラミング言語」の基本を学び、論理的思考を鍛えます。</p>
+            </a>
+
+            <a href="page7.html" class="lecture-card">
+                <div class="lecture-header">
+                    <span class="lecture-number">第7回</span>
+                    <h2 class="lecture-title">データ構造と2進数</h2>
+                </div>
+                <p class="lecture-summary">配列、リスト、スタック、キュー、木構造といったデータの整理術と、コンピュータの根幹をなす2進数の仕組みを理解します。</p>
+            </a>
+
+            <a href="page8.html" class="lecture-card">
+                <div class="lecture-header">
+                    <span class="lecture-number">第8回</span>
+                    <h2 class="lecture-title">ネットワーク</h2>
+                </div>
+                <p class="lecture-summary">インターネットを支える通信のルール「プロトコル」や、TCP/IP、OSI参照モデルなど、ネットワークの全体像を掴みます。</p>
+            </a>
+
+            <a href="page9.html" class="lecture-card">
+                <div class="lecture-header">
+                    <span class="lecture-number">第9回</span>
+                    <h2 class="lecture-title">Wi-Fiと家庭でのネットワークの構築</h2>
+                </div>
+                <p class="lecture-summary">Wi-Fiの規格やセキュリティ、家庭で快適なネット環境を構築するための回線選びやルーター設定など、実践的な知識を学びます。</p>
+            </a>
+
+            <a href="page10.html" class="lecture-card">
+                <div class="lecture-header">
+                    <span class="lecture-number">第10回</span>
+                    <h2 class="lecture-title">セキュリティ</h2>
+                </div>
+                <p class="lecture-summary">マルウェアや不正アクセス等の脅威から身を守る方法と、暗号化や認証といったセキュリティ技術の仕組みを解説します。</p>
+            </a>
+
+            <a href="page11.html" class="lecture-card">
+                <div class="lecture-header">
+                    <span class="lecture-number">第11回</span>
+                    <h2 class="lecture-title">システム開発</h2>
+                </div>
+                <p class="lecture-summary">システム開発の全体像を学びます。ウォーターフォールやアジャイルといった開発手法、プロジェクト管理の知識を身につけます。</p>
+            </a>
+
+            <a href="page12.html" class="lecture-card">
+                <div class="lecture-header">
+                    <span class="lecture-number">第12回</span>
+                    <h2 class="lecture-title">経営と法律</h2>
+                </div>
+                <p class="lecture-summary">企業の社会的責任(CSR)や財務諸表の読み方、労働法やPL法など、ITを活用する上で知っておくべき経営と法律の知識を学びます。</p>
+            </a>
+
+            <a href="page13.html" class="lecture-card">
+                <div class="lecture-header">
+                    <span class="lecture-number">第13回</span>
+                    <h2 class="lecture-title">コンピューターのしくみ</h2>
+                </div>
+                <p class="lecture-summary">コンピューターの5大装置（CPU、メモリ等）の役割や、記憶装置の階層構造など、PCやスマホの「中身」の仕組みを理解します。</p>
+            </a>
+
+            <a href="page14.html" class="lecture-card">
+                <div class="lecture-header">
+                    <span class="lecture-number">第14回</span>
+                    <h2 class="lecture-title">ソフトウェア</h2>
+                </div>
+                <p class="lecture-summary">WindowsやmacOSといったOSの役割から、ファイル管理、様々なアプリケーション、そしてOSS（オープンソース）の世界までを探ります。</p>
+            </a>
+
+            <a href="page15.html" class="lecture-card">
+                <div class="lecture-header">
+                    <span class="lecture-number">第15回</span>
+                    <h2 class="lecture-title">データベース</h2>
+                </div>
+                <p class="lecture-summary">膨大なデータを効率的に管理するデータベースの仕組みを学びます。RDBやSQL、トランザクション処理など、データ活用の要を掴みます。</p>
+            </a>
+
+            <a href="page16.html" class="lecture-card quiz-card">
+                <div class="lecture-header">
+                    <span class="lecture-number">最終章</span>
+                    <h2 class="lecture-title">総復習テスト</h2>
+                </div>
+                <p class="lecture-summary">第1回から第15回までの全範囲を網羅した確認テストで、学びの成果をチェックしましょう。全問正解を目指して挑戦！</p>
+            </a>
+
+        </div>
+    </div>
+</body>
+</html>

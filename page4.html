@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ITリテラシー入門 第4回 メディア</title>
+    <style>
+        :root {
+            --primary-color: #0d47a1; /* 濃い青 */
+            --secondary-color: #1976d2; /* 青 */
+            --accent-color: #d32f2f; /* 赤系のアクセント */
+            --background-color: #f5f8fa; /* 薄いグレーがかった背景 */
+            --text-color: #333;
+            --white-color: #ffffff;
+            --marker-yellow: #fffde7;
+            --confirm-green: #e8f5e9;
+            --action-blue: #e3f2fd;
+        }
+
+        body {
+            font-family: 'Yu Gothic UI', 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+            line-height: 1.8;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: var(--white-color);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        .page {
+            border: 1px solid #ddd;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .page-number {
+            position: absolute;
+            bottom: 10px;
+            right: 20px;
+            color: #aaa;
+            font-size: 0.9em;
+        }
+
+        h1 {
+            font-size: 2.2em;
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--secondary-color);
+            padding-bottom: 10px;
+            margin-bottom: 5px;
+            position: relative;
+        }
+        
+        h1::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -3px;
+            width: 70px;
+            border-bottom: 3px solid var(--primary-color);
+        }
+        
+        .lecturer {
+            font-size: 1.1em;
+            color: var(--secondary-color);
+            text-align: right;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            color: var(--primary-color);
+            border-left: 5px solid var(--secondary-color);
+            padding-left: 15px;
+            margin-top: 40px;
+        }
+
+        h3 {
+            font-size: 1.4em;
+            color: var(--secondary-color);
+            border-bottom: 1px dashed var(--secondary-color);
+            padding-bottom: 5px;
+            margin-top: 30px;
+        }
+
+        p {
+            margin-bottom: 1.2em;
+        }
+
+        strong, b {
+            color: var(--primary-color);
+        }
+
+        .marker {
+            background: linear-gradient(transparent 60%, var(--marker-yellow) 60%);
+        }
+        
+        .text-confirm { color: #2e7d32; font-weight: bold; }
+        .text-action { color: var(--secondary-color); font-weight: bold; }
+        .text-problem { color: var(--accent-color); font-weight: bold; }
+
+        .toc {
+            background-color: #f8fafd;
+            border: 1px solid var(--secondary-color);
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+        }
+
+        .toc h2 {
+            margin-top: 0;
+            border-left: none;
+            padding-left: 0;
+            border-bottom: 2px solid var(--secondary-color);
+        }
+
+        .toc ul { list-style-type: none; padding-left: 0; }
+        .toc ul ul { padding-left: 20px; }
+        .toc a { text-decoration: none; color: var(--primary-color); }
+        .toc a:hover { text-decoration: underline; }
+
+        .question-box {
+            border: 2px solid var(--accent-color);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            background-color: #fbe9e7;
+        }
+
+        .fill-in {
+            font-weight: bold;
+            color: var(--accent-color);
+            border-bottom: 2px dotted var(--accent-color);
+            cursor: pointer;
+            padding: 0 5px;
+        }
+
+        .answer {
+            display: none;
+            background-color: var(--marker-yellow);
+            padding: 2px 5px;
+            border-radius: 3px;
+            margin: 0 5px;
+        }
+        
+        .answer.visible { display: inline-block; }
+
+        .card {
+            background-color: #f9f9f9;
+            border-left: 5px solid var(--primary-color);
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .card-header {
+            font-weight: bold;
+            font-size: 1.2em;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .diagram {
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin: 20px 0;
+            background-color: #f8fafd;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .diagram.vertical { flex-direction: column; align-items: center; }
+        .diagram .box {
+            border: 2px solid var(--secondary-color);
+            background-color: var(--white-color);
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-align: center;
+            min-width: 100px;
+        }
+        .diagram .arrow {
+            font-size: 2em;
+            color: var(--secondary-color);
+            margin: 0 5px;
+            padding: 0 5px;
+            line-height: 1;
+        }
+        .diagram.vertical .arrow {
+            transform: rotate(90deg);
+        }
+        .diagram .sub-text {
+            font-size: 0.8em;
+            color: #555;
+            text-align: center;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .diagram .node {
+            border: 2px solid var(--primary-color);
+            background-color: var(--white-color);
+            padding: 10px 20px;
+            border-radius: 50%;
+            text-align: center;
+            min-width: 50px;
+        }
+        .diagram .edge {
+            color: var(--secondary-color);
+            font-weight: bold;
+            font-size: 1.2em;
+            position: relative;
+            padding: 0 20px;
+        }
+        .diagram .edge.no-arrow::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            width: 100%;
+            height: 2px;
+            background-color: var(--secondary-color);
+        }
+        .diagram .edge.arrow::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            width: calc(100% - 10px);
+            height: 2px;
+            background-color: var(--secondary-color);
+        }
+        .diagram .edge.arrow::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            width: 0;
+            height: 0;
+            border-top: 8px solid transparent;
+            border-bottom: 8px solid transparent;
+            border-left: 10px solid var(--secondary-color);
+            transform: translateY(-50%);
+        }
+        
+        .footnote {
+            font-size: 0.8em;
+            color: #666;
+            margin-top: 10px;
+            border-top: 1px solid #ccc;
+            padding-top: 5px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.95em;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: var(--white-color);
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        
+        .references {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #ccc;
+        }
+        
+        .references ul { list-style: none; padding: 0; }
+        .references li { margin-bottom: 10px; font-size: 0.9em; }
+        
+        .button-container {
+            text-align: center;
+            margin: 40px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .nav-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: var(--white-color);
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        
+        .nav-button:hover { background-color: var(--secondary-color); }
+
+        code {
+            background-color: #eee;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        
+        @media (max-width: 768px) {
+            .container { padding: 10px; }
+            .page { padding: 1rem; }
+            h1 { font-size: 1.8em; }
+            h2 { font-size: 1.5em; }
+            h3 { font-size: 1.2em; }
+            .diagram .box, .diagram .arrow, .diagram .node, .diagram .edge { font-size: 0.9em; }
+            .diagram { flex-direction: column; }
+            .diagram .arrow { transform: rotate(90deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ITリテラシー入門 第4回 メディア</h1>
+        <p class="lecturer">講師：吉村 創一朗 先生</p>
+
+        <nav class="toc">
+            <h2>目次</h2>
+            <ul>
+                <li><a href="#chap1">1. デジタルデータの世界へようこそ！</a>
+                    <ul>
+                        <li><a href="#sec1_1">1.1 アナログとデジタルの違い</a></li>
+                        <li><a href="#sec1_2">1.2 デジタルデータとアナログデータの特性</a></li>
+                        <li><a href="#sec1_3">1.3 コンピューターとデジタル：なぜ2進法？</a></li>
+                        <li><a href="#sec1_4">1.4 コンピューターで使われる数の表現</a></li>
+                    </ul>
+                </li>
+                <li><a href="#chap2">2. データを小さくする魔法、データ圧縮</a>
+                    <ul>
+                        <li><a href="#sec2_1">2.1 データ圧縮の目的と種類</a></li>
+                        <li><a href="#sec2_2">2.2 可逆圧縮の仕組み：ランレングス法</a></li>
+                        <li><a href="#sec2_3">2.3 可逆圧縮の仕組み：ハフマン符号化</a></li>
+                    </ul>
+                </li>
+                <li><a href="#chap3">3. 音をデジタルに変える技術</a>
+                    <ul>
+                        <li><a href="#sec3_1">3.1 音の正体とデジタル化のプロセス</a></li>
+                        <li><a href="#sec3_2">3.2 正確な音を記録する：標本化（サンプリング）</a></li>
+                        <li><a href="#sec3_3">3.3 音の強さを数値化する：量子化と符号化</a></li>
+                        <li><a href="#sec3_4">3.4 PCM方式とMIDI</a></li>
+                    </ul>
+                </li>
+                <li><a href="#chap4">4. 画像をデジタルで描く技術</a>
+                    <ul>
+                        <li><a href="#sec4_1">4.1 画像のデジタル化プロセス</a></li>
+                        <li><a href="#sec4_2">4.2 解像度と階調：画質の決め手</a></li>
+                        <li><a href="#sec4_3">4.3 ビットマップ画像とベクトル画像</a></li>
+                        <li><a href="#sec4_4">4.4 画像ファイルの形式と特徴</a></li>
+                    </ul>
+                </li>
+                 <li><a href="#chap5">5. 動きを捉える、動画データの仕組み</a>
+                    <ul>
+                        <li><a href="#sec5_1">5.1 動画の仕組み：フレームとフレームレート</a></li>
+                        <li><a href="#sec5_2">5.2 動画の圧縮とコーデック</a></li>
+                        <li><a href="#sec5_3">5.3 すぐに見られる！ストリーミング技術</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="page">
+            <h2 id="chap1">1. デジタルデータの世界へようこそ！</h2>
+            <p>「デジタルトランスフォーメーション」や「デジタル技術」という言葉、よく耳にしますよね。でも、そもそも「デジタル」って一体何でしょうか？この章では、その基本中の基本である「デジタル」という言葉の意味から探っていきましょう。</p>
+            
+            <h3 id="sec1_1">1.1 アナログとデジタルの違い</h3>
+            <p>私たちの身の回りにある長さや重さ、時間といった量は、本来なめらかに連続しています。こうした連続的な量をそのまま表現するのが<b class="text-action">「アナログ」</b>方式です。</p>
+            <p>一方、これらの量を一定の区切りでカクカクとした段階的な数値で表現するのが<b class="text-confirm">「デジタル」</b>方式です。アナログとデジタルの違いは、体重計を例にすると分かりやすいですよ。</p>
+            <ul>
+                <li><b>アナログ体重計：</b>バネの伸び縮みに合わせて針がなめらかに動きます。65kgと65.1kgの間の微妙な値も指し示すことができます。</li>
+                <li><b>デジタル体重計：</b>重さを電気信号で感知し、コンピューターが計算して「65.1kg」のように表示します。表示は0.1kg刻みなので、値は65.1kg、65.2kg...と飛び飛び（非連続的）になります。</li>
+            </ul>
+            <p>この飛び飛びのデータが<b class="marker">デジタルデータ</b>、なめらかに連続したデータが<b class="marker">アナログデータ</b>です。そして、これらは相互に変換可能です。アナログからデジタルへの変換を<b>A/D変換</b>、デジタルからアナログへの変換を<b>D/A変換</b>といいます。</p>
+            
+            <div class="card">
+                <div class="card-header">事例：レコード音楽のデジタル化</div>
+                <p>昔ながらのレコードは、音の波形を溝の凹凸として記録したアナログデータです。これをPCに取り込んでMP3ファイルにするのは<b class="text-action">A/D変換</b>にあたります。逆に、PC上の音楽データをスピーカーで鳴らして、その音をカセットテープに録音するのは<b class="text-confirm">D/A変換</b>の一例と言えるでしょう。懐かしい！</p>
+            </div>
+
+            <h3 id="sec1_2">1.2 デジタルデータとアナログデータの特性</h3>
+            <p>デジタルデータとアナログデータには、それぞれ得意なことと苦手なことがあります。</p>
+            <table>
+                <thead>
+                    <tr><th>特性</th><th>デジタルデータ</th><th>アナログデータ</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><b>記録</b></td><td>動画、画像、テキストなど種類を問わず、同じメディア（例: SSD）に保存できる。</td><td>データによって記録メディアが異なる（例: 映像はフィルム、音楽はレコード）。</td></tr>
+                    <tr><td><b>加工</b></td><td>コピー、結合、編集が非常に簡単。</td><td>統合や編集が難しく、専門的な技術が必要。</td></tr>
+                    <tr><td><b>劣化</b></td><td>何度コピーや伝送を繰り返しても、データそのものは劣化しない。</td><td>コピーや伝送を繰り返すたびに、ノイズが乗るなど品質が劣化する。</td></tr>
+                </tbody>
+            </table>
+            <p>こう見るとデジタルは良いこと尽くめですが、弱点もあります。それは<b class="text-problem">メディア自体の劣化</b>です。例えば、2000年以上前の石板「ロゼッタストーン」は今でも読めますが、音楽CDは30年ほどで劣化して読めなくなることがあります。そのため、デジタルデータは定期的に新しいメディアへコピーし続けることが重要になります。</p>
+
+            <h3 id="sec1_3">1.3 コンピューターとデジタル：なぜ2進法？</h3>
+            <p>コンピューターの内部では、すべてのデジタルデータが<b class="text-action">「2進法」</b>で表現されています。2進法とは、<b>「0」</b>と<b>「1」</b>の2つの数字だけで数を表現する方法です。</p>
+            <p>なぜコンピューターは2進法を使うのでしょうか？それは、コンピューターが電気で動いているからです。電気回路には「電気が流れている(ON)」と「電気が流れていない(OFF)」という2つの状態しかありません。このONを「1」、OFFを「0」に対応させることで、コンピューターは情報をシンプルかつ確実に処理できるのです。</p>
+            <p>この「0」か「1」かを表す情報の最小単位を<b>1ビット（bit）</b>といいます。そして、人間が扱いやすいように、このビットを8個まとめたものを<b>1バイト（byte）</b>と呼びます。1バイトで、256通りの情報を表現できます。</p>
+
+            <h3 id="sec1_4">1.4 コンピューターで使われる数の表現</h3>
+            <p>データ量が大きくなると、バイトの前にK(キロ)やM(メガ)といった接頭語をつけて表現します。</p>
+            <table>
+                <thead>
+                    <tr><th>単位</th><th>読み方</th><th>データ量</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>B</td><td>バイト</td><td>1B = 8bit</td></tr>
+                    <tr><td>KB</td><td>キロバイト</td><td>1KB = 1,024B (2の10乗)</td></tr>
+                    <tr><td>MB</td><td>メガバイト</td><td>1MB = 1,024KB</td></tr>
+                    <tr><td>GB</td><td>ギガバイト</td><td>1GB = 1,024MB</td></tr>
+                    <tr><td>TB</td><td>テラバイト</td><td>1TB = 1,024GB</td></tr>
+                </tbody>
+            </table>
+            <p>また、プログラムの世界では、1バイト（8ビット）のデータを<b class="text-confirm">16進数</b>2桁で表現することがよくあります。これは、2進数の<code>11111111</code>（10進数で255）が、16進数だと<code>FF</code>と非常にスッキリ書けるためです。</p>
+            
+            <div class="card">
+                <div class="card-header">事例：プログラマーのお遊び？マジックナンバー</div>
+                <p>様々なデータ形式には、そのファイルが何であるかを示すための「マジックナンバー」という数バイトの特別なデータが埋め込まれています。なんと、プログラミング言語Javaのファイルには、マジックナンバーとして16進数で<code>CAFEBABE</code>（カフェベイブ）という単語が埋め込まれているんです！なんだか面白いですよね。</p>
+            </div>
+            
+            <div class="question-box">
+                <h4>問題1.1</h4>
+                <p>連続的なデータを<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">アナログデータ</span></span>、非連続的なデータを<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">デジタルデータ</span></span>といいます。アナログからデジタルへの変換を<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">A/D変換</span></span>と呼びます。情報の最小単位は<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">ビット(bit)</span></span>で、8ビットをまとめて<span class="fill-in" onclick="toggleAnswer(this)">(5)<span class="answer">バイト(byte)</span></span>といいます。</p>
+            </div>
+            <div class="page-number">1</div>
+        </div>
+
+        <div class="page">
+            <h2 id="chap2">2. データを小さくする魔法、データ圧縮</h2>
+            <p>動画や高画質な写真など、デジタルデータはどんどん大容量になっています。そこで重要になるのが、データの内容を保ったままファイルサイズを小さくする<b class="text-action">「データ圧縮」</b>の技術です。これにより、ストレージの節約や、ネットワークでのデータ転送を高速化できます。</p>
+            
+            <h3 id="sec2_1">2.1 データ圧縮の目的と種類</h3>
+            <p>データ圧縮には、大きく分けて2つの種類があります。</p>
+            <ul>
+                <li><b class="text-confirm">可逆圧縮：</b>圧縮したデータを、完全に元のデータに戻すことができる方式です。テキストファイルやプログラムなど、1ビットの情報も欠けてはいけないデータに使われます。代表的な形式は<b>ZIP</b>です。</li>
+                <li><b class="text-problem">非可逆圧縮：</b>圧縮する際に、人間には知覚しにくい部分のデータを少しだけ捨ててしまうことで、高い圧縮率を実現する方式です。一度圧縮すると完全には元に戻せませんが、ファイルサイズを劇的に小さくできます。<b>JPEG</b>（画像）や<b>MP3</b>（音楽）、<b>MP4</b>（動画）などがこれにあたります。</li>
+            </ul>
+            <p>一般的に、非可逆圧縮の方が圧縮率は高くなります。なぜなら、元に戻すための情報を一部捨ててしまえるからです。</p>
+
+            <div class="card">
+                <div class="card-header">事例：昔のメール作法「PPAP」はなぜ危険？</div>
+                <p>一昔前、パスワード付きZIPファイルをメールで送り、そのパスワードを別のメールで送る「PPAP」という手法がビジネスシーンで流行しました。しかし、これはセキュリティ上のリスクが高いとされ、現在では非推奨です。なぜなら、同じ経路でパスワードを送るため盗聴のリスクがあり、また圧縮ファイルの中身をウイルス対策ソフトが検査できず、マルウェアの温床になりかねないからです。</p>
+            </div>
+
+            <h3 id="sec2_2">2.2 可逆圧縮の仕組み：ランレングス法</h3>
+            <p>では、可逆圧縮はどうやってデータを小さくしているのでしょうか？代表的な手法の一つが<b class="marker">「ランレングス法」</b>です。これは、同じデータが連続する部分を「（データ）が（何個）続く」という形に置き換えるシンプルな方法です。</p>
+            <p>例えば、以下のようなモノクロ画像の1行があったとします。（0=白、1=黒）</p>
+            <code>00001111001111011001000011110000 (32bit)</code>
+            <p>これをランレングス法で圧縮すると、「0が4個、1が4個、0が2個、1が4個...」と数えて、その個数を並べます。</p>
+            <p><b>4, 4, 2, 4, 1, 2, 2, 1, 4, 4, 4</b></p>
+            <p>この11個の数字を2進数で表現すれば、元の32bitよりずっと短いデータ量で同じ情報を表せるのです。単純な画像や、同じ色が続く画像で非常に効果的です。</p>
+
+            <h3 id="sec2_3">2.3 可逆圧縮の仕組み：ハフマン符号化</h3>
+            <p>もう一つの強力な手法が<b class="marker">「ハフマン符号化」</b>です。これは、文章中で<b class="text-action">よく出現する文字には短いビット列</b>を、<b class="text-problem">あまり出現しない文字には長いビット列</b>を割り当てることで、全体のデータ量を圧縮する方法です。</p>
+            <p>例えば、英語の文章では「e」や「a」が頻繁に登場します。これらの文字に短い符号（例: 2ビット）を割り当て、あまり使われない「q」や「z」に長い符号（例: 5ビット）を割り当てれば、トータルのビット数を大幅に削減できます。</p>
+            <div class="diagram vertical">
+                <div class="box" style="width: 250px;">文字列: abcaabdeaeedbae</div>
+                <div class="arrow">↓</div>
+                <div class="box"><b>出現頻度を数える</b><br>a:5, e:4, b:3, d:2, c:1</div>
+                <div class="arrow">↓</div>
+                <div class="box"><b>ハフマン木を構成し、符号化</b><br>a:00, e:01, b:10, d:110, c:111</div>
+                <div class="arrow">↓</div>
+                <div class="box" style="background-color: var(--confirm-green);"><b>データ量大幅削減！</b></div>
+            </div>
+            <p>このハフマン符号化は、ZIPファイルやJPEGファイルでも利用されている非常に重要な圧縮アルゴリズムです。</p>
+            
+            <div class="question-box">
+                <h4>問題2.1</h4>
+                <p>圧縮しても完全に元に戻せる圧縮方式を<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">可逆圧縮</span></span>、完全には元に戻せないが高い圧縮率の方式を<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">非可逆圧縮</span></span>といいます。同じデータが連続する部分を圧縮する手法を<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">ランレングス法</span></span>、出現頻度に応じて符号の長さを変える手法を<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">ハフマン符号化</span></span>といいます。</p>
+            </div>
+            <div class="page-number">2</div>
+        </div>
+        
+        <div class="page">
+            <h2 id="chap3">3. 音をデジタルに変える技術</h2>
+            <p>私たちが聞いている「音」。その正体は、空気の振動、つまり<b class="text-action">「波」</b>です。このアナログな波を、どうやってコンピューターで扱えるデジタルデータに変換しているのでしょうか。そのプロセスを見ていきましょう。</p>
+            
+            <h3 id="sec3_1">3.1 音の正体とデジタル化のプロセス</h3>
+            <p>音の波は、<b>周波数</b>（波の細かさ＝音の高さ）と<b>振幅</b>（波の大きさ＝音の大きさ）で特徴づけられます。このアナログな音波をデジタル化するには、以下の3ステップを踏みます。</p>
+            <div class="diagram">
+                <div class="box">アナログ音声<br>(音の波)</div>
+                <div class="arrow">→</div>
+                <div class="box" style="background-color: var(--action-blue);">標本化</div>
+                <div class="arrow">→</div>
+                <div class="box" style="background-color: var(--action-blue);">量子化</div>
+                <div class="arrow">→</div>
+                <div class="box" style="background-color: var(--action-blue);">符号化</div>
+                <div class="arrow">→</div>
+                <div class="box" style="background-color: var(--confirm-green);">デジタル音声</div>
+            </div>
+            <p>この一連の流れを<b class="marker">PCM（パルス符号変調）方式</b>といい、現在のデジタル音声の基本となっています。</p>
+
+            <h3 id="sec3_2">3.2 正確な音を記録する：標本化（サンプリング）</h3>
+            <p><b>標本化（サンプリング）</b>とは、連続的な音の波から、一定の時間間隔でその時点での波の高さ（電圧）を採取していく作業です。ちょうど、流れる川の水を一定間隔でコップに汲み取るようなイメージです。</p>
+            <p>このとき、どれくらいの間隔でサンプリングするかが重要になります。この1秒間あたりのサンプリング回数を<b class="text-confirm">サンプリング周波数</b>（単位: Hz）といいます。</p>
+            <p>音を正確に記録するためには、元の音の最高周波数の2倍を超えるサンプリング周波数が必要という<b class="marker">「標本化定理」</b>があります。人間の可聴域が約20kHzまでなので、音楽CDではその約2倍の<b>44.1kHz (44100Hz)</b>が採用されています。これは、1秒間に44100回も音の高さを記録しているということです！</p>
+            
+            <h3 id="sec3_3">3.3 音の強さを数値化する：量子化と符号化</h3>
+            <p><b>量子化</b>とは、標本化で得られたバラバラな波の高さの値を、あらかじめ決められた段階的な数値に割り当てる作業です。例えば、「4ビットで量子化する」と決めた場合、波の高さを0から15までの16段階のどれかに当てはめます。このビット数を<b class="text-confirm">量子化ビット数</b>といいます。</p>
+            <p>音楽CDでは<b>16bit</b>が使われており、音の強弱を約65,536段階で表現しています。より高音質なハイレゾ音源では24bitが使われ、さらに細やかな表現が可能になります。</p>
+            <p>最後の<b>符号化</b>で、量子化された数値を0と1の2進数に変換し、デジタルデータとして記録します。こうして、空気の振動がコンピューターで扱えるデータになるのです。</p>
+            
+            <h3 id="sec3_4">3.4 PCM方式とMIDI</h3>
+            <p>音を波形そのものとして記録するPCM方式とは別に、もう一つ重要な規格があります。それが<b class="text-action">MIDI（ミディ）</b>です。</p>
+            <p>MIDIは、音の波形ではなく、「どの楽器で」「どの音を」「どのくらいの長さ・強さで」演奏するかという<b class="marker">楽譜のような演奏情報</b>をデータ化したものです。そのため、データ量が圧倒的に小さくなるという大きなメリットがあります。</p>
+
+            <div class="card">
+                <div class="card-header">事例：懐かしの「着メロ」はMIDIだった！</div>
+                <p>インターネット黎明期や、スマートフォンの前の携帯電話（ガラケー）の時代、電話がかかってきたときに流れる音楽「着メロ」が流行しました。当時の通信速度ではMP3のような大きな音声ファイルは扱えなかったため、このデータ量の小さいMIDIが活用されていたのです。実は、N予備校を運営するドワンゴも、この着メロ配信事業から始まった歴史があります。</p>
+            </div>
+
+            <div class="question-box">
+                <h4>問題3.1</h4>
+                <p>音のデジタル化は、<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">標本化</span></span>、<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">量子化</span></span>、<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">符号化</span></span>という手順を踏みます。1秒間のサンプリング回数を<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">サンプリング周波数</span></span>といいます。演奏情報を記録する規格を<span class="fill-in" onclick="toggleAnswer(this)">(5)<span class="answer">MIDI</span></span>と呼びます。</p>
+            </div>
+            <div class="page-number">3</div>
+        </div>
+
+        <div class="page">
+            <h2 id="chap4">4. 画像をデジタルで描く技術</h2>
+            <p>普段何気なく見ているスマートフォンの写真やWebサイトの画像。これらも音声と同じように、アナログな世界をデジタルデータに変換したものです。この章では、画像のデジタル化の仕組みを探ります。</p>
+
+            <h3 id="sec4_1">4.1 画像のデジタル化プロセス</h3>
+            <p>画像のデジタル化も、音声と非常によく似たプロセスをたどります。デジタルカメラやイメージスキャナは、レンズを通して入ってきた光の情報をデジタルデータに変換しています。</p>
+            <ol>
+                <li><b>標本化（サンプリング）：</b>まず、画像を<b class="text-action">画素（ピクセル）</b>と呼ばれる非常に小さな四角形の点の集まりに分割します。そして、一つ一つの画素の色情報を読み取ります。</li>
+                <li><b>量子化：</b>次に、読み取った各画素の色を、あらかじめ決められた色の段階（パレット）のどれに一番近いかで数値に変換します。</li>
+                <li><b>符号化：</b>最後に、量子化された色の数値を2進数に変換して、デジタルデータとして記録します。</li>
+            </ol>
+            <p>この画素の集まりで画像を表現する方法を<b class="marker">ビットマップ画像（ラスタ画像）</b>といいます。</p>
+
+            <h3 id="sec4_2">4.2 解像度と階調：画質の決め手</h3>
+            <p>デジタル画像の美しさを決める2つの重要な要素が<b class="text-confirm">「解像度」</b>と<b class="text-confirm">「階調」</b>です。</p>
+            <p><b>解像度</b>とは、画像を構成する画素の密度のことです。同じ大きさの画像でも、画素の数が多ければ多いほど（解像度が高いほど）、より細かく滑らかな表現が可能になります。よくスマートフォンのカメラの性能で「〇〇万画素」というのは、この画素の総数を表しています。</p>
+            <p><b>階調</b>とは、1つの画素で表現できる色の段階数のことです。階調が豊かであればあるほど、より多くの色を表現でき、自然なグラデーションが可能になります。現在主流の<b class="marker">24bitフルカラー</b>では、光の三原色（赤・緑・青）それぞれを256段階で表現し、合計で約1677万色もの色を表現することができます。</p>
+            
+            <h3 id="sec4_3">4.3 ビットマップ画像とベクトル画像</h3>
+            <p>デジタル画像の表現方法には、ビットマップ画像の他にもう一つ<b class="text-action">「ベクトル画像（ベクタ画像）」</b>という形式があります。</p>
+            <ul>
+                <li><b>ビットマップ画像：</b>点の集まりで画像を表現します。写真や複雑なイラストに適していますが、拡大すると画素のギザギザ（ジャギー）が目立ってしまいます。<b class="text-problem">（ペイント系ソフトが得意）</b></li>
+                <li><b>ベクトル画像：</b>点とそれを結ぶ線や曲線の数式データとして画像を表現します。そのため、いくら拡大・縮小しても画像が劣化せず、常に滑らかなのが特徴です。ロゴや図形、イラストなどに適しています。<b class="text-confirm">（ドロー系ソフトが得意）</b></li>
+            </ul>
+
+            <h3 id="sec4_4">4.4 画像ファイルの形式と特徴</h3>
+            <p>画像ファイルには様々な形式があり、それぞれに特徴があります。用途によって使い分けることが重要です。</p>
+            <table>
+                <thead>
+                    <tr><th>ファイル形式</th><th>特徴</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><b>JPEG (.jpg)</b></td><td>非可逆圧縮。写真などフルカラーの画像に適している。Webで最も標準的に使われる。</td></tr>
+                    <tr><td><b>GIF (.gif)</b></td><td>可逆圧縮。256色までしか扱えないが、アニメーションや透過機能がある。</td></tr>
+                    <tr><td><b>PNG (.png)</b></td><td>可逆圧縮。フルカラーと透過機能を両立しており、GIFの上位互換。Web用のロゴやイラストに最適。</td></tr>
+                    <tr><td><b>BMP (.bmp)</b></td><td>無圧縮。画質は劣化しないが、ファイルサイズが非常に大きい。</td></tr>
+                </tbody>
+            </table>
+            
+            <div class="card">
+                <div class="card-header">事例：プロカメラマンが使う「RAWデータ」とは？</div>
+                <p>JPEGは保存するたびに画質が劣化していく性質があるため、実は写真の長期保存や本格的な編集には向きません。そこでプロのカメラマンは<b class="text-action">「RAW（生）データ」</b>という形式で撮影します。これはカメラのセンサーが捉えた情報を一切加工せずに記録したデータで、ファイルサイズは巨大ですが、後から最高の画質で現像（JPEGなどに変換）できるというメリットがあります。未来の技術で、昔撮った写真をより美しく蘇らせることができるかもしれない、ロマンのあるデータ形式ですね！</p>
+            </div>
+
+            <div class="question-box">
+                <h4>問題4.1</h4>
+                <p>画像を構成する最小の点のことを<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">画素(ピクセル)</span></span>といいます。各色の濃淡を何段階で表せるかを示すものを<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">階調</span></span>といいます。点の集まりで画像を表現する形式を<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">ビットマップ画像</span></span>、数式で表現する形式を<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">ベクトル画像</span></span>と呼びます。</p>
+            </div>
+            <div class="page-number">4</div>
+        </div>
+
+        <div class="page">
+            <h2 id="chap5">5. 動きを捉える、動画データの仕組み</h2>
+            <p>動画は、テキストや画像、音声に比べて圧倒的にデータ量が大きくなります。そのため、動画を扱う技術は、いかにしてデータを効率的に圧縮し、スムーズに再生するかにかかっています。最終章では、動画データの仕組みと、それを支えるストリーミング技術について学びましょう。</p>
+
+            <h3 id="sec5_1">5.1 動画の仕組み：フレームとフレームレート</h3>
+            <p>動画が動いて見える仕組みは、実はとてもシンプルです。それは、パラパラ漫画と同じ原理です。少しずつ変化する静止画像を連続して高速で表示することで、人間の目にはあたかも動いているように見えるのです。</p>
+            <p>この動画を構成する1枚1枚の静止画像のことを<b class="text-action">「フレーム」</b>といいます。そして、1秒間に何枚のフレームを表示するかという値が<b class="text-confirm">「フレームレート」</b>で、<b>fps (frames per second)</b> という単位で表されます。</p>
+            <p>テレビ放送やYouTubeなどの動画は、一般的に<b>30fps</b>や<b>60fps</b>で作られています。フレームレートが高いほど、映像はより滑らかになります。</p>
+
+            <h3 id="sec5_2">5.2 動画の圧縮とコーデック</h3>
+            <p>動画のデータ量は「1フレームあたりのデータ量 × フレームレート」で決まるため、無圧縮ではとてつもないサイズになってしまいます。そこで、動画特有の圧縮技術が使われます。</p>
+            <ul>
+                <li><b>フレーム内圧縮：</b>各フレームをJPEGのように画像として圧縮します。</li>
+                <li><b>フレーム間圧縮：</b>動画の圧縮で最も重要な技術。前のフレームとの<b class="marker">差分だけを記録</b>することで、データ量を劇的に削減します。例えば、背景が動かず人物だけが話しているシーンでは、人物の口元など変化した部分だけを記録し、背景は前のフレームのデータを流用します。</li>
+            </ul>
+            <p>この動画を圧縮・展開（再生）するためのアルゴリズムやプログラムのことを<b class="text-action">ビデオコーデック</b>といいます。代表的なものに、現在最も普及している<b>H.264</b>や、その後継で圧縮効率が約2倍になった<b>H.265</b>などがあります。</p>
+
+            <h3 id="sec5_3">5.3 すぐに見られる！ストリーミング技術</h3>
+            <p>大容量の動画ファイルを、ダウンロードが終わるのを待たずにすぐに見られるのは<b class="text-confirm">「ストリーミング」</b>技術のおかげです。これは、動画ファイルを小さな塊に分割し、それを少しずつ受信しながら同時に再生していく仕組みです。</p>
+            <p>ダウンロードがファイル全体を一度ローカルに保存するのに対し、ストリーミングはデータを保存しないため、デバイスのストレージを圧迫しないというメリットもあります。</p>
+            
+            <div class="card">
+                <div class="card-header">事例：YouTubeの再生バーの秘密「バッファリング」</div>
+                <p>動画サイトで再生バーを見ると、再生位置を示す赤い点の少し先に、灰色のバーが伸びているのに気づいたことはありませんか？あれが<b class="text-action">「バッファリング」</b>されている部分です。これは、数秒先のデータを先読みして一時的に保存しておく仕組みで、これがあるおかげで通信が少し不安定になっても映像が途切れずに済むのです。まさに、スムーズな動画視聴を支える縁の下の力持ちですね！</p>
+            </div>
+            
+            <p>現在、動画ストリーミングで最も普及している規格は、Apple社が開発した<b class="marker">HLS (HTTP Live Streaming)</b>です。この技術の登場により、スマートフォンでも快適に動画を視聴できるようになりました。</p>
+
+            <div class="question-box">
+                <h4>問題5.1</h4>
+                <p>動画を構成する1枚1枚の静止画像を<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">フレーム</span></span>といい、1秒間あたりのフレーム数を<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">フレームレート(fps)</span></span>といいます。動画を圧縮・展開するための技術を<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">ビデオコーデック</span></span>と呼びます。データを少しずつ受信しながら再生する技術を<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">ストリーミング</span></span>といい、その際にデータを先読みする機能を<span class="fill-in" onclick="toggleAnswer(this)">(5)<span class="answer">バッファリング</span></span>といいます。</p>
+            </div>
+            <div class="page-number">5</div>
+        </div>
+
+        <div class="button-container">
+            <a href="page3.html" class="nav-button">← 前の講座へ</a>
+            <a href="page5.html" class="nav-button">次の講座へ →</a>
+        </div>
+        
+        <div id="references" class="references">
+            <h3>参考文献・リンク</h3>
+            <ul>
+                <li>本教材は、ZEN大学（仮称・設置認可申請中）が提供する講義「ITリテラシー入門 第4回 メディア」（講師：吉村 創一朗 先生）のテキストおよび講義内容を元に作成されました。</li>
+            </ul>
+        </div>
+    </div>
+    <script>
+        function toggleAnswer(element) {
+            const answer = element.querySelector('.answer');
+            if (answer) {
+                answer.classList.toggle('visible');
+            }
+        }
+    </script>
+</body>
+</html>

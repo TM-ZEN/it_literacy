@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ITリテラシー入門 第7回 データ構造と2進数</title>
+    <style>
+        :root {
+            --primary-color: #0d47a1; /* 濃い青 */
+            --secondary-color: #1976d2; /* 青 */
+            --accent-color: #d32f2f; /* 赤系のアクセント */
+            --background-color: #f5f8fa; /* 薄いグレーがかった背景 */
+            --text-color: #333;
+            --white-color: #ffffff;
+            --marker-yellow: #fffde7;
+            --confirm-green-bg: #e8f5e9;
+            --action-blue-bg: #e3f2fd;
+            --problem-red-bg: #fbe9e7;
+            --confirm-green-text: #2e7d32;
+            --action-blue-text: var(--secondary-color);
+            --problem-red-text: var(--accent-color);
+        }
+
+        body {
+            font-family: 'Yu Gothic UI', 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+            line-height: 1.8;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: var(--white-color);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        .page {
+            border: 1px solid #ddd;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .page-number {
+            position: absolute;
+            bottom: 10px;
+            right: 20px;
+            color: #aaa;
+            font-size: 0.9em;
+        }
+
+        h1 {
+            font-size: 2.2em;
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--secondary-color);
+            padding-bottom: 10px;
+            margin-bottom: 5px;
+            position: relative;
+        }
+        
+        h1::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -3px;
+            width: 70px;
+            border-bottom: 3px solid var(--primary-color);
+        }
+        
+        .lecturer {
+            font-size: 1.1em;
+            color: var(--secondary-color);
+            text-align: right;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            color: var(--primary-color);
+            border-left: 5px solid var(--secondary-color);
+            padding-left: 15px;
+            margin-top: 40px;
+        }
+
+        h3 {
+            font-size: 1.4em;
+            color: var(--secondary-color);
+            border-bottom: 1px dashed var(--secondary-color);
+            padding-bottom: 5px;
+            margin-top: 30px;
+        }
+
+        p { margin-bottom: 1.2em; }
+        strong, b { color: var(--primary-color); }
+        .marker { background: linear-gradient(transparent 60%, var(--marker-yellow) 60%); }
+        .text-confirm { color: var(--confirm-green-text); font-weight: bold; }
+        .text-action { color: var(--action-blue-text); font-weight: bold; }
+        .text-problem { color: var(--problem-red-text); font-weight: bold; }
+
+        .toc {
+            background-color: #f8fafd;
+            border: 1px solid var(--secondary-color);
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+        }
+        .toc h2 { margin-top: 0; border-left: none; padding-left: 0; border-bottom: 2px solid var(--secondary-color); }
+        .toc ul { list-style-type: none; padding-left: 0; }
+        .toc ul ul { padding-left: 20px; }
+        .toc a { text-decoration: none; color: var(--primary-color); }
+        .toc a:hover { text-decoration: underline; }
+
+        .question-box {
+            border: 2px solid var(--accent-color);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            background-color: var(--problem-red-bg);
+        }
+
+        .fill-in {
+            font-weight: bold;
+            color: var(--accent-color);
+            border-bottom: 2px dotted var(--accent-color);
+            cursor: pointer;
+            padding: 0 5px;
+        }
+
+        .answer {
+            display: none;
+            background-color: var(--marker-yellow);
+            padding: 2px 5px;
+            border-radius: 3px;
+            margin: 0 5px;
+        }
+        .answer.visible { display: inline-block; }
+
+        .card {
+            background-color: #f9f9f9;
+            border-left: 5px solid var(--primary-color);
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .card-header {
+            font-weight: bold;
+            font-size: 1.2em;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        table {
+            width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.95em;
+        }
+        th, td { border: 1px solid #ccc; padding: 12px; text-align: left; }
+        th { background-color: var(--primary-color); color: var(--white-color); font-weight: bold; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+        
+        /* --- 図式スタイル --- */
+        .diagram {
+            font-family: 'Yu Gothic UI', sans-serif;
+            text-align: center;
+            padding: 20px 0;
+            overflow-x: auto;
+        }
+        .array-container, .list-container {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin-bottom: 10px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .array-cell, .list-node {
+            border: 2px solid var(--primary-color);
+            padding: 5px;
+            min-width: 50px;
+            background-color: var(--confirm-green-bg);
+            position: relative;
+        }
+        .array-index {
+            font-size: 0.8em;
+            color: var(--secondary-color);
+            margin-bottom: 3px;
+        }
+        .array-data {
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        .list-node {
+            display: flex;
+        }
+        .list-data {
+            padding: 10px;
+            font-weight: bold;
+            border-right: 1px solid var(--primary-color);
+        }
+        .list-pointer {
+            padding: 10px;
+            color: var(--action-blue-text);
+        }
+        .arrow {
+            margin: 0 10px;
+            align-self: center;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        .stack-container {
+            display: inline-flex;
+            flex-direction: column-reverse;
+            border: 3px solid var(--primary-color);
+            border-top: none;
+            padding: 0 10px;
+        }
+        .queue-container {
+            display: flex;
+            border: 3px solid var(--primary-color);
+            padding: 10px 0;
+            position: relative;
+        }
+        .stack-item, .queue-item {
+            border: 2px solid var(--secondary-color);
+            padding: 10px 20px;
+            margin: 5px;
+            background-color: var(--action-blue-bg);
+            font-weight: bold;
+        }
+        /* --- 木構造のスタイル（修正版） --- */
+        .tree-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: auto;
+            padding: 20px;
+        }
+        .tree-node {
+            padding: 5px 15px;
+            border: 2px solid var(--primary-color);
+            background-color: var(--white-color);
+            border-radius: 8px;
+            display: inline-block;
+        }
+        .tree-children {
+            display: flex;
+            position: relative;
+            padding-top: 20px;
+        }
+        .tree-child {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0 10px;
+            position: relative;
+        }
+        /* 子への縦線 */
+        .tree-child::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            border-left: 2px solid var(--primary-color);
+            width: 0;
+            height: 20px;
+        }
+        /* 子間の横線 */
+        .tree-child::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            border-top: 2px solid var(--primary-color);
+            width: 100%;
+        }
+        .tree-children > .tree-child:first-child::after {
+            left: 50%;
+            width: 50%;
+        }
+        .tree-children > .tree-child:last-child::after {
+            width: 50%;
+        }
+        .tree-children > .tree-child:only-child::after {
+            display: none;
+        }
+        /* 親から子グループへの縦線 */
+        .tree-children::after {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            border-left: 2px solid var(--primary-color);
+            width: 0;
+            height: 20px;
+        }
+        /* --- ここまで木構造のスタイル --- */
+
+        .binary-calc { font-family: 'Courier New', Courier, monospace; white-space: pre; line-height: 1.5; padding: 15px; background-color: #f9f9f9; border: 1px solid #ccc; border-radius: 5px; display: inline-block; }
+
+
+        .references { margin-top: 40px; padding-top: 20px; border-top: 1px solid #ccc; }
+        .references ul { list-style: none; padding: 0; }
+        .references li { margin-bottom: 10px; font-size: 0.9em; }
+        
+        .button-container { text-align: center; margin: 40px 0; display: flex; justify-content: space-between; }
+        .nav-button {
+            display: inline-block; padding: 10px 20px; background-color: var(--primary-color);
+            color: var(--white-color); text-decoration: none; border-radius: 5px;
+            font-weight: bold; transition: background-color 0.3s;
+        }
+        .nav-button:hover { background-color: var(--secondary-color); }
+        
+        @media (max-width: 768px) {
+            .container { padding: 10px; }
+            .page { padding: 1rem; }
+            h1 { font-size: 1.8em; }
+            h2 { font-size: 1.5em; }
+            h3 { font-size: 1.2em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ITリテラシー入門 第7回 データ構造と2進数</h1>
+        <p class="lecturer">講師：吉村 創一朗 先生</p>
+
+        <nav class="toc">
+            <h2>目次</h2>
+            <ul>
+                <li><a href="#chap1">1. データ構造の基本：配列</a>
+                    <ul>
+                        <li><a href="#sec1_1">1.1 データ構造とアルゴリズムの関係</a></li>
+                        <li><a href="#sec1_2">1.2 配列の長所と短所</a></li>
+                    </ul>
+                </li>
+                <li><a href="#chap2">2. 柔軟なデータ構造：リスト</a>
+                    <ul>
+                        <li><a href="#sec2_1">2.1 リストの仕組み</a></li>
+                        <li><a href="#sec2_2">2.2 配列とリストの使い分け</a></li>
+                    </ul>
+                </li>
+                <li><a href="#chap3">3. 操作を制限したデータ構造：スタックとキュー</a>
+                    <ul>
+                        <li><a href="#sec3_1">3.1 スタック（LIFO）</a></li>
+                        <li><a href="#sec3_2">3.2 キュー（FIFO）</a></li>
+                    </ul>
+                </li>
+                <li><a href="#chap4">4. 階層を表現するデータ構造：木構造と探索</a>
+                    <ul>
+                        <li><a href="#sec4_1">4.1 木構造とは</a></li>
+                        <li><a href="#sec4_2">4.2 深さ優先探索（DFS）と幅優先探索（BFS）</a></li>
+                    </ul>
+                </li>
+                <li><a href="#chap5">5. コンピュータと2進数</a>
+                    <ul>
+                        <li><a href="#sec5_1">5.1 基数と桁の関係</a></li>
+                        <li><a href="#sec5_2">5.2 ビットシフトと計算</a></li>
+                    </ul>
+                </li>
+                <li><a href="#chap6">6. 2進数の計算と論理演算</a>
+                    <ul>
+                        <li><a href="#sec6_1">6.1 負の数の表現：補数</a></li>
+                        <li><a href="#sec6_2">6.2 小数の表現：浮動小数点数</a></li>
+                        <li><a href="#sec6_3">6.3 論理和と論理積</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="page">
+            <h2 id="chap1">1. データ構造の基本：配列</h2>
+
+            <h3 id="sec1_1">1.1 データ構造とアルゴリズムの関係</h3>
+            <p>前回学んだアルゴリズムは「処理の手順」でした。しかし、その処理対象である「データ」がどんな形で整理されているかによって、アルゴリズムの効率は劇的に変わります。この<b class="marker">データの入れ物や並べ方の作法</b>こそが<b class="text-action">データ構造</b>です。</p>
+            <p>アルゴリズムとデータ構造は、料理における「レシピ」と「調理器具」のような関係です。最高のレシピがあっても、調理器具が不適切では美味しい料理は作れません。同様に、<b class="text-confirm">最適なアルゴリズムを考える第一歩は、最適なデータ構造を考えること</b>だと言っても過言ではないのです。</p>
+
+            <h3 id="sec1_2">1.2 配列の長所と短所</h3>
+            <p><b class="text-action">配列 (Array)</b> は、最も基本的なデータ構造です。データをメモリ（記憶装置）上の<b class="marker">連続した番地に順番に並べたもの</b>で、各データには「0」から始まる<b class="text-problem">添字（インデックス）</b>という番号が割り振られます。</p>
+            <div class="diagram">
+                <div class="array-container">
+                    <div class="array-cell"><div class="array-index">[0]</div><div class="array-data">'A'</div></div>
+                    <div class="array-cell"><div class="array-index">[1]</div><div class="array-data">'B'</div></div>
+                    <div class="array-cell"><div class="array-index">[2]</div><div class="array-data">'C'</div></div>
+                    <div class="array-cell"><div class="array-index">[3]</div><div class="array-data">'D'</div></div>
+                </div>
+            </div>
+            
+            <p><b>長所：参照が超高速</b><br>
+            配列の最大の強みは、添字を使えば目的のデータに一瞬でアクセスできることです。「3番目のデータ（添字は2）を見たい！」と思えば、メモリの決まった場所を直接見に行くだけで済みます。これを<b class="text-confirm">ランダムアクセス</b>に強いと言います。</p>
+            <p><b>短所：挿入と削除が超苦手</b><br>
+            一方、配列の途中にデータを挿入したり、削除したりするのは非常に手間がかかります。例えば、上の配列の'B'と'C'の間に'X'を挿入する場合、'C'と'D'を一つずつ後ろにずらして場所を空けなければなりません。データが100万件あれば、最悪100万回近くの「ずらし処理」が発生します。</p>
+
+            <div class="card">
+                <div class="card-header">事例：ゲームのアイテムボックス</div>
+                <p>ゲームのアイテムボックスは、まさに配列の考え方が使われています。「8番のスロットに薬草を入れる」のように、場所（添字）が決まっているので管理がしやすいです。しかし、アイテムを整理（ソート）する時に、アイテムの場所を入れ替える処理が内部的にたくさん走っているのは、配列の「挿入・削除が苦手」という性質が関係しています。</p>
+            </div>
+            
+            <div class="question-box">
+                <h4>問題1.1</h4>
+                <p>データの入れ物や並べ方の作法を<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">データ構造</span></span>といいます。データをメモリ上の連続した番地に並べ、0から始まる番号で管理するデータ構造を<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">配列</span></span>といい、この番号を<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">添字（インデックス）</span></span>と呼びます。配列はデータの参照は高速ですが、<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">挿入や削除</span></span>には時間がかかります。</p>
+            </div>
+            <div class="page-number">1</div>
+        </div>
+
+        <div class="page">
+            <h2 id="chap2">2. 柔軟なデータ構造：リスト</h2>
+
+            <h3 id="sec2_1">2.1 リストの仕組み</h3>
+            <p>配列が「挿入・削除」を苦手とするのとは対照的に、それを得意とするのが<b class="text-action">リスト (List)</b>です。連結リストや線形リストとも呼ばれます。</p>
+            <p>リストは、各データ要素が「<b class="marker">自分のデータ</b>」と「<b class="marker">次のデータのありか（ポインタ）</b>」をペアで持っています。このポインタ（住所情報のようなもの）を頼りに、数珠つなぎのようにデータが連結されています。</p>
+            <div class="diagram">
+                <div class="list-container">
+                    <div class="list-node"><div class="list-data">'A'</div><div class="list-pointer">*</div></div>
+                    <div class="arrow">→</div>
+                    <div class="list-node"><div class="list-data">'B'</div><div class="list-pointer">*</div></div>
+                    <div class="arrow">→</div>
+                    <div class="list-node"><div class="list-data">'C'</div><div class="list-pointer">空</div></div>
+                </div>
+            </div>
+            <p><b>長所：挿入と削除が超高速</b><br>
+            リストの途中にデータを挿入する場合、前後の要素が持っている「次のデータのありか（ポインタ）」を新しいデータのものに書き換えるだけで完了します。配列のように全データをずらす必要がないため、非常に高速です。</p>
+            <p><b>短所：参照が超苦手</b><br>
+            逆に、リストは「3番目のデータが見たい」と思っても、先頭から順番にポインタをたどっていくしかありません。データが100万件あれば、最悪100万回ポインタをたどる必要があります。配列のランダムアクセスとは対照的です。</p>
+            
+            <h3 id="sec2_2">2.2 配列とリストの使い分け</h3>
+            <p>配列とリストは、それぞれ得意なことと苦手なことが正反対です。どちらが優れているということではなく、<b class="text-confirm">目的に応じて使い分ける</b>ことが重要です。</p>
+            <table class="comparison-table">
+                <thead>
+                    <tr><th></th><th>配列 (Array)</th><th>リスト (List)</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><b>参照（アクセス）</b></td><td class="text-confirm">高速（添字で一発）</td><td class="text-problem">低速（先頭から順にたどる）</td></tr>
+                    <tr><td><b>挿入・削除</b></td><td class="text-problem">低速（全要素の移動が必要）</td><td class="text-confirm">高速（ポインタの書き換えのみ）</td></tr>
+                    <tr><td><b>メモリ利用</b></td><td>連続した大きな領域が必要</td><td>バラバラの領域でもOK、効率的</td></tr>
+                </tbody>
+            </table>
+            
+            <div class="card">
+                <div class="card-header">事例：音楽プレイリストの編集</div>
+                <p>あなたが作ったお気に入りのプレイリストを編集する場面を想像してください。曲順を入れ替えたり、新しい曲を間に挟んだりしますよね。このような「挿入」や「削除」が頻繁に起こる処理には、配列よりもリスト構造の方がはるかに向いています。</p>
+            </div>
+
+            <div class="question-box">
+                <h4>問題2.1</h4>
+                <p>データと「次のデータのありか」をペアで持ち、数珠つなぎにデータを管理するデータ構造を<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">リスト</span></span>といいます。この「次のデータのありか」を<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">ポインタ</span></span>と呼びます。リストは挿入や削除は高速ですが、特定のデータへの<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">参照（アクセス）</span></span>は、先頭から順番にたどる必要があるため低速です。</p>
+            </div>
+            <div class="page-number">2</div>
+        </div>
+
+        <div class="page">
+            <h2 id="chap3">3. 操作を制限したデータ構造：スタックとキュー</h2>
+            <p>データの出し入れの方法に、あえて<b class="marker">厳しいルール（制限）</b>を設けることで、特定の処理をシンプルかつ安全に行うために作られたデータ構造が「スタック」と「キュー」です。</p>
+
+            <h3 id="sec3_1">3.1 スタック（LIFO）</h3>
+            <p><b class="text-action">スタック (Stack)</b> は、データの追加（プッシュ）と取り出し（ポップ）を<b class="marker">片方の端からしか行えない</b>データ構造です。まるで、底のある箱に本を平積みしていくようなイメージです。最後に入れた本が、一番最初に取り出されます。</p>
+            <p>この「<b class="text-confirm">後入れ先出し</b>」の性質を、英語の頭文字をとって <b class="text-problem">LIFO (Last-In, First-Out)</b> と呼びます。</p>
+            <div class="diagram">
+                <div class="stack-container">
+                    <div class="stack-item">4. 最後に入れる</div>
+                    <div class="stack-item">3</div>
+                    <div class="stack-item">2</div>
+                    <div class="stack-item">1. 最初に入れる</div>
+                </div>
+                <p>取り出すときは 4 → 3 → 2 → 1 の順になる</p>
+            </div>
+
+            <div class="card">
+                <div class="card-header">事例：ブラウザの「戻る」ボタン</div>
+                <p>Webブラウザでページを閲覧した履歴はスタックに保存されています。ページA→B→Cと移動すると、履歴スタックには[A, B, C]と積まれます。「戻る」ボタンを押すと、最後に追加されたCが取り出され（ポップされ）、Bのページに戻るのです。この仕組みのおかげで、私たちは直感的にブラウジングができます。</p>
+            </div>
+
+            <h3 id="sec3_2">3.2 キュー（FIFO）</h3>
+            <p><b class="text-action">キュー (Queue)</b> は、データの追加を一方の端（末尾）から行い、取り出しを<b class="marker">もう一方の端（先頭）から行う</b>データ構造です。これは、お店のレジの「待ち行列」そのものです。最初に並んだ人が、最初にサービスを受けられます。</p>
+            <p>この「<b class="text-confirm">先入れ先出し</b>」の性質を <b class="text-problem">FIFO (First-In, First-Out)</b> と呼びます。</p>
+            <div class="diagram">
+                <div class="queue-container">
+                    <div class="queue-item">1. 最初</div>
+                    <div class="queue-item">2</div>
+                    <div class="queue-item">3</div>
+                    <div class="queue-item">4. 最後</div>
+                </div>
+                 <p>取り出すときも 1 → 2 → 3 → 4 の順になる</p>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">事例：オンラインゲームのマッチング</div>
+                <p>対戦ゲームで「対戦相手を探す」ボタンを押すと、あなたはマッチングの待機列（キュー）に入ります。先に待っていた人から順番に対戦相手が見つかり、ゲームが開始されます。この公平な順番待ちは、キューのFIFOという性質によって実現されています。</p>
+            </div>
+            
+            <div class="question-box">
+                <h4>問題3.1</h4>
+                <p>片方の端からしかデータの出し入れができないデータ構造を<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">スタック</span></span>といい、その「後入れ先出し」の性質を<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">LIFO</span></span>と呼びます。一方、データの追加と取り出しを別々の端で行うデータ構造を<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">キュー</span></span>といい、その「先入れ先出し」の性質を<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">FIFO</span></span>と呼びます。</p>
+            </div>
+            <div class="page-number">3</div>
+        </div>
+        
+        <div class="page">
+            <h2 id="chap4">4. 階層を表現するデータ構造：木構造と探索</h2>
+            
+            <h3 id="sec4_1">4.1 木構造とは</h3>
+            <p>会社の組織図や、PCのフォルダ構造のように、<b class="marker">階層的な関係を持つデータ</b>を表現するのに適したデータ構造が<b class="text-action">木構造 (Tree)</b> です。木を逆さまにしたような形をしています。</p>
+            <ul>
+                <li><b>ノード (Node):</b> 木構造を構成する各要素。</li>
+                <li><b>ルート (Root):</b> 木の根元となる、最上位のノード。</li>
+                <li><b>リーフ (Leaf):</b> 木の葉にあたる、末端のノード（子を持たないノード）。</li>
+                <li><b>親ノードと子ノード:</b> あるノードから見て、一つ上の階層のノードが親、一つ下の階層のノードが子。</li>
+            </ul>
+             <div class="diagram">
+                <div class="tree-container">
+                    <div class="tree-node">ルート</div>
+                    <div class="tree-children">
+                        <div class="tree-child">
+                            <div class="tree-node">子</div>
+                            <div class="tree-children">
+                                <div class="tree-child"><div class="tree-node">リーフ</div></div>
+                                <div class="tree-child"><div class="tree-node">リーフ</div></div>
+                            </div>
+                        </div>
+                        <div class="tree-child">
+                            <div class="tree-node">子</div>
+                             <div class="tree-children">
+                                <div class="tree-child"><div class="tree-node">リーフ</div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h3 id="sec4_2">4.2 深さ優先探索（DFS）と幅優先探索（BFS）</h3>
+            <p>この木構造の中から目的のデータ（ノード）を探す方法として、代表的なものが2つあります。</p>
+            <p><b>深さ優先探索 (Depth-First Search, DFS)</b><br>
+            まず、<b class="marker">行けるところまで深く潜っていく</b>探索方法です。ルートから始めて、子ノード、さらにその子ノードへと進み、行き止まり（リーフ）に達したら、一つ親に戻って別の道を深く探索します。目的のデータが木の深い場所にある場合に効率的です。</p>
+            
+            <p><b>幅優先探索 (Breadth-First Search, BFS)</b><br>
+            <b class="marker">同じ階層のノードをすべて調べてから</b>、次の階層に進む探索方法です。ルートから始めて、まず全ての子ノードを調べ、次に孫ノードを全て調べる、というように横に広く探索します。目的のデータが比較的浅い階層にある場合に有効です。</p>
+            
+            <div class="card">
+                <div class="card-header">事例：ゲームのスキルツリー</div>
+                <p>RPGなどでおなじみのスキルツリーは、まさに木構造です。「剣術」のルートスキルから、「一刀両断」や「疾風斬り」といった子スキルが派生していきますよね。ある特定の奥義スキルを目指して一直線にスキルを習得していくのは「深さ優先探索」、とりあえずレベル1のスキルを全部取っておこうというのは「幅優先探索」的な考え方と言えるかもしれません。</p>
+            </div>
+            
+            <div class="question-box">
+                <h4>問題4.1</h4>
+                <p>階層構造を表現するデータ構造を<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">木構造</span></span>といいます。その構成要素を<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">ノード</span></span>、最上位の要素を<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">ルート</span></span>、末端の要素を<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">リーフ</span></span>と呼びます。深く潜るように探索する方法を<span class="fill-in" onclick="toggleAnswer(this)">(5)<span class="answer">深さ優先探索</span></span>、同じ階層を横に広がるように探索する方法を<span class="fill-in" onclick="toggleAnswer(this)">(6)<span class="answer">幅優先探索</span></span>といいます。</p>
+            </div>
+            <div class="page-number">4</div>
+        </div>
+
+        <div class="page">
+            <h2 id="chap5">5. コンピュータと2進数</h2>
+
+            <h3 id="sec5_1">5.1 基数と桁の関係</h3>
+            <p>私たちは普段、0から9までの10個の数字を使って数を数える「10進数」の世界に生きています。一方、コンピュータは「ON」と「OFF」しか理解できないため、<b class="marker">0と1の2つの数字だけ</b>で全てを表現する「<b class="text-action">2進数</b>」の世界で動いています。</p>
+            <p>このように、各桁で使える数字の種類を<b class="text-confirm">基数</b>といいます。10進数の基数は10、2進数の基数は2です。2進数の1桁は「ビット(bit)」と呼ばれ、コンピュータが扱う情報の最小単位です。</p>
+            
+            <div class="card">
+                <div class="card-header">なぜ昔のゲームの最大値は255なの？</div>
+                <p>昔のゲームでは、キャラクターのレベルやアイテムの所持数が「255」でカンスト（カウンターストップ）することがよくありました。これは、データを「8ビット」で管理していたためです。8ビットの2進数で表現できる最大の数は「11111111」で、これを10進数に直すと255になります。これに1を足すと桁が溢れて（オーバーフロー）、0に戻ってしまうのです。</p>
+            </div>
+            
+            <h3 id="sec5_2">5.2 ビットシフトと計算</h3>
+            <p>10進数で桁が一つ上がると10倍になるように、2進数では<b class="marker">桁が一つ上がると2倍</b>になります。この性質を利用した計算が<b class="text-action">ビットシフト</b>です。</p>
+            <ul>
+                <li><b>左シフト：</b>全ビットを左に1つずらすと、数値は<b class="text-confirm">2倍</b>になる。</li>
+                <li><b>右シフト：</b>全ビットを右に1つずらすと、数値は<b class="text-problem">1/2倍</b>になる（小数点以下は切り捨て）。</li>
+            </ul>
+            <p>単純な掛け算や割り算よりも高速に処理できるため、ビットシフトはプログラムの内部で頻繁に利用されています。</p>
+            <p><b>例：10進数の「8」をビットシフト</b><br>
+            「8」は8ビットの2進数で「00001000」です。</p>
+            <p><b>左に1シフト → </b>「00010000」 (10進数で16。2倍になった！)<br>
+            <b>右に1シフト → </b>「00000100」 (10進数で4。1/2倍になった！)</p>
+            
+            <div class="question-box">
+                <h4>問題5.1</h4>
+                <p>各桁で使える数字の種類を<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">基数</span></span>といいます。コンピュータが使う0と1だけの数の世界は<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">2進数</span></span>です。2進数の桁を左にずらすと数値が2倍、右にずらすと1/2倍になる計算を<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">ビットシフト</span></span>といいます。8ビットで表現できる最大の数に1を足すと0に戻ってしまう現象を<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">オーバーフロー</span></span>といいます。</p>
+            </div>
+            <div class="page-number">5</div>
+        </div>
+        
+        <div class="page">
+            <h2 id="chap6">6. 2進数の計算と論理演算</h2>
+            
+            <h3 id="sec6_1">6.1 負の数の表現：補数</h3>
+            <p>コンピュータは足し算は得意ですが、実は直接的な引き算は行いません。ではどうしているのかというと、「<b class="text-problem">負の数を足す</b>」という方法で引き算を実現しています。そのために使われるのが<b class="text-action">補数</b>という考え方です。</p>
+            <p>補数とは、ある数に足すと桁が溢れてちょうど「0」になる数のことです。例えば、8ビットの世界で「7」の補数は「-7」として扱われます。この補数を使うことで、<b class="marker">全ての引き算を足し算として処理できる</b>ようになります。</p>
+            <p><b>8ビットでの補数の求め方</b><br>
+            1. 全てのビットを反転させる (0を1に、1を0に)。<br>
+            2. その結果に1を足す。</p>
+            
+            <div class="card">
+                <div class="card-header">計算例：10 - 7 をやってみよう</div>
+                 <p>10 - 7 は 10 + (-7) と考えます。<br>
+                 - 10進数「10」→ 2進数「00001010」<br>
+                 - 10進数「7」→ 2進数「00000111」<br>
+                 - 「-7」の補数を求めると → 「11111001」<br>
+                 - これらを足し算すると…<br>
+                 </p>
+                 <div class="binary-calc">
+  00001010
++ 11111001
+----------
+ 100000011
+                 </div>
+                 <p>9桁目「1」は桁溢れで消え、「00000011」が残ります。これは10進数の「3」なので、正しく計算できました！</p>
+            </div>
+
+            <h3 id="sec6_2">6.2 小数の表現：浮動小数点数</h3>
+            <p>整数だけでなく、小数も2進数で表現されます。その一般的な方法が<b class="text-action">浮動小数点数</b>です。これは、数を「<b class="marker">符号部</b>」「<b class="marker">指数部</b>」「<b class="marker">仮数部</b>」の3つのパーツに分けて表現する方法です。これにより、非常に大きな数から非常に小さな数まで、幅広い範囲の小数を効率的に表現できます。</p>
+            <p>ただし、コンピュータで扱える桁数には限りがあるため、計算の過程で非常に小さい数が無視されたり（<b class="text-problem">情報落ち</b>）、桁が丸められたりして、<b class="text-confirm">計算誤差</b>が生じることがあります。</p>
+            
+            <h3 id="sec6_3">6.3 論理和と論理積</h3>
+            <p>2進数の各ビット（0か1）を、偽(False)か真(True)と見立てて行う演算を<b class="text-action">論理演算</b>といいます。</p>
+            <ul>
+                <li><b>論理和 (OR):</b> 「AまたはB」が真なら真 (1)。両方偽 (0) のときだけ偽 (0) になります。<br>
+                <code>0011 or 0101 = 0111</code></li>
+                <li><b>論理積 (AND):</b> 「AかつB」が真のときだけ真 (1)。どちらか一方でも偽 (0) なら偽 (0) になります。<br>
+                <code>0011 and 0101 = 0001</code></li>
+            </ul>
+            <p>これらの論理演算は、特定の条件を満たすかどうかを判定したり、データの特定の部分だけを取り出したり（ビットマスク）する際に、非常に重要な役割を果たします。</p>
+            
+            <div class="question-box">
+                <h4>問題6.1</h4>
+                <p>2進数で負の数を表現するために使う、足すと0になる数のことを<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">補数</span></span>といいます。小数を「符号部」「指数部」「仮数部」で表現する方法を<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">浮動小数点数</span></span>と呼びます。「または」を意味する演算を<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">論理和(OR)</span></span>、「かつ」を意味する演算を<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">論理積(AND)</span></span>といいます。</p>
+            </div>
+            <div class="page-number">6</div>
+        </div>
+        
+        <div class="button-container">
+            <a href="page6.html" class="nav-button">← 前の講座へ</a>
+            <a href="page8.html" class="nav-button">次の講座へ →</a>
+        </div>
+        
+        <div id="references" class="references">
+            <h3>参考文献・リンク</h3>
+            <ul>
+                <li>本教材は、ZEN大学（仮称・設置認可申請中）が提供する講義「ITリテラシー入門 第7回 データ構造と2進数」（講師：吉村 創一朗 先生）のテキストおよび講義内容を元に作成されました。</li>
+            </ul>
+        </div>
+    </div>
+    <script>
+        function toggleAnswer(element) {
+            const answer = element.querySelector('.answer');
+            if (answer) {
+                answer.classList.toggle('visible');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ITリテラシー入門 第5回 デジタル・シティズンシップ教育</title>
+    <style>
+        :root {
+            --primary-color: #0d47a1; /* 濃い青 */
+            --secondary-color: #1976d2; /* 青 */
+            --accent-color: #d32f2f; /* 赤系のアクセント */
+            --background-color: #f5f8fa; /* 薄いグレーがかった背景 */
+            --text-color: #333;
+            --white-color: #ffffff;
+            --marker-yellow: #fffde7;
+            --confirm-green: #e8f5e9;
+            --action-blue: #e3f2fd;
+        }
+
+        body {
+            font-family: 'Yu Gothic UI', 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+            line-height: 1.8;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: var(--white-color);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        .page {
+            border: 1px solid #ddd;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .page-number {
+            position: absolute;
+            bottom: 10px;
+            right: 20px;
+            color: #aaa;
+            font-size: 0.9em;
+        }
+
+        h1 {
+            font-size: 2.2em;
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--secondary-color);
+            padding-bottom: 10px;
+            margin-bottom: 5px;
+            position: relative;
+        }
+        
+        h1::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -3px;
+            width: 70px;
+            border-bottom: 3px solid var(--primary-color);
+        }
+        
+        .lecturer {
+            font-size: 1.1em;
+            color: var(--secondary-color);
+            text-align: right;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            color: var(--primary-color);
+            border-left: 5px solid var(--secondary-color);
+            padding-left: 15px;
+            margin-top: 40px;
+        }
+
+        h3 {
+            font-size: 1.4em;
+            color: var(--secondary-color);
+            border-bottom: 1px dashed var(--secondary-color);
+            padding-bottom: 5px;
+            margin-top: 30px;
+        }
+
+        p {
+            margin-bottom: 1.2em;
+        }
+
+        strong, b {
+            color: var(--primary-color);
+        }
+
+        .marker {
+            background: linear-gradient(transparent 60%, var(--marker-yellow) 60%);
+        }
+        
+        .text-confirm { color: #2e7d32; font-weight: bold; }
+        .text-action { color: var(--secondary-color); font-weight: bold; }
+        .text-problem { color: var(--accent-color); font-weight: bold; }
+
+        .toc {
+            background-color: #f8fafd;
+            border: 1px solid var(--secondary-color);
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+        }
+
+        .toc h2 {
+            margin-top: 0;
+            border-left: none;
+            padding-left: 0;
+            border-bottom: 2px solid var(--secondary-color);
+        }
+
+        .toc ul { list-style-type: none; padding-left: 0; }
+        .toc ul ul { padding-left: 20px; }
+        .toc a { text-decoration: none; color: var(--primary-color); }
+        .toc a:hover { text-decoration: underline; }
+
+        .question-box {
+            border: 2px solid var(--accent-color);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            background-color: #fbe9e7;
+        }
+
+        .fill-in {
+            font-weight: bold;
+            color: var(--accent-color);
+            border-bottom: 2px dotted var(--accent-color);
+            cursor: pointer;
+            padding: 0 5px;
+        }
+
+        .answer {
+            display: none;
+            background-color: var(--marker-yellow);
+            padding: 2px 5px;
+            border-radius: 3px;
+            margin: 0 5px;
+        }
+        
+        .answer.visible { display: inline-block; }
+
+        .card {
+            background-color: #f9f9f9;
+            border-left: 5px solid var(--primary-color);
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .card-header {
+            font-weight: bold;
+            font-size: 1.2em;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .diagram {
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin: 20px 0;
+            background-color: #f8fafd;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        /* Ring Diagram Styles */
+        .diagram.ring-diagram {
+            align-items: center;
+            min-height: 320px;
+        }
+        .ring-container {
+            width: 300px;
+            height: 300px;
+            border: 3px solid var(--primary-color);
+            background-color: var(--action-blue);
+            border-radius: 50%;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 25px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+        .ring-text {
+            font-weight: bold;
+            color: var(--primary-color);
+            font-size: 1.2em;
+            line-height: 1.2;
+        }
+        .ring-container .inner-circle {
+            width: 200px;
+            height: 200px;
+            border: 3px solid var(--primary-color);
+            background-color: #bbdefb;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 20px;
+            box-sizing: border-box;
+        }
+        .inner-circle .center-circle {
+            width: 100px;
+            height: 100px;
+            border: 3px solid var(--primary-color);
+            background-color: #90caf9;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.95em;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: var(--white-color);
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        
+        .references {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #ccc;
+        }
+        
+        .references ul { list-style: none; padding: 0; }
+        .references li { margin-bottom: 10px; font-size: 0.9em; }
+        
+        .button-container {
+            text-align: center;
+            margin: 40px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .nav-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: var(--white-color);
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        
+        .nav-button:hover { background-color: var(--secondary-color); }
+        
+        @media (max-width: 768px) {
+            .container { padding: 10px; }
+            .page { padding: 1rem; }
+            h1 { font-size: 1.8em; }
+            h2 { font-size: 1.5em; }
+            h3 { font-size: 1.2em; }
+            .ring-container { width: 250px; height: 250px; padding-top: 20px;}
+            .ring-container .inner-circle { width: 170px; height: 170px; padding-top: 15px;}
+            .inner-circle .center-circle { width: 90px; height: 90px; }
+            .ring-text { font-size: 1em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ITリテラシー入門 第5回 デジタル・シティズンシップ教育</h1>
+        <p class="lecturer">講師：吉村 創一朗 先生</p>
+
+        <nav class="toc">
+            <h2>目次</h2>
+            <ul>
+                <li><a href="#chap1">1. デジタル・シティズンシップ教育とは</a>
+                    <ul>
+                        <li><a href="#sec1_1">1.1 ポジティブなデジタル市民になろう</a></li>
+                        <li><a href="#sec1_2">1.2 デジタル・シティズンシップの9つの要素</a></li>
+                    </ul>
+                </li>
+                <li><a href="#chap2">2. 心と体の健康を守る「メディアバランス」</a>
+                    <ul>
+                        <li><a href="#sec2_1">2.1 メディアとの上手な付き合い方</a></li>
+                        <li><a href="#sec2_2">2.2 自分に合ったメディアバランスを計画しよう</a></li>
+                    </ul>
+                </li>
+                <li><a href="#chap3">3. ネット社会での振る舞い「責任ある発信」</a>
+                    <ul>
+                        <li><a href="#sec3_1">3.1 「私・共・公」で考える責任の輪</a></li>
+                        <li><a href="#sec3_2">3.2 行動する前の3つのステップ</a></li>
+                    </ul>
+                </li>
+                <li><a href="#chap4">4. 消えない足あと「デジタル・フットプリント」</a>
+                    <ul>
+                        <li><a href="#sec4_1">4.1 デジタル足あと（デジタル・フットプリント）とは？</a></li>
+                        <li><a href="#sec4_2">4.2 発信が未来や社会に与える影響</a></li>
+                    </ul>
+                </li>
+                <li><a href="#chap5">5. 偽情報に騙されない「ニュース・メディアリテラシー」</a>
+                    <ul>
+                        <li><a href="#sec5_1">5.1 偽情報（フェイク）とその目的</a></li>
+                        <li><a href="#sec5_2">5.2 偽情報を見抜くための方法</a></li>
+                    </ul>
+                </li>
+                <li><a href="#chap6">6. みんなが暮らしやすい社会へ「シビックテック」</a>
+                    <ul>
+                        <li><a href="#sec6_1">6.1 シビックテックと多様性</a></li>
+                        <li><a href="#sec6_2">6.2 全員を包摂するテクノロジー</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="page">
+            <h2 id="chap1">1. デジタル・シティズンシップ教育とは</h2>
+            <p>インターネットやスマホが当たり前になった現代社会。私たちは皆、デジタル世界の「市民」です。この章では、デジタル市民として賢く、そして創造的に生きるための力、<b class="text-action">「デジタル・シティズンシップ」</b>について学びます。これは、単にネットの危険から身を守るだけでなく、テクノロジーを積極的に活用して社会に貢献するための考え方です。</p>
+
+            <h3 id="sec1_1">1.1 ポジティブなデジタル市民になろう</h3>
+            <p>これまで日本では「情報モラル教育」が中心でした。これは「〜してはいけない」という<b class="text-problem">抑制的なルール</b>を学ぶことが主眼でした。しかし、時代は変わり、現在、欧米を中心に<b class="text-confirm">「デジタル・シティズンシップ教育」</b>へとシフトしています。</p>
+            <p>デジタル・シティズンシップ教育は、「テクノロジーを使って、もっと良い社会を、もっと面白いことを創造しよう！」という<b class="marker">ポジティブで創造的な考え方</b>がベースになっています。スマホやPCを「危険なもの」として遠ざけるのではなく、学びや生活を豊かにするための「強力な道具」と捉えるのです。</p>
+            
+            <div class="card">
+                <div class="card-header">事例：SNSとの付き合い方、どう変わる？</div>
+                <p><b>情報モラル教育：</b>「SNSでの不適切な投稿は炎上するから危険！個人情報は絶対に出さないように！」と危険性を強調します。</p>
+                <p><b>デジタル・シティズンシップ教育：</b>「どうすれば炎上せずに、自分の考えや作品を多くの人に届けられるだろう？」「Twitterを使って効果的なWebマーケティングをするには？」といった<b class="text-action">「どうすればうまく活用できるか」</b>を考え、実践しながら学びます。もちろん、リスク管理も学びますが、それはあくまで活用のための一環です。</p>
+            </div>
+            
+            <p>日本では<b class="marker">GIGAスクール構想</b>により、生徒一人ひとりが端末を持つ環境が整いました。これからの社会では、ルールに縛られるだけでなく、「安全、責任、多様性の尊重」を軸に自ら考え、行動するスキルが求められています。</p>
+
+            <h3 id="sec1_2">1.2 デジタル・シティズンシップの9つの要素</h3>
+            <p>国際教育テクノロジ学会(ISTE)などが提唱するデジタル・シティズンシップには、以下の9つの重要な要素があります。</p>
+            <table>
+                <thead>
+                    <tr><th>要素</th><th>概要</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><b>デジタル・アクセス</b></td><td>誰もが情報技術に公平にアクセスできる環境を整えること。</td></tr>
+                    <tr><td><b>デジタル・コマース</b></td><td>ネットショッピングなど、オンラインでの安全な商取引について学ぶこと。</td></tr>
+                    <tr><td><b>デジタル・コミュニケーション</b></td><td>オンラインで効果的に他者と協力し、創造的な活動を行う能力。</td></tr>
+                    <tr><td><b>デジタル・エチケット</b></td><td>オンラインでもオフラインでも、他者を尊重する行動基準。</td></tr>
+                    <tr><td><b>デジタル・フルーエンシー</b></td><td>情報技術を理解し、主体的に活用できる能力。（メディアリテラシーも含む）</td></tr>
+                    <tr><td><b>デジタル健康と福祉</b></td><td>心身の健康を保つためのメディアとの付き合い方（メディアバランス）。</td></tr>
+                    <tr><td><b>デジタル規範</b></td><td>ネットいじめなど、オンラインでの問題行動に対する責任と対処法。</td></tr>
+                    <tr><td><b>デジタル権利と責任</b></td><td>著作権やプライバシーなど、デジタル世界での権利と責任を理解すること。</td></tr>
+                    <tr><td><b>デジタル・セキュリティ</b></td><td>ウイルス対策やパスワード管理など、自らを守るための予防策。</td></tr>
+                </tbody>
+            </table>
+            
+            <div class="question-box">
+                <h4>問題1.1</h4>
+                <p>デジタル市民としてテクノロジーを責任もって使う能力を<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">デジタル・シティズンシップ</span></span>といいます。これは、危険性を学ぶ抑制的な<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">情報モラル教育</span></span>とは異なり、創造的でポジティブな活用を目指します。日本では<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">GIGAスクール構想</span></span>により、生徒が端末を持つ環境が整備されました。</p>
+            </div>
+            <div class="page-number">1</div>
+        </div>
+
+        <div class="page">
+            <h2 id="chap2">2. 心と体の健康を守る「メディアバランス」</h2>
+            <p>スマホやPCは便利で楽しいですが、気づけば何時間も経っていた…なんてことはありませんか？デジタル・シティズンシップでは、ルールで時間を縛るのではなく、自分自身で心と体の健康のためにメディアとの付き合い方を考える<b class="text-action">「メディアバランス」</b>を重視します。</p>
+
+            <h3 id="sec2_1">2.1 メディアとの上手な付き合い方</h3>
+            <p>メディアバランスとは、<b class="marker">メディアの利用と、睡眠、食事、趣味、家族との時間などを健康的に両立させること</b>です。テレビやネットだけでなく、本や音楽なども含めたすべての情報を受け取る方法（メディア）が対象となります。</p>
+            <p>大切なのは、画一的なルールを決めることではありません。「自分にとっての最適なバランスは何か？」を考え、計画し、そして振り返ることです。</p>
+            
+            <div class="card">
+                <div class="card-header">考えてみよう：アキくんの悩み</div>
+                <p>パソコンが大好きなアキくん。プログラミングも、友達とのオンラインゲームも、動画編集も全部PCでやっています。でも最近、なんだか寝不足でイライラするし、肩も凝って最悪…。<br>アキくんは、どうすればこの状況を改善できるでしょうか？</p>
+                <p class="text-confirm">これはまさに、メディアバランスが崩れている状態です。PCを使うこと自体が悪いのではなく、時間の使い方や他の活動とのバランスを見直す必要がありますね。</p>
+            </div>
+            
+            <h3 id="sec2_2">2.2 自分に合ったメディアバランスを計画しよう</h3>
+            <p>自分だけのメディアバランス計画を立ててみましょう。正解はありません。自分のライフスタイルや目標に合わせて考えることが重要です。</p>
+            <ul>
+                <li><strong>健康を第一に：</strong>メディアをバランスよく使い、睡眠時間や運動の時間を確保する。</li>
+                <li><strong>自分を観察する：</strong>「これをしている時、自分の気持ちはどう変わるか？」を意識してみる。</li>
+                <li><strong>違いを認める：</strong>メディアバランスは人それぞれ。自分の計画を他人に押し付けない。</li>
+                <li><strong>使わない選択肢：</strong>時にはデジタルから離れる「デジタルデトックス」も大切な選択肢です。</li>
+            </ul>
+
+            <div class="card">
+                <div class="card-header">計画例：あなたならどう計画する？</div>
+                <p><b>平日の日中：</b>PCでの作業に集中するが、1時間に1回は立ち上がってストレッチをする。ランチの時間はスマホを見ずに同僚と話す。</p>
+                <p><b>平日の夜間：</b>ゲームは2時間までと決め、寝る1時間前にはブルーライトを浴びないように読書に切り替える。睡眠は8時間確保する。</p>
+                <p><b>休日：</b>午前中は趣味の動画制作。午後は友人とスポーツをするなど、意識的に体を動かす時間を作る。</p>
+            </div>
+            <p>このように、自分の生活を豊かにするためにメディアを主体的にコントロールしていく。それがメディアバランスの考え方です。</p>
+
+            <div class="question-box">
+                <h4>問題2.1</h4>
+                <p>心身の健康を保つため、メディア利用と他の生活のバランスを自分で考えることを<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">メディアバランス</span></span>といいます。これには決まった正解はなく、一人ひとりが自分のライフスタイルに合わせて計画し、<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">メディアを使わない</span></span>という選択肢も考慮することが重要です。</p>
+            </div>
+            <div class="page-number">2</div>
+        </div>
+
+        <div class="page">
+            <h2 id="chap3">3. ネット社会での振る舞い「責任ある発信」</h2>
+            <p>インターネットは、誰もが世界中に向けて情報を発信できる強力なツールです。しかし、その力には大きな責任が伴います。この章では、自分の思いを大切にしつつ、他者への配慮も忘れない「責任ある発信」について考えます。</p>
+
+            <h3 id="sec3_1">3.1 「私・共・公」で考える責任の輪</h3>
+            <p>アメリカのNPO「Common Sense Media」は、情報発信の際の責任を3つの輪で表現しています。何かを発信する前には、この3つの輪それぞれへの影響を考えることが大切です。</p>
+            <div class="diagram ring-diagram">
+                <div class="ring-container">
+                    <span class="ring-text">公<br><small>(より大きな世界)</small></span>
+                    <div class="inner-circle">
+                        <span class="ring-text">共<br><small>(コミュニティ)</small></span>
+                        <div class="center-circle">
+                            <span class="ring-text">私<br><small>(自分自身)</small></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <ul>
+                <li><b class="text-action">私（自分自身への責任）：</b>自分の心と体の安全、健康を守る。自分を偽ったり、危険に晒したりしない。</li>
+                <li><b class="text-confirm">共（コミュニティへの責任）：</b>友人、家族、クラスメイトなど、自分が知っている人々への責任。彼らを傷つけたり、迷惑をかけたりしない。</li>
+                <li><b class="text-problem">公（より大きな世界への責任）：</b>直接は知らないけれど、自分の発信が影響を与える可能性のある人々への責任。社会全体への影響を考える。</li>
+            </ul>
+
+            <div class="card">
+                <div class="card-header">考えてみよう：タマミさんの気持ち</div>
+                <p>学校新聞の編集委員が、WEBサイトに載せるための「映える写真」を探していました。そこで見つかったのが、タマミさんがダイナミックな構図で写っている美化活動の写真。でも、タマミさん本人に許可を取りに行くと、「その写真をWEBサイトに載せてほしくない」と浮かない顔で言われてしまいました…。</p>
+                <p><b>あなたならどうしますか？</b><br>
+                「良い新聞を作りたい」という<b class="text-action">「公」</b>の視点と、「写っている本人が嫌がっている」という<b class="text-confirm">「共」</b>（タマミさん個人）の視点がぶつかっています。タマミさんの気持ちを無視して載せるのは、責任ある発信とは言えませんよね。まずはなぜ嫌なのかを丁寧に聞き、解決策を探ることが大切です。</p>
+            </div>
+
+            <h3 id="sec3_2">3.2 行動する前の3つのステップ</h3>
+            <p>感情に任せた発信は、思わぬトラブルを招きます。何かを発信する前、特にもやもやした気持ちの時には、以下の3ステップを思い出してください。</p>
+            <ol>
+                <li><b class="text-problem">立ち止まる：</b>まず、一呼吸おいて感情を整理する。カッとなってもすぐに行動しない。</li>
+                <li><b class="text-action">考える：</b>自分は何を達成したいのか？ 他の人はどう思うだろうか？ 最善の行動は何かを冷静に考える。</li>
+                <li><b class="text-confirm">相談する：</b>一人で抱え込まず、信頼できる人に相談する。自分では気づかなかった視点が得られることもあります。</li>
+            </ol>
+            <p>これらのステップを踏むことで、独りよがりではない、より良い情報発信ができるようになります。</p>
+
+            <div class="question-box">
+                <h4>問題3.1</h4>
+                <p>情報発信の際は、自分自身への責任である「<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">私</span></span>」、友人や家族など身近な人への責任である「<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">共</span></span>」、そしてより大きな世界への責任である「<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">公</span></span>」の3つの輪を考えることが重要です。行動する前には、まず「立ち止まる」、次に「<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">考える</span></span>」、そして「相談する」というステップを踏みましょう。</p>
+            </div>
+            <div class="page-number">3</div>
+        </div>
+
+        <div class="page">
+            <h2 id="chap4">4. 消えない足あと「デジタル・フットプリント」</h2>
+            <p>インターネット上に一度公開された情報は、完全に消すことが非常に困難です。あなたがオンラインで残したあらゆる活動の痕跡、それが<b class="text-action">「デジタル足あと（デジタル・フットプリント）」</b>です。タトゥーのように半永久的に残ることから、<b class="text-problem">デジタルタトゥー</b>とも呼ばれます。</p>
+            
+            <h3 id="sec4_1">4.1 デジタル足あと（デジタル・フットプリント）とは？</h3>
+            <p>デジタル足あととは、<b class="marker">オンライン上での書き込み、写真の投稿、いいねやシェアなど、共有したすべての情報が手がかりとなって残り、あなた個人を特定できる情報群</b>のことです。それは、一生涯あなたについて回る可能性があります。</p>
+            <p>良い情報発信はあなたの評価を高めますが、不用意な発言や行動は、何年も経ってからあなたの未来に影響を及ぼすかもしれません。</p>
+
+            <div class="card">
+                <div class="card-header">事例：過去の投稿が命取りに…</div>
+                <p>デビューしたばかりのアイドルが、数年前にSNSで差別的な発言をしていたことが発覚して解雇されたり、プロのeスポーツ選手が過去の不適切な投稿を理由に契約を解除されたりする事件は、後を絶ちません。当時は軽い気持ちだったかもしれませんが、その「足あと」が将来の夢を壊してしまうこともあるのです。これは決して他人事じゃないですよね。</p>
+            </div>
+            
+            <h3 id="sec4_2">4.2 発信が未来や社会に与える影響</h3>
+            <p>あなたのデジタル足あとは、あなた自身だけでなく、周りの人々や社会全体にも影響を与えます。例えば、友人がSNSに「自分でクッキーを焼いたよ！」と市販のクッキーの写真を投稿したとします。この小さな嘘もまた、デジタル足あとです。</p>
+            <ul>
+                <li><b>わたし（自分自身）への影響：</b>自分を偽ることになり、後でバレた時に信頼を失う。</li>
+                <li><b>まわりの人々への影響：</b>その投稿を見た友人は「すごい！」と思うかもしれないし、嘘だと知れば呆れてしまうかもしれない。</li>
+                <li><b>見知らぬ人々、世界への影響：</b>その投稿が拡散されれば、多くの人が「この人はお菓子作りが上手なんだ」と誤解する。もしその人がお菓子屋を開いたら…？</li>
+            </ul>
+            <p>また、同じ投稿でも、<b class="marker">誰が発信したかによって受け手の印象は大きく変わります</b>。親しい友人の冗談は笑って許せても、見知らぬ人の同じ投稿には不快感を覚えることがあります。自分の「当たり前」が、世間の「非常識」である可能性も常に意識する必要があります。</p>
+            <p>デジタル足あとは拡散され、社会に影響を与え続ける可能性を秘めています。社会の一員としての責任を自覚し、投稿ボタンを押す前にもう一度考える習慣をつけましょう。</p>
+            
+            <div class="question-box">
+                <h4>問題4.1</h4>
+                <p>オンライン上での活動の痕跡が半永久的に残ることを<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">デジタル足あと</span></span>（または<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">デジタルタトゥー</span></span>）といいます。これは自分自身だけでなく、<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">まわりの人々</span></span>や<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">社会全体</span></span>にも影響を与える可能性があります。発信する際は、自分の常識が他人の常識とは限らないことを意識することが大切です。</p>
+            </div>
+            <div class="page-number">4</div>
+        </div>
+
+        <div class="page">
+            <h2 id="chap5">5. 偽情報に騙されない「ニュース・メディアリテラシー」</h2>
+            <p>SNSの普及により、誰もが情報発信者になれる時代。しかし、その中には意図的に作られた<b class="text-problem">「偽情報（フェイクニュース）」</b>も数多く紛れ込んでいます。この章では、偽情報に騙されず、また知らず知らずのうちに拡散に加担しないためのリテラシーを学びます。</p>
+
+            <h3 id="sec5_1">5.1 偽情報（フェイク）とその目的</h3>
+            <p><b class="text-action">偽情報（フェイク）</b>とは、<b class="marker">意図的に広められる、誤った、または不正確な情報</b>のことです。特にニュースの体裁をとったものはフェイクニュースと呼ばれます。最近では、AI技術を使って本物そっくりの画像や動画を作り出す<b class="text-problem">ディープフェイク</b>も問題になっています。</p>
+            
+            <div class="card">
+                <div class="card-header">なぜ偽情報は作られるのか？</div>
+                <p>主な目的は、人々の注目を集めることです。災害時に過去の被害写真をあたかも現在のもののように投稿したり、衝撃的なタイトルでクリックさせたり…。SNSでは閲覧数やフォロワー数がお金になるため、嘘をついてでも注目を集めようとする人がいるのです。<br>他にも、特定の個人や団体を攻撃したり、政治的な意図を持って世論を操作したりするために作られることもあります。</p>
+            </div>
+            
+            <p>例えば、文化祭の模擬店でパフェを売るために、写真を過剰に加工して「すごく豪華！」に見せる看板を作ったとします。これはお客さんを呼びたいという善意からかもしれませんが、実際の商品と異なれば、お客さんをがっかりさせ、お店の信用を失う「偽情報」になってしまいます。</p>
+
+            <h3 id="sec5_2">5.2 偽情報を見抜くための方法</h3>
+            <p>偽情報が災害や選挙、感染症などに関するものだった場合、人々の命や社会の根幹を揺るがす大きな問題に発展しかねません。私たちは情報の受け手として、その真偽を確かめるスキルを持つ必要があります。</p>
+            <p>「これって本当？」と疑問に思ったら、以下の方法を試してみましょう。</p>
+            <ul>
+                <li><b class="text-action">一次情報を探す：</b>その情報の「おおもと」はどこかを探します。公的機関（政府や自治体）の発表や、信頼できる報道機関のニュースなど、元になった情報源を確認しましょう。</li>
+                <li><b class="text-confirm">発信元を確認する：</b>誰がその情報を発信しているかを確認します。専門家なのか、匿名の個人なのか。プロフィールや過去の投稿も判断材料になります。</li>
+                <li><b class="text-action">複数の情報源を比較する：</b>一つの情報だけを鵜呑みにせず、他のニュースサイトや専門家の意見など、複数の情報源と見比べてみましょう。</li>
+                <li><b class="text-confirm">コメントやリプライを参考にする：</b>SNSでは、コメント欄で他のユーザーが情報の誤りを指摘していたり、関連情報を提供していたりすることがあります。</li>
+            </ul>
+            <p>安易な「いいね」や「リツイート」は、あなたを偽情報の拡散者にしてしまう可能性があります。情報を発信する時も、受け取る時も、その責任を意識することが大切です。
+            </p>
+
+            <div class="question-box">
+                <h4>問題5.1</h4>
+                <p>意図的に広められる誤った情報を<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">偽情報(フェイク)</span></span>といいます。AIを使って作られた偽の画像や動画は<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">ディープフェイク</span></span>と呼ばれます。情報が本当か確かめるには、情報の出どころである<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">一次情報</span></span>を探したり、<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">複数の情報源</span></span>を比較したりする方法があります。</p>
+            </div>
+            <div class="page-number">5</div>
+        </div>
+
+        <div class="page">
+            <h2 id="chap6">6. みんなが暮らしやすい社会へ「シビックテック」</h2>
+            <p>テクノロジーは、私たちの生活を便利にするだけでなく、社会が抱える問題を解決する力も持っています。市民が主体となってテクノロジーを活用し、より良い社会を目指す取り組み、それが<b class="text-action">「シビックテック」</b>です。</p>
+
+            <h3 id="sec6_1">6.1 シビックテックと多様性</h3>
+            <p><b>シビックテック (Civic Tech)</b> は、「市民 (Civic)」と「テクノロジー (Technology)」を組み合わせた造語です。市民自身が、行政サービスの問題や地域の課題をテクノロジーを使って解決しようとする活動全般を指します。</p>
+            <p>複雑化する現代社会では、行政だけではすべての課題に対応しきれません。そこで、市民が当事者として問題を発見し、解決策を考え、行動することが期待されています。</p>
+            
+            <div class="card">
+                <div class="card-header">事例：市民が作った便利なアプリ</div>
+                <ul>
+                    <li><b>ごみ収集日アプリ (5374.jp)：</b>「次の燃えるゴミの日はいつだっけ？」を解決するシンプルなアプリ。自治体が公開しているデータを基に、有志のエンジニアが開発しました。</li>
+                    <li><b>地域課題レポートアプリ (ちばレポ)：</b>「道路に穴が空いている」「公園の遊具が壊れている」といった地域の課題を、市民が写真付きで市に報告できるアプリ。市民と行政が協力して街を良くしていく仕組みです。すごいよね！</li>
+                </ul>
+            </div>
+            
+            <p>しかし、テクノロジーで課題を解決しようとする時、忘れてはならないのが<b class="marker">「ダイバーシティ（多様性）」</b>と<b class="marker">「インクルージョン（包摂）」</b>の視点です。「みんなのため」に作ったつもりのものが、特定の人々にとって使いにくかったり、誰かを排除してしまったりする可能性があるからです。</p>
+
+            <h3 id="sec6_2">6.2 全員を包摂するテクノロジー</h3>
+            <p>例えば、近くの飲食店の空席状況がわかる便利なアプリを開発したとします。しかし、そのアプリのせいで、ある人たちが困ってしまうかもしれません。</p>
+            <ul>
+                <li><b>盲導犬を連れた男性：</b>アプリでお店を見つけたのに、入店を断られてしまった。お店が盲導犬に対応しているかどうかの情報がなかった。</li>
+                <li><b>ベビーカー利用の女性：</b>アプリで空席を確認して行ったのに、ベビーカーを置くスペースがなく、他のお客さんにも迷惑がられてしまった。</li>
+            </ul>
+            <p>このように、一つの解決策が新たな問題を生むことがあります。開発する際には、<b class="text-action">様々な立場の人々のこと</b>を想像し、設計に反映させることが不可欠です。障害の有無、年齢、国籍、言語、子育て中かどうかなど、多様な人々が誰一人取り残されることなく参加できる社会を、テクノロジーを通じて作っていくことが求められています。</p>
+            
+            <div class="question-box">
+                <h4>問題6.1</h4>
+                <p>市民がテクノロジーを活用して社会課題を解決する取り組みを<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">シビックテック</span></span>といいます。テクノロジーを活用する際は、多様な人々を受け入れ、誰一人取り残さない<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">ダイバーシティ</span></span>と<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">インクルージョン</span></span>の視点が非常に重要です。</p>
+            </div>
+            <div class="page-number">6</div>
+        </div>
+
+        <div class="button-container">
+            <a href="page4.html" class="nav-button">← 前の講座へ</a>
+            <a href="page6.html" class="nav-button">次の講座へ →</a>
+        </div>
+        
+        <div id="references" class="references">
+            <h3>参考文献・リンク</h3>
+            <ul>
+                <li>本教材は、ZEN大学（仮称・設置認可申請中）が提供する講義「ITリテラシー入門 第5回 デジタル・シティズンシップ教育」（講師：吉村 創一朗 先生）のテキストおよび講義内容を元に作成されました。</li>
+                <li>デジタル・シティズンシップの概念や教材については、米国のNPO「Common Sense Media」や日本の「経済産業省 STEAMライブラリ」などが詳しい情報を提供しています。</li>
+            </ul>
+        </div>
+    </div>
+    <script>
+        function toggleAnswer(element) {
+            const answer = element.querySelector('.answer');
+            if (answer) {
+                answer.classList.toggle('visible');
+            }
+        }
+    </script>
+</body>
+</html>

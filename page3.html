@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ITリテラシー入門 第3回 AIとデータサイエンス</title>
+    <style>
+        :root {
+            --primary-color: #0d47a1; /* 濃い青 */
+            --secondary-color: #1976d2; /* 青 */
+            --accent-color: #d32f2f; /* 赤系のアクセント */
+            --background-color: #f5f8fa; /* 薄いグレーがかった背景 */
+            --text-color: #333;
+            --white-color: #ffffff;
+            --marker-yellow: #fffde7;
+            --confirm-green: #e8f5e9;
+            --action-blue: #e3f2fd;
+        }
+
+        body {
+            font-family: 'Yu Gothic UI', 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+            line-height: 1.8;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: var(--white-color);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        .page {
+            border: 1px solid #ddd;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .page-number {
+            position: absolute;
+            bottom: 10px;
+            right: 20px;
+            color: #aaa;
+            font-size: 0.9em;
+        }
+
+        h1 {
+            font-size: 2.2em;
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--secondary-color);
+            padding-bottom: 10px;
+            margin-bottom: 5px;
+            position: relative;
+        }
+        
+        h1::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -3px;
+            width: 70px;
+            border-bottom: 3px solid var(--primary-color);
+        }
+        
+        .lecturer {
+            font-size: 1.1em;
+            color: var(--secondary-color);
+            text-align: right;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            color: var(--primary-color);
+            border-left: 5px solid var(--secondary-color);
+            padding-left: 15px;
+            margin-top: 40px;
+        }
+
+        h3 {
+            font-size: 1.4em;
+            color: var(--secondary-color);
+            border-bottom: 1px dashed var(--secondary-color);
+            padding-bottom: 5px;
+            margin-top: 30px;
+        }
+
+        p {
+            margin-bottom: 1.2em;
+        }
+
+        strong, b {
+            color: var(--primary-color);
+        }
+
+        .marker {
+            background: linear-gradient(transparent 60%, var(--marker-yellow) 60%);
+        }
+        
+        .text-confirm { color: #2e7d32; font-weight: bold; }
+        .text-action { color: var(--secondary-color); font-weight: bold; }
+        .text-problem { color: var(--accent-color); font-weight: bold; }
+
+        .toc {
+            background-color: #f8fafd;
+            border: 1px solid var(--secondary-color);
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+        }
+
+        .toc h2 {
+            margin-top: 0;
+            border-left: none;
+            padding-left: 0;
+            border-bottom: 2px solid var(--secondary-color);
+        }
+
+        .toc ul { list-style-type: none; padding-left: 0; }
+        .toc ul ul { padding-left: 20px; }
+        .toc a { text-decoration: none; color: var(--primary-color); }
+        .toc a:hover { text-decoration: underline; }
+
+        .question-box {
+            border: 2px solid var(--accent-color);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            background-color: #fbe9e7;
+        }
+
+        .fill-in {
+            font-weight: bold;
+            color: var(--accent-color);
+            border-bottom: 2px dotted var(--accent-color);
+            cursor: pointer;
+            padding: 0 5px;
+        }
+
+        .answer {
+            display: none;
+            background-color: var(--marker-yellow);
+            padding: 2px 5px;
+            border-radius: 3px;
+            margin: 0 5px;
+        }
+        
+        .answer.visible { display: inline-block; }
+
+        .card {
+            background-color: #f9f9f9;
+            border-left: 5px solid var(--primary-color);
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .card-header {
+            font-weight: bold;
+            font-size: 1.2em;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .diagram {
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin: 20px 0;
+            background-color: #f8fafd;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .diagram.vertical { flex-direction: column; align-items: center; }
+        .diagram .box {
+            border: 2px solid var(--secondary-color);
+            background-color: var(--white-color);
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-align: center;
+            min-width: 100px;
+        }
+        .diagram .arrow {
+            font-size: 2em;
+            color: var(--secondary-color);
+            margin: 0 5px;
+            padding: 0 5px;
+            line-height: 1;
+        }
+        .diagram.vertical .arrow {
+            transform: rotate(90deg);
+        }
+        .diagram .sub-text {
+            font-size: 0.8em;
+            color: #555;
+            text-align: center;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .diagram .node {
+            border: 2px solid var(--primary-color);
+            background-color: var(--white-color);
+            padding: 10px 20px;
+            border-radius: 50%;
+            text-align: center;
+            min-width: 50px;
+        }
+        .diagram .edge {
+            color: var(--secondary-color);
+            font-weight: bold;
+            font-size: 1.2em;
+            position: relative;
+            padding: 0 20px;
+        }
+        .diagram .edge.no-arrow::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            width: 100%;
+            height: 2px;
+            background-color: var(--secondary-color);
+        }
+        .diagram .edge.arrow::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            width: calc(100% - 10px);
+            height: 2px;
+            background-color: var(--secondary-color);
+        }
+        .diagram .edge.arrow::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            width: 0;
+            height: 0;
+            border-top: 8px solid transparent;
+            border-bottom: 8px solid transparent;
+            border-left: 10px solid var(--secondary-color);
+            transform: translateY(-50%);
+        }
+        
+        .footnote {
+            font-size: 0.8em;
+            color: #666;
+            margin-top: 10px;
+            border-top: 1px solid #ccc;
+            padding-top: 5px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.95em;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: var(--white-color);
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        
+        .references {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #ccc;
+        }
+        
+        .references ul { list-style: none; padding: 0; }
+        .references li { margin-bottom: 10px; font-size: 0.9em; }
+        
+        .button-container {
+            text-align: center;
+            margin: 40px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .nav-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: var(--white-color);
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        
+        .nav-button:hover { background-color: var(--secondary-color); }
+        
+        @media (max-width: 768px) {
+            .container { padding: 10px; }
+            .page { padding: 1rem; }
+            h1 { font-size: 1.8em; }
+            h2 { font-size: 1.5em; }
+            h3 { font-size: 1.2em; }
+            .diagram .box, .diagram .arrow, .diagram .node, .diagram .edge { font-size: 0.9em; }
+            .diagram { flex-direction: column; }
+            .diagram .arrow { transform: rotate(90deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ITリテラシー入門 第3回 AIとデータサイエンス</h1>
+        <p class="lecturer">講師：吉村 創一朗 先生</p>
+
+        <nav class="toc">
+            <h2>目次</h2>
+            <ul>
+                <li><a href="#chap1">1. 人工知能（AI）ってなんだろう？</a>
+                    <ul>
+                        <li><a href="#sec1_1">1.1 AIの基本的な考え方</a></li>
+                        <li><a href="#sec1_2">1.2 ルールベースAIと機械学習AI</a></li>
+                        <li><a href="#sec1_3">1.3 機械学習の3つの手法</a></li>
+                        <li><a href="#sec1_4">1.4 ニューラルネットワークとディープラーニング</a></li>
+                    </ul>
+                </li>
+                <li><a href="#chap2">2. AIと社会の付き合い方</a>
+                    <ul>
+                        <li><a href="#sec2_1">2.1 AI活用の原則とガイドライン</a></li>
+                        <li><a href="#sec2_2">2.2 AI利用の留意点：バイアスと倫理問題</a></li>
+                    </ul>
+                </li>
+                <li><a href="#chap3">3. データサイエンスの基礎：データの種類と前処理</a>
+                    <ul>
+                        <li><a href="#sec3_1">3.1 様々なデータの種類</a></li>
+                        <li><a href="#sec3_2">3.2 構造化データと非構造化データ</a></li>
+                        <li><a href="#sec3_3">3.3 データ分析前の「お掃除」：前処理</a></li>
+                    </ul>
+                </li>
+                <li><a href="#chap4">4. データを読み解く武器：応用数学</a>
+                    <ul>
+                        <li><a href="#sec4_1">4.1 数値解析とシミュレーション</a></li>
+                        <li><a href="#sec4_2">4.2 データの性質を表す「尺度」</a></li>
+                        <li><a href="#sec4_3">4.3 グラフ理論と最適化問題</a></li>
+                    </ul>
+                </li>
+                 <li><a href="#chap5">5. データから真実を見抜く：統計情報の活用</a>
+                    <ul>
+                        <li><a href="#sec5_1">5.1 全数調査と標本調査</a></li>
+                        <li><a href="#sec5_2">5.2 仮説は正しい？仮説検定の考え方</a></li>
+                        <li><a href="#sec5_3">5.3 データの関係性を探る：相関分析と回帰分析</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="page">
+            <h2 id="chap1">1. 人工知能（AI）ってなんだろう？</h2>
+            <p>最近、ニュースやWebサイトで「AI」という言葉を見ない日はないですよね。<b class="text-action">AI（Artificial Intelligence）</b>とは、日本語で<b class="marker">人工知能</b>と訳され、人間の推論、認識、判断といった知的な働きをコンピューターで実現する技術のことです。</p>
+            <p>この章では、AIがどのような仕組みで動いているのか、その基本的な分類と特徴を学んでいきましょう。</p>
+            
+            <h3 id="sec1_1">1.1 AIの基本的な考え方</h3>
+            <p>AIは、大きく2つのアプローチに分けられます。一つは、あらかじめ人間が設定したルールに従って動く<b class="text-action">「ルールベース」</b>。もう一つは、大量のデータからコンピューター自身がルールやパターンを学習する<b class="text-confirm">「機械学習」</b>です。</p>
+            <div class="diagram vertical">
+                <div class="box">人工知能(AI)</div>
+                <div class="arrow">↓</div>
+                <div style="display: flex; gap: 20px;">
+                    <div class="box">ルールベースAI</div>
+                    <div class="box">機械学習AI</div>
+                </div>
+            </div>
+
+            <h3 id="sec1_2">1.2 ルールベースAIと機械学習AI</h3>
+            <p><b>ルールベースAI</b>は、その名の通り「もしAならばBする」といったルールをたくさん組み合わせて作られます。例えば、PCの故障診断プログラムや、メールの自動振り分け設定などがこれにあたります。ルールが単純なため挙動が予測しやすく、確実な処理が求められる場面で活躍します。</p>
+            <p>一方、<b>機械学習AI</b>は、コンピューターに大量の<b class="marker">サンプルデータ（特徴量）</b>を与え、そのデータから法則性やパターンを自ら見つけ出させる方法です。例えば、「このメールは迷惑メール」「これは違う」という大量のサンプルを学習させることで、未知のメールも高い精度で分類できるようになります。</p>
+
+            <h3 id="sec1_3">1.3 機械学習の3つの手法</h3>
+            <p>機械学習は、さらに3つの学習方法に分類されます。</p>
+            <ul>
+                <li><b>教師あり学習：</b>正解データ（教師データ）を与えて学習させる方法です。迷惑メールフィルタや画像認識（これは猫、これは犬と教える）で使われます。</li>
+                <li><b>教師なし学習：</b>正解データを与えず、データの中から似たもの同士のグループ（クラスタ）を自動的に見つけさせる方法です。ECサイトの顧客セグメンテーションなどに利用されます。</li>
+                <li><b>強化学習：</b>ある目標（例えばゲームクリア）に対して、AIが試行錯誤を繰り返しながら、最も高い報酬（スコア）が得られる行動を自ら学習する方法です。囲碁や将棋のAI、ロボットの制御などに使われます。</li>
+            </ul>
+
+            <h3 id="sec1_4">1.4 ニューラルネットワークとディープラーニング</h3>
+            <p>機械学習の中でも、特に目覚ましい発展を遂げているのが<b class="text-action">「ニューラルネットワーク」</b>です。これは人間の脳の神経細胞（ニューロン）の仕組みを数学的に模倣したモデルで、繰り返し学習することで精度を高めていきます。</p>
+            <p>そして、このニューラルネットワークを何層にも深く重ねて、より複雑な特徴を自動で学習できるようにしたものが<b class="text-confirm">「ディープラーニング（深層学習）」</b>です。2010年代後半から急速に発展し、画像認識、自動翻訳、さらには画像生成AIなど、現代のAI技術の中核を担っています。</p>
+            
+            <div class="question-box">
+                <h4>問題1.1</h4>
+                <p>あらかじめ決められたルールに基づいて動作するAIを<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">ルールベースAI</span></span>といいます。データからAI自身がパターンを学ぶ方法を<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">機械学習</span></span>といいます。正解データを与えて学習させる手法を<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">教師あり学習</span></span>、AIが試行錯誤しながら最適な行動を学ぶ手法を<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">強化学習</span></span>といいます。ニューラルネットワークを多層に重ねたものを<span class="fill-in" onclick="toggleAnswer(this)">(5)<span class="answer">ディープラーニング</span></span>と呼びます。</p>
+            </div>
+            <div class="page-number">1</div>
+        </div>
+
+        <div class="page">
+            <h2 id="chap2">2. AIと社会の付き合い方</h2>
+            <p>AIは非常に便利な技術ですが、その強力さゆえに、使い方を間違えると大きな問題を引き起こす可能性もあります。そこで、AIを倫理的に正しく利用するためのルール作りが進められています。</p>
+
+            <h3 id="sec2_1">2.1 AI活用の原則とガイドライン</h3>
+            <p>日本では、政府がAI開発・利用の基本方針として<b class="text-action">「人間中心のAI社会原則」</b>と<b class="text-confirm">「AI利活用ガイドライン」</b>を定めています。</p>
+            <p>「人間中心のAI社会原則」は2019年に内閣府から出され、以下の7つの原則で構成されています。</p>
+            <table>
+                <thead>
+                    <tr><th>原則名</th><th>内容</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><b>人間中心の原則</b></td><td>AIは人間の能力を拡張するもので、最終的な判断は人間が行う。</td></tr>
+                    <tr><td><b>教育・リテラシーの原則</b></td><td>すべての人がAIを理解し活用できる教育環境を整備する。</td></tr>
+                    <tr><td><b>プライバシー確保の原則</b></td><td>個人のデータを利用する際は、個人の自由や尊厳を侵害しない。</td></tr>
+                    <tr><td><b>セキュリティ確保の原則</b></td><td>AIシステムの安全性とサイバー攻撃などへの耐性を確保する。</td></tr>
+                    <tr><td><b>公正競争確保の原則</b></td><td>特定の企業がデータを独占し、不公正な競争が起きないようにする。</td></tr>
+                    <tr><td><b>公平性、説明責任及び透明性の原則</b></td><td>AIによる判断が不当な差別を生まず、その判断過程が説明可能であること。</td></tr>
+                    <tr><td><b>イノベーションの原則</b></td><td>AI技術の発展を促すため、データ利用環境の整備や規制改革を進める。</td></tr>
+                </tbody>
+            </table>
+            <p>これらの原則を受け、総務省が出した「AI利活用ガイドライン」では、AIを開発する事業者や利用者が具体的にどう行動すべきか、より実践的な指針が示されています。</p>
+            
+            <h3 id="sec2_2">2.2 AI利用の留意点：バイアスと倫理問題</h3>
+            <p>AIは万能ではありません。特に注意すべき点が2つあります。</p>
+            
+            <div class="card">
+                <div class="card-header">注意点1：学習データのバイアス</div>
+                <p>AIは与えられたデータから学習するため、その元となるデータに偏り（<b class="text-problem">バイアス</b>）があると、AIの判断も偏ってしまいます。例えば、過去の採用データが男性中心だった場合、それを学習したAIが女性を不当に低く評価してしまう、といった問題が実際に起こりました。AIを作る際は、データの偏りに細心の注意を払う必要があります。</p>
+            </div>
+
+            <div class="card">
+                <div class="card-header">注意点2：倫理的な判断の難しさ</div>
+                <p>有名な思考実験に<b class="text-problem">「トロッコ問題」</b>があります。「暴走するトロッコの先に5人の作業員がいる。あなたが線路の分岐レバーを引けば、5人は助かるが、代わりに別の線路上にいる1人が犠牲になる。あなたはどうするか？」という問題です。このような究極の状況で、AIにどのような判断をさせるべきか。これは技術だけでなく、倫理や哲学も関わる非常に難しい問題で、未だ明確な答えは出ていません。</p>
+            </div>
+            
+            <p>私たちは、AIがまだ発展途上の技術であることを理解し、その判断を鵜呑みにせず、最終的には人間が責任を持つという姿勢が重要です。</p>
+
+            <div class="question-box">
+                <h4>問題2.1</h4>
+                <p>AIの判断に影響を与える学習データの偏りを<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">(統計)バイアス</span></span>といいます。日本政府が定めたAI利用の基本方針には「人間中心のAI社会原則」と<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">AI利活用ガイドライン</span></span>があります。5人を助けるために1人を犠牲にするかという倫理的な問題を<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">トロッコ問題</span></span>と呼びます。</p>
+            </div>
+            <div class="page-number">2</div>
+        </div>
+
+        <div class="page">
+            <h2 id="chap3">3. データサイエンスの基礎：データの種類と前処理</h2>
+            <p>AIやデータ分析を学ぶ上で、まず「データ」そのものについて理解を深めることが大切です。データには様々な種類があり、分析にかける前には適切な「下ごしらえ」が必要になります。</p>
+
+            <h3 id="sec3_1">3.1 様々なデータの種類</h3>
+            <p>私たちが扱うデータは、その性質によっていくつかの種類に分けられます。</p>
+            <ul>
+                <li><b class="text-action">ログデータ：</b>システムの操作履歴やWebサイトのアクセス記録など、いつ誰が何をしたかという行動の記録です。</li>
+                <li><b class="text-action">GISデータ（地理空間情報）：</b>スマートフォンのGPS情報のように、位置情報とそれに関連する情報を組み合わせたデータです。</li>
+                <li><b class="text-action">クロスセクションデータ：</b>ある一時点における、複数の対象を横断的に集めたデータです（例：2023年の各店舗の売上）。</li>
+                <li><b class="text-action">時系列データ：</b>時間の経過と共に変化を記録したデータです（例：ある店舗の2020年からの年次売上推移）。</li>
+                <li><b class="text-action">メタデータ：</b>データに関するデータのこと。例えば、写真データにおける撮影日時、場所、使用カメラといった情報がメタデータにあたります。</li>
+            </ul>
+
+            <h3 id="sec3_2">3.2 構造化データと非構造化データ</h3>
+            <p>データを分析する上で、その「形」も重要です。データは大きく2つに分類されます。</p>
+            <p><b class="text-confirm">構造化データ</b>とは、Excelの表のように、行と列で整理された規則正しいデータのことです。データベースに格納されているデータや、CSV形式のデータもこれに含まれます。</p>
+            <p>一方、<b class="text-problem">非構造化データ</b>とは、文章、音声、画像、動画のように、決まった形を持たないデータのことです。現代ではこちらのデータが爆発的に増えており、これをどう分析するかがデータサイエンスの大きな課題となっています。</p>
+
+            <h3 id="sec3_3">3.3 データ分析前の「お掃除」：前処理</h3>
+            <p>集めたばかりの「生」のデータは、重複や入力ミス、欠損などが含まれており、そのままでは分析に使えません。そこで、分析の前段階として<b class="marker">データの前処理（データクレンジング）</b>という作業が必要になります。</p>
+            <ul>
+                <li><b>名寄せ：</b>表記の揺れ（例：「株式会社ドワンゴ」と「(株)ドワンゴ」）や重複データを特定し、一つのデータに統合する作業です。</li>
+                <li><b>欠損値の処理：</b>データが入力されていない空白部分（欠損値）を、平均値などで補完したり、そのデータ行ごと削除したりします。</li>
+                <li><b>外れ値の処理：</b>他の値から極端に離れた値（外れ値）を見つけ、それが入力ミスであれば修正し、そうでなければ分析の目的に応じて除外するかどうかを判断します。</li>
+                <li><b>アノテーション：</b>非構造化データに対して、タグや注釈を付ける作業です。例えば、画像データに「犬」「猫」といったラベルを付けることで、AIが学習しやすくなります。</li>
+            </ul>
+            <p>地味な作業ですが、この前処理の質がデータ分析の精度を大きく左右するため、非常に重要な工程です。</p>
+
+            <div class="question-box">
+                <h4>問題3.1</h4>
+                <p>位置情報とそれに関連する情報を組み合わせたデータを<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">GISデータ</span></span>といいます。Excelの表のように行と列で整理されたデータを<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">構造化データ</span></span>、文章や画像のような決まった形のないデータを<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">非構造化データ</span></span>と呼びます。表記の揺れや重複データを統合する作業を<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">名寄せ</span></span>といいます。</p>
+            </div>
+            <div class="page-number">3</div>
+        </div>
+        
+        <div class="page">
+            <h2 id="chap4">4. データを読み解く武器：応用数学</h2>
+            <p>データサイエンスは、実は様々な数学の考え方や手法に支えられています。ここでは、社会の課題解決に役立つ応用数学の世界を少し覗いてみましょう。</p>
+            
+            <h3 id="sec4_1">4.1 数値解析とシミュレーション</h3>
+            <p><b class="text-action">数値解析</b>とは、社会の様々な現象を数式（モデル）で表現し、コンピューター上でその動きを再現・予測することです。<b class="marker">シミュレーション（模擬実験）</b>とも呼ばれ、台風の進路予測や、建物の耐震設計、新薬の開発など、現実では実験が難しい事象を分析するのに欠かせません。</p>
+            <p>この数値解析で強力な武器となるのが<b class="text-confirm">線形代数</b>で扱われる<b class="text-confirm">「ベクトル」</b>と<b class="text-confirm">「行列」</b>です。ベクトルは「向きと大きさ」を持つ量で、物体の速度などを表現するのに使われます。行列は数字を縦横に並べたもので、物体の回転や拡大といった変換を計算したり、大量のデータから重要な特徴を抽出したりするのに役立ちます。</p>
+
+            <h3 id="sec4_2">4.2 データの性質を表す「尺度」</h3>
+            <p>データ分析を行う際、そのデータがどのような性質を持つかを知ることが重要です。この性質の分類を<b class="marker">「尺度」</b>といい、大きく4つに分けられます。どの尺度かによって、適用できる分析手法が異なります。</p>
+            <table>
+                <thead>
+                    <tr><th>尺度名</th><th>特徴</th><th>例</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><b>名義尺度</b></td><td>分類するための名前や番号。大小や順序はない。</td><td>性別、血液型、郵便番号</td></tr>
+                    <tr><td><b>順序尺度</b></td><td>順序関係はあるが、その間隔に意味はない。</td><td>順位（1位, 2位）、満足度（良い, 普通）</td></tr>
+                    <tr><td><b>間隔尺度</b></td><td>順序と等間隔な目盛りがあり、差に意味がある。ゼロは相対的。</td><td>西暦、摂氏温度、偏差値</td></tr>
+                    <tr><td><b>比例尺度</b></td><td>絶対的なゼロ（無）があり、差と比率の両方に意味がある。</td><td>長さ、質量、年齢、金額</td></tr>
+                </tbody>
+            </table>
+            <p>例えば、名義尺度である郵便番号の平均値を計算しても意味はありませんが、比例尺度である身長の平均値を求めれば、集団の傾向を知ることができます。</p>
+
+            <h3 id="sec4_3">4.3 グラフ理論と最適化問題</h3>
+            <p>数学は数値だけでなく、「つながり」の構造を扱うこともできます。その代表が<b class="text-action">グラフ理論</b>です。これは、点（ノード）とそれらを結ぶ線（エッジ）で構成される図（グラフ）を使って、物事の関係性を分析する学問です。</p>
+            <div class="diagram">
+                <div class="node">Aさん</div>
+                <div class="edge no-arrow"></div>
+                <div class="node">Bさん</div>
+                <div class="sub-text">無向グラフ（Facebookの友達関係など）</div>
+            </div>
+            <div class="diagram">
+                <div class="node">Aさん</div>
+                <div class="edge arrow"></div>
+                <div class="node">Bさん</div>
+                <div class="sub-text">有向グラフ（Twitterのフォロー関係など）</div>
+            </div>
+            <p>このグラフ理論は、電車の乗り換え案内のような<b class="text-confirm">最適化問題</b>を解くのに使われます。駅を「ノード」、線路を「エッジ」と見立て、出発地から目的地までの最短時間や最安料金といった最適な経路を見つけ出すのです。</p>
+
+            <div class="question-box">
+                <h4>問題4.1</h4>
+                <p>現実の現象をコンピューター上で再現・予測することを<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">シミュレーション</span></span>といいます。データの性質の分類を<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">尺度</span></span>といい、順位のように順序関係はあるが間隔に意味がないものを<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">順序尺度</span></span>、長さや重さのように比率にも意味があるものを<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">比例尺度</span></span>といいます。点と線でつながりを表現する数学の分野を<span class="fill-in" onclick="toggleAnswer(this)">(5)<span class="answer">グラフ理論</span></span>といいます。</p>
+            </div>
+            <div class="page-number">4</div>
+        </div>
+
+        <div class="page">
+            <h2 id="chap5">5. データから真実を見抜く：統計情報の活用</h2>
+            <p>選挙の出口調査や商品のアンケートのように、一部の人を調べるだけで全体の傾向を予測できるのはなぜでしょうか？その秘密は「統計」にあります。統計は、データ全体の傾向や性質を知るための強力なツールです。</p>
+
+            <h3 id="sec5_1">5.1 全数調査と標本調査</h3>
+            <p>統計調査には、大きく分けて2つの方法があります。</p>
+            <ul>
+                <li><b class="text-action">全数調査：</b>調査対象となる集団（母集団）の全員を調査する方法です。国勢調査が代表例です。正確なデータが得られますが、膨大なコストと時間がかかります。</li>
+                <li><b class="text-confirm">標本調査（サンプリング）：</b>母集団から一部のサンプル（標本）を偏りなく抽出し、その結果から全体を推測する方法です。テレビの視聴率調査や世論調査で使われます。コストを抑えられますが、サンプルの選び方が非常に重要になります。</li>
+            </ul>
+            <p>標本調査で正確な結果を得るためには、<b class="marker">無作為抽出（ランダムサンプリング）</b>が原則です。これにより、調査者の意図や偏りを排除し、母集団を公平に反映したサンプルを得ることができます。</p>
+            
+            <h3 id="sec5_2">5.2 仮説は正しい？仮説検定の考え方</h3>
+            <p><b class="text-action">仮説検定</b>とは、「この肥料には効果がある」といった自分の立てた仮説が、データの上で正しいと言えるかを統計的に判断する手法です。面白いのは、その証明の仕方です。</p>
+            <p>まず、証明したい仮説（対立仮説）とは<b class="text-problem">逆の仮説（帰無仮説）</b>を立てます。例えば「この肥料には効果がない」という帰無仮説を設定します。その上で実験を行い、「もし効果がないとしたら、こんな結果が偶然起こる確率は非常に低い（例：5%未満）」ということを示します。これにより、「効果がない」という帰無仮説を棄却し、間接的に「効果がある」という本来の仮説を支持するのです。</p>
+            <p>この考え方は、新薬の効果検証や、Web広告のA/Bテストなど、科学的・ビジネス的な意思決定の場で広く活用されています。</p>
+
+            <h3 id="sec5_3">5.3 データの関係性を探る：相関分析と回帰分析</h3>
+            <p>2つのデータの関係性を分析する手法として、<b class="text-confirm">相関分析</b>と<b class="text-confirm">回帰分析</b>があります。</p>
+            <p><b class="marker">相関分析</b>は、2つのデータ間にどれくらい強い関係があるか（相関）を調べるものです。「身長が高い人は体重も重い傾向がある」というのは<b class="text-action">正の相関</b>、「勉強時間が長いほどゲームの時間は短くなる」というのは<b class="text-problem">負の相関</b>です。これを視覚的に表したのが<b class="marker">散布図</b>です。</p>
+            <div class="card">
+                <div class="card-header">注意：相関関係と因果関係</div>
+                <p>「アイスの売上が伸びると、水難事故が増える」というデータには正の相関が見られます。しかし、これは「アイスを食べると溺れる」という<b class="text-problem">因果関係</b>を意味しません。真の原因は「気温が高くなる」という第三の要因です。相関があるからといって、そこに必ずしも原因と結果の関係があるとは限らない点に注意が必要です。</p>
+            </div>
+            <p>一方、<b class="text-action">回帰分析</b>は、相関関係のあるデータから、一方のデータを使って他方のデータを予測する数式（回帰式）を導き出す手法です。例えば、広告費と売上の関係から、来月の広告費でどれくらいの売上が見込めるかを予測するのに使われます。</p>
+
+            <div class="question-box">
+                <h4>問題5.1</h4>
+                <p>調査対象の集団全体を<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">母集団</span></span>、そこから抽出した一部の集団を<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">標本(サンプル)</span></span>といいます。証明したい仮説とは逆の仮説を立てて、それを否定することで間接的に証明する手法を<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">仮説検定</span></span>といいます。2つのデータの関係の強さを分析するのを<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">相関分析</span></span>、その関係から将来の値を予測するのを<span class="fill-in" onclick="toggleAnswer(this)">(5)<span class="answer">回帰分析</span></span>といいます。</p>
+            </div>
+            <div class="page-number">5</div>
+        </div>
+
+        <div class="button-container">
+            <a href="page2.html" class="nav-button">← 前の講座へ</a>
+            <a href="page4.html" class="nav-button">次の講座へ →</a>
+        </div>
+        
+        <div id="references" class="references">
+            <h3>参考文献・リンク</h3>
+            <ul>
+                <li>本教材は、ZEN大学（仮称・設置認可申請中）が提供する講義「ITリテラシー入門 第3回 AIとデータサイエンス」（講師：吉村 創一朗 先生）のテキストおよび講義内容を元に作成されました。</li>
+            </ul>
+        </div>
+    </div>
+    <script>
+        function toggleAnswer(element) {
+            const answer = element.querySelector('.answer');
+            if (answer) {
+                answer.classList.toggle('visible');
+            }
+        }
+    </script>
+</body>
+</html>

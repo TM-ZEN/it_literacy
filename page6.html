@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ITリテラシー入門 第6回 アルゴリズムとプログラミング言語</title>
+    <style>
+        :root {
+            --primary-color: #0d47a1; /* 濃い青 */
+            --secondary-color: #1976d2; /* 青 */
+            --accent-color: #d32f2f; /* 赤系のアクセント */
+            --background-color: #f5f8fa; /* 薄いグレーがかった背景 */
+            --text-color: #333;
+            --white-color: #ffffff;
+            --marker-yellow: #fffde7;
+            --confirm-green-bg: #e8f5e9;
+            --action-blue-bg: #e3f2fd;
+            --problem-red-bg: #fbe9e7;
+            --confirm-green-text: #2e7d32;
+            --action-blue-text: var(--secondary-color);
+            --problem-red-text: var(--accent-color);
+        }
+
+        body {
+            font-family: 'Yu Gothic UI', 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+            line-height: 1.8;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: var(--white-color);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        .page {
+            border: 1px solid #ddd;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .page-number {
+            position: absolute;
+            bottom: 10px;
+            right: 20px;
+            color: #aaa;
+            font-size: 0.9em;
+        }
+
+        h1 {
+            font-size: 2.2em;
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--secondary-color);
+            padding-bottom: 10px;
+            margin-bottom: 5px;
+            position: relative;
+        }
+        
+        h1::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -3px;
+            width: 70px;
+            border-bottom: 3px solid var(--primary-color);
+        }
+        
+        .lecturer {
+            font-size: 1.1em;
+            color: var(--secondary-color);
+            text-align: right;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            color: var(--primary-color);
+            border-left: 5px solid var(--secondary-color);
+            padding-left: 15px;
+            margin-top: 40px;
+        }
+
+        h3 {
+            font-size: 1.4em;
+            color: var(--secondary-color);
+            border-bottom: 1px dashed var(--secondary-color);
+            padding-bottom: 5px;
+            margin-top: 30px;
+        }
+
+        p { margin-bottom: 1.2em; }
+        strong, b { color: var(--primary-color); }
+        .marker { background: linear-gradient(transparent 60%, var(--marker-yellow) 60%); }
+        .text-confirm { color: var(--confirm-green-text); font-weight: bold; }
+        .text-action { color: var(--action-blue-text); font-weight: bold; }
+        .text-problem { color: var(--problem-red-text); font-weight: bold; }
+
+        .toc {
+            background-color: #f8fafd;
+            border: 1px solid var(--secondary-color);
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+        }
+        .toc h2 { margin-top: 0; border-left: none; padding-left: 0; border-bottom: 2px solid var(--secondary-color); }
+        .toc ul { list-style-type: none; padding-left: 0; }
+        .toc ul ul { padding-left: 20px; }
+        .toc a { text-decoration: none; color: var(--primary-color); }
+        .toc a:hover { text-decoration: underline; }
+
+        .question-box {
+            border: 2px solid var(--accent-color);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            background-color: var(--problem-red-bg);
+        }
+
+        .fill-in {
+            font-weight: bold;
+            color: var(--accent-color);
+            border-bottom: 2px dotted var(--accent-color);
+            cursor: pointer;
+            padding: 0 5px;
+        }
+
+        .answer {
+            display: none;
+            background-color: var(--marker-yellow);
+            padding: 2px 5px;
+            border-radius: 3px;
+            margin: 0 5px;
+        }
+        .answer.visible { display: inline-block; }
+
+        .card {
+            background-color: #f9f9f9;
+            border-left: 5px solid var(--primary-color);
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .card-header {
+            font-weight: bold;
+            font-size: 1.2em;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        table {
+            width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.95em;
+        }
+        th, td { border: 1px solid #ccc; padding: 12px; text-align: left; }
+        th { background-color: var(--primary-color); color: var(--white-color); font-weight: bold; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+        
+        .code-block { background-color: #2d2d2d; color: #f8f8f2; padding: 1em; margin: 20px 0; border-radius: 5px; overflow-x: auto; font-family: 'Courier New', Courier, monospace;}
+        .code-block .keyword { color: #f92672; }
+        .code-block .string { color: #e6db74; }
+        .code-block .number { color: #ae81ff; }
+        .code-block .comment { color: #75715e; }
+        .code-block .function { color: #a6e22e; }
+
+        /* --- Flowchart Styles (Revised) --- */
+        .flowchart {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            padding: 20px 0;
+            overflow-x: auto;
+        }
+        .flow-element {
+            padding: 10px 20px;
+            border: 2px solid var(--primary-color);
+            text-align: center;
+            background-color: var(--white-color);
+            min-width: 150px;
+            box-sizing: border-box;
+            white-space: nowrap;
+        }
+        .flow-start, .flow-end {
+            border-radius: 20px;
+            background-color: var(--action-blue-bg);
+        }
+        .flow-process {
+            background-color: var(--confirm-green-bg);
+        }
+        .flow-decision {
+            width: 180px;
+            height: 80px;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--problem-red-bg);
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+        }
+        .flow-arrow {
+            width: 2px;
+            height: 25px;
+            background-color: var(--primary-color);
+            position: relative;
+        }
+        .flow-arrow::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 8px solid var(--primary-color);
+        }
+        .flow-split-connector {
+            width: 2px;
+            height: 25px;
+            background-color: var(--primary-color);
+            position: relative;
+        }
+        .flow-split-connector::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 200px;
+            height: 2px;
+            background-color: var(--primary-color);
+            transform: translateX(-50%);
+        }
+        .flow-split-container {
+            display: flex;
+            justify-content: space-between;
+            width: 260px;
+            align-items: flex-start;
+        }
+        .flow-path {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            flex-basis: 50%;
+        }
+        .flow-label {
+            font-weight: bold;
+            padding-top: 5px;
+        }
+        .flow-loop-line-container {
+            width: 100%;
+            height: 120px;
+            position: relative;
+        }
+        .flow-loop-line {
+            position: absolute;
+            bottom: 0;
+            left: -40px;
+            width: 80px;
+            height: 100%;
+            border: 2px solid var(--primary-color);
+            border-top: none;
+            border-right: none;
+            border-radius: 0 0 0 20px;
+        }
+        .flow-loop-line::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: -2px;
+            transform: translate(50%, -50%);
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-bottom: 8px solid var(--primary-color);
+        }
+
+
+        .references { margin-top: 40px; padding-top: 20px; border-top: 1px solid #ccc; }
+        .references ul { list-style: none; padding: 0; }
+        .references li { margin-bottom: 10px; font-size: 0.9em; }
+        
+        .button-container { text-align: center; margin: 40px 0; display: flex; justify-content: space-between; }
+        .nav-button {
+            display: inline-block; padding: 10px 20px; background-color: var(--primary-color);
+            color: var(--white-color); text-decoration: none; border-radius: 5px;
+            font-weight: bold; transition: background-color 0.3s;
+        }
+        .nav-button:hover { background-color: var(--secondary-color); }
+        
+        @media (max-width: 768px) {
+            .container { padding: 10px; }
+            .page { padding: 1rem; }
+            h1 { font-size: 1.8em; }
+            h2 { font-size: 1.5em; }
+            h3 { font-size: 1.2em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ITリテラシー入門 第6回 アルゴリズムとプログラミング言語</h1>
+        <p class="lecturer">講師：吉村 創一朗 先生</p>
+
+        <nav class="toc">
+            <h2>目次</h2>
+            <ul>
+                <li><a href="#chap1">1. アルゴリズムとは</a>
+                    <ul>
+                        <li><a href="#sec1_1">1.1 アルゴリズムの役割と効率性</a></li>
+                        <li><a href="#sec1_2">1.2 アルゴリズム改善の例：素数判定</a></li>
+                    </ul>
+                </li>
+                <li><a href="#chap2">2. アルゴリズムの基本構造と表現方法</a>
+                    <ul>
+                        <li><a href="#sec2_1">2.1 3つの基本構造</a></li>
+                        <li><a href="#sec2_2">2.2 フローチャートと状態遷移図</a></li>
+                    </ul>
+                </li>
+                <li><a href="#chap3">3. 探索（サーチ）アルゴリズム</a>
+                    <ul>
+                        <li><a href="#sec3_1">3.1 線形探索法</a></li>
+                        <li><a href="#sec3_2">3.2 二分探索法</a></li>
+                        <li><a href="#sec3_3">3.3 ハッシュ探索法</a></li>
+                    </ul>
+                </li>
+                <li><a href="#chap4">4. ソート（整列）アルゴリズム</a>
+                    <ul>
+                        <li><a href="#sec4_1">4.1 バブルソート</a></li>
+                        <li><a href="#sec4_2">4.2 選択ソート</a></li>
+                        <li><a href="#sec4_3">4.3 クイックソート</a></li>
+                        <li><a href="#sec4_4">4.4 マージソート</a></li>
+                    </ul>
+                </li>
+                <li><a href="#chap5">5. プログラムの構成要素</a>
+                    <ul>
+                        <li><a href="#sec5_1">5.1 プログラミング言語の基本</a></li>
+                        <li><a href="#sec5_2">5.2 変数・データ型・演算・制御文</a></li>
+                    </ul>
+                </li>
+                <li><a href="#chap6">6. 関数・ライブラリ・API</a>
+                    <ul>
+                        <li><a href="#sec6_1">6.1 関数：処理の部品化</a></li>
+                        <li><a href="#sec6_2">6.2 ライブラリ：便利な道具箱</a></li>
+                        <li><a href="#sec6_3">6.3 API：プログラム間の連携</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="page">
+            <h2 id="chap1">1. アルゴリズムとは</h2>
+            <p>コンピューターに何かをさせたい時、「これをやって」とお願いするだけでは動きません。どういう<b class="text-action">手順</b>で、何をすべきかを具体的に指示する必要があります。この「何かしらの処理を行うときの手順」こそが<b class="marker">アルゴリズム</b>です。</p>
+
+            <h3 id="sec1_1">1.1 アルゴリズムの役割と効率性</h3>
+            <p>アルゴリズムは、料理のレシピのようなものです。同じカレーを作るにも、人によって手順や使う材料が違うように、同じ問題を解決するためのアルゴリズムも一つではありません。そして、その中には効率が良いものと悪いものが存在します。</p>
+
+            <div class="card">
+                <div class="card-header">事例：100巻の漫画から名シーンを探す</div>
+                <p><b>問題：</b>100巻の漫画シリーズで、主人公が子どもに切り替わる巻を探したい！</p>
+                <p><b>アルゴリズムA（線形探索法）：</b>一番シンプル。<b class="text-action">1巻から順番に100巻まで</b>読み進める。運が悪ければ100冊チェックする必要がある。</p>
+                <p><b>アルゴリズムB（二分探索法）：</b>もっと賢い方法。まず真ん中の<b>50巻</b>をチェック。「もう切り替わってる」なら前半の1〜49巻、「まだ」なら後半の51〜100巻を探す。これを繰り返して範囲を半分ずつに絞っていく。この方法なら、<b class="text-confirm">たった数冊</b>のチェックで目的の巻にたどり着けます。</p>
+            </div>
+            
+            <p>この例のように、より効率の良いアルゴリズムを選ぶことで、作業時間を劇的に短縮できます。コンピューターの計算では、この差はさらに顕著になります。効率の悪いアルゴリズムでは、たとえスーパーコンピューターを使っても<b class="text-problem">人類が滅びるまで計算が終わらない</b>、なんてこともあり得るのです。</p>
+
+            <h3 id="sec1_2">1.2 アルゴリズム改善の例：素数判定</h3>
+            <p>「101は素数か？」をコンピューターに判定させるアルゴリズムを考えてみましょう。</p>
+            <ol>
+                <li><b>愚直なアルゴリズム：</b>2から100までの99個の数で割り算を試す。割り切れなければ素数。<b>→ 計算回数：99回</b></li>
+                <li><b>改善1：</b>2で割り切れなければ、4, 6, 8...といった他の偶数でも割り切れないはず。奇数だけで試す。<b>→ 計算回数：約50回</b></li>
+                <li><b>改善2（最終形）：</b>ある数が素数か調べるには、<b class="marker">その数の平方根以下の数</b>で割り切れるか調べれば十分です（101の平方根は約10）。なぜなら、もし11以上の数で割り切れるなら、そのペアとなる数は10以下になり、すでにチェック済みだからです。
+                <br>この知識と改善1を組み合わせると、調べるのは<b>「10以下の奇数」</b>、つまり3, 5, 7, 9だけで良くなります。（2は最初に試す）<b>→ 計算回数：たった5回！</b></li>
+            </ol>
+            <p>99回かかっていた計算がたった5回に短縮されました。これがアルゴリズムの力であり、面白さです。</p>
+
+            <div class="question-box">
+                <h4>問題1.1</h4>
+                <p>何かしらの処理を行うときの手順のことを<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">アルゴリズム</span></span>といいます。1巻から順番に探す方法を<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">線形探索法</span></span>、範囲を半分ずつに絞っていく方法を<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">二分探索法</span></span>といいます。ある数が素数かどうか調べるには、その数の<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">平方根</span></span>以下の数で割り切れるか調べれば十分です。</p>
+            </div>
+            <div class="page-number">1</div>
+        </div>
+
+        <div class="page">
+            <h2 id="chap2">2. アルゴリズムの基本構造と表現方法</h2>
+            <p>どんなに複雑に見えるプログラムも、実はたった3つのシンプルな構造の組み合わせでできています。この章では、その基本構造と、それを視覚的に表現する方法について学びます。</p>
+
+            <h3 id="sec2_1">2.1 3つの基本構造</h3>
+            <p>プログラムのアルゴリズムは、以下の3つの基本構造で成り立っています。</p>
+            <ul>
+                <li><b class="text-action">順次構造：</b>処理を上から下へ、順番に実行していく最も基本的な構造です。</li>
+                <li><b class="text-confirm">分岐構造：</b>「もしAならば処理1を、そうでなければ処理2を」というように、条件によって実行する処理が変わる構造です。「if文」などがこれにあたります。</li>
+                <li><b class="text-problem">反復構造（ループ構造）：</b>「条件Bが成り立つ間、処理3を繰り返す」というように、同じ処理を何度も実行する構造です。「for文」や「while文」が使われます。</li>
+            </ul>
+            <p>反復構造には、無限に処理を繰り返す「無限ループ」に陥らないよう、必ず<b class="marker">終了条件（分岐構造）</b>を組み込む必要があります。</p>
+
+            <h3 id="sec2_2">2.2 フローチャートと状態遷移図</h3>
+            <p>これらの構造を図形や矢印で視覚的に表現する方法が<b class="text-action">フローチャート（流れ図）</b>です。アルゴリズムの流れを直感的に理解するのに役立ちます。</p>
+
+            <div class="card">
+                <div class="card-header">フローチャート例：1から10までを足し合わせる</div>
+                <p>このアルゴリズムは、「合計を入れる箱(sum)」と「1ずつ増えるカウンター(i)」を用意し、カウンターが10になるまで合計の箱に足し続ける、という流れを反復構造で表現しています。</p>
+                <div class="flowchart">
+                    <div class="flow-element flow-start">開始</div>
+                    <div class="flow-arrow"></div>
+                    <div class="flow-element flow-process">合計(sum) = 0<br>カウンタ(i) = 1</div>
+                    <div class="flow-arrow"></div>
+                    <div class="flow-element flow-decision">i <= 10 ?</div>
+                    <div class="flow-split-connector"></div>
+                    <div class="flow-split-container">
+                        <div class="flow-path">
+                            <div class="flow-label">Yes</div>
+                            <div class="flow-arrow"></div>
+                            <div class="flow-element flow-process">sum = sum + i<br>i = i + 1</div>
+                            <div class="flow-loop-line-container">
+                                <div class="flow-loop-line"></div>
+                            </div>
+                        </div>
+                        <div class="flow-path">
+                            <div class="flow-label">No</div>
+                            <div class="flow-arrow"></div>
+                            <div class="flow-element flow-process">合計(sum)を出力</div>
+                            <div class="flow-arrow"></div>
+                            <div class="flow-element flow-end">終了</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <p>フローチャートが「処理の流れ」を表すのに対し、<b class="text-confirm">状態遷移図（ステート図）</b>はプログラムやデバイスの「状態の変化」を表します。例えば、スマホの画面が「節電状態」→「ロック状態」→「ロック解除状態」と移り変わる様子を図で表現できます。</p>
+            
+            <div class="question-box">
+                <h4>問題2.1</h4>
+                <p>プログラムのアルゴリズムは、順番に実行する「<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">順次構造</span></span>」、条件で処理が変わる「<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">分岐構造</span></span>」、処理を繰り返す「<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">反復構造</span></span>」の3つで表現できます。処理の流れを視覚的に表した図を<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">フローチャート</span></span>といいます。</p>
+            </div>
+            <div class="page-number">2</div>
+        </div>
+
+        <div class="page">
+            <h2 id="chap3">3. 探索（サーチ）アルゴリズム</h2>
+            <p>膨大なデータの中から、目的の情報を探し出す。この「探索（サーチ）」は、コンピューターが得意とする処理の一つです。ここでは、代表的な3つの探索アルゴリズムを紹介します。</p>
+
+            <h3 id="sec3_1">3.1 線形探索法 (Linear Search)</h3>
+            <p>最もシンプルで直感的な方法です。データの<b class="marker">先頭から順番に一つずつ</b>、目的のデータかどうかをチェックしていきます。データが整理されていなくても使えますが、データ量が多くなると時間がかかるのが欠点です。</p>
+            <p><b>例：</b>12支の中から「いぬ」を探す場合、ねずみ→うし→とら…と11番目まで順番に確認します。</p>
+
+            <h3 id="sec3_2">3.2 二分探索法 (Binary Search)</h3>
+            <p>非常に高速な探索法ですが、<b class="text-problem">あらかじめデータが整列されている（ソート済み）</b>必要があります。データの真ん中を見て、目的のデータがそれより前にあるか後ろにあるかを判断し、探す範囲を半分に絞り込む、という作業を繰り返します。</p>
+            <p><b>例：</b>あいうえお順に並べた12支から「ひつじ」を探す場合...<br>
+            1. 中央(6番目)の「さる」をチェック → 「ひつじ」はもっと後ろにあるので、前半は無視。<br>
+            2. 残った後半の中央(9番目)の「とり」をチェック → 「ひつじ」はもっと後ろ。<br>
+            3. さらに残った範囲の中央を探すと、目的の「ひつじ」が見つかります。
+            <br>データが12個の場合、線形探索では最悪12回かかりますが、二分探索なら<b class="text-confirm">最大でも4回</b>のチェックで済みます。</p>
+            
+            <h3 id="sec3_3">3.3 ハッシュ探索法 (Hash Search)</h3>
+            <p>探索速度だけなら最速かもしれない方法です。データそのものではなく、データから計算した<b class="text-action">「ハッシュ値」</b>という短い数値を使って、目的のデータがどこに格納されているかを一発で突き止めます。</p>
+            <p><b>仕組み：</b><br>
+            1. 探索前に、各データからハッシュ値を計算する<b>対応表</b>を作っておきます。（例：「ねずみ」→90、「うし」→33）<br>
+            2. データを、ハッシュ値に対応するメモリ上の住所（アドレス）に格納します。（例：90番地に「ねずみ」を格納）<br>
+            3. 「たつ」を探したければ、ハッシュ値「71」を計算し、メモリの71番地を見に行けば、そこに「たつ」があるかどうか瞬時にわかります。</p>
+            <p>準備は大変ですが、一度準備してしまえば<b class="marker">探索は一瞬</b>で終わります。ただし、偶然同じハッシュ値が生成されてしまう「ハッシュ衝突」が起こる可能性があり、その場合の対策も必要になります。</p>
+
+            <div class="question-box">
+                <h4>問題3.1</h4>
+                <p>探索アルゴリズムの代表例は3つあります。先頭から順番に探す<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">線形探索法</span></span>、ソート済みのデータで範囲を半分に絞る<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">二分探索法</span></span>、そしてデータから計算した値で場所を特定する<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">ハッシュ探索法</span></span>です。</p>
+            </div>
+            <div class="page-number">3</div>
+        </div>
+        
+        <div class="page">
+            <h2 id="chap4">4. ソート（整列）アルゴリズム</h2>
+            <p>データを特定の順序（あいうえお順、数字の小さい順など）に並べ替えることを「ソート（整列）」といいます。ソートは、二分探索の前準備など、様々な場面で使われる基本的なアルゴリズムです。ここでは4つの代表的なソートを紹介します。</p>
+
+            <h3 id="sec4_1">4.1 バブルソート</h3>
+            <p>隣り合う要素を比較し、順序が逆なら交換する、という作業を繰り返す最もシンプルなソートです。1周終わるごとに一番大きい（または小さい）要素が端に確定していく様子が、<b class="marker">泡が浮き上がる</b>ように見えることからこの名がつきました。シンプルですが、データ量が増えると非常に遅くなるのが特徴です。</p>
+
+            <h3 id="sec4_2">4.2 選択ソート</h3>
+            <p>未整列の部分から<b class="text-action">最小（または最大）の要素を探し出し、先頭と交換する</b>という作業を繰り返します。1周終わるごとに先頭の要素が確定していきます。バブルソート同様、実装は簡単ですが、効率はあまり良くありません。</p>
+
+            <h3 id="sec4_3">4.3 クイックソート</h3>
+            <p>その名の通り、非常に高速なソートアルゴリズムで、一般的に広く使われています。まず、基準となる値（ピボット）を一つ選び、それより<b class="text-confirm">小さい要素のグループと大きい要素のグループに分割</b>します。そして、分割された各グループ内で同じ処理を再帰的に繰り返すことで、全体を整列させます。データ量が多い場合に特にパフォーマンスを発揮します。</p>
+
+            <h3 id="sec4_4">4.4 マージソート</h3>
+            <p>まずデータをバラバラの最小単位に分割し、その後、<b class="marker">整列済みの小さなグループ同士を合体（マージ）</b>させて、より大きな整列済みグループを作っていく、という作業を繰り返す方法です。クイックソート同様に高速ですが、特にデータがある程度整列されている場合に強みを発揮します。安定した性能を持つのが特徴です。</p>
+
+            <div class="card">
+                <div class="card-header">どのソートを選ぶべき？</div>
+                <p><b>計算量（速度）の目安：</b><br>
+                ・<b>遅い（データ量の2乗に比例）：</b> バブルソート、選択ソート<br>
+                ・<b>速い（n log nに比例）：</b> クイックソート、マージソート<br>
+                一般的にはクイックソートがよく使われますが、データの特性に応じて最適なアルゴリズムを使い分けることで、ソフトウェアの性能は大きく向上します。</p>
+            </div>
+
+            <div class="question-box">
+                <h4>問題4.1</h4>
+                <p>データを並べ替えるソートアルゴリズムには様々な種類があります。隣同士を比較・交換する<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">バブルソート</span></span>、最小値を探して先頭と交換する<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">選択ソート</span></span>はシンプルですが低速です。基準値で分割を繰り返す<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">クイックソート</span></span>や、整列済みグループを合体させていく<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">マージソート</span></span>は高速なアルゴリズムとして知られています。</p>
+            </div>
+            <div class="page-number">4</div>
+        </div>
+
+        <div class="page">
+            <h2 id="chap5">5. プログラムの構成要素</h2>
+            <p>アルゴリズムをコンピューターが理解できる形にしたものがプログラムです。ここでは、多くのプログラミング言語に共通する基本的な構成要素について見ていきましょう。</p>
+
+            <h3 id="sec5_1">5.1 プログラミング言語の基本</h3>
+            <p>世の中にはC言語、Java、Python、JavaScriptなど、目的や特徴の異なる様々なプログラミング言語が存在します。言語によって文法は異なりますが、基本的な考え方や構成要素には共通点が多くあります。</p>
+            <table>
+                <thead>
+                    <tr><th>代表的なプログラミング言語</th><th>主な用途</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>C言語 / C++</td><td>処理速度が求められるOS、ゲーム、組み込みシステムなど</td></tr>
+                    <tr><td>Java</td><td>Webアプリ、Androidアプリなど、様々な環境で動作</td></tr>
+                    <tr><td>Python</td><td>AI・機械学習、Webアプリ、データ分析など。文法がシンプル</td></tr>
+                    <tr><td>JavaScript</td><td>Webサイトに動きをつける、Webアプリ開発</td></tr>
+                    <tr><td>R</td><td>統計解析、データサイエンス</td></tr>
+                </tbody>
+            </table>
+
+            <h3 id="sec5_2">5.2 変数・データ型・演算・制御文</h3>
+            <p>ほとんどのプログラミング言語は、以下の4つの要素を持っています。</p>
+            <ol>
+                <li><b>変数 (Variable):</b>
+                <p>数値や文字列などの<b class="text-action">値を入れておくための、名前付きの箱</b>のようなものです。例えば `student_count = 50` のように、`student_count` という変数に `50` という値を格納（代入）します。</p></li>
+
+                <li><b>データ型 (Data Type):</b>
+                <p>変数が扱うデータの種類のことです。「整数型」「文字列型」「論理値型（True/False）」などがあります。データ型を意識しないと、予期せぬエラーの原因になります。<br>
+                <b class="text-problem">例 (Python):</b> `print(1 + 1)` の結果は `2` ですが、`print("1" + "1")` の結果は文字列の連結で `11` になります。</p></li>
+
+                <li><b>演算 (Operation):</b>
+                <p>足し算や引き算などの<b class="text-confirm">四則演算</b>、大小を比較する<b class="text-action">比較演算</b>、複数の条件を組み合わせる<b class="text-problem">論理演算</b>（AND, OR）などがあります。これらの演算子を使って計算や条件判定を行います。</p></li>
+
+                <li><b>制御文 (Control Statement):</b>
+                <p>プログラムの流れを制御するための命令です。アルゴリズムの基本構造である「分岐」や「反復」を実現します。<br>
+                ・<b class="text-confirm">if文：</b>条件に応じて処理を分岐させる。<br>
+                ・<b class="text-problem">for文 / while文：</b>処理を特定の回数や条件で繰り返す。</p></li>
+            </ol>
+            
+            <div class="question-box">
+                <h4>問題5.1</h4>
+                <p>プログラムは、アルゴリズムを<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">プログラミング言語</span></span>で記述したものです。値を入れておく箱を<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">変数</span></span>、その値の種類を<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">データ型</span></span>といいます。プログラムの流れを制御するif文やfor文などを<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">制御文</span></span>と呼びます。</p>
+            </div>
+            <div class="page-number">5</div>
+        </div>
+
+        <div class="page">
+            <h2 id="chap6">6. 関数・ライブラリ・API</h2>
+            <p>モダンなプログラミングでは、すべての処理を自分で一から書くことは稀です。先人たちが作った便利な「部品」をうまく組み合わせることで、効率的に高品質なプログラムを開発します。その中心となるのが、関数、ライブラリ、APIです。</p>
+
+            <h3 id="sec6_1">6.1 関数：処理の部品化</h3>
+            <p><b class="text-action">関数 (Function)</b> とは、<b class="marker">特定の処理をひとまとまりにし、名前をつけたもの</b>です。同じ処理を何度も書く手間を省き、プログラムを読みやすくする効果があります。入力値である<b class="text-problem">「引数（ひきすう）」</b>を受け取り、処理結果である<b class="text-confirm">「戻り値（もどりち）」</b>を返すことができます。</p>
+            <div class="code-block">
+                <span class="comment"># Pythonで、与えられた数xを2乗して3を足す関数</span><br>
+                <span class="keyword">def</span> <span class="function">calc</span>(x):<br>
+                    <span class="keyword">return</span> x * x + <span class="number">3</span><br><br>
+                <span class="comment"># この関数を呼び出す</span><br>
+                <span class="function">print</span>(<span class="function">calc</span>(<span class="number">4</span>))  <span class="comment"># 4*4+3 = 19 が表示される</span>
+            </div>
+
+            <h3 id="sec6_2">6.2 ライブラリ：便利な道具箱</h3>
+            <p><b class="text-confirm">ライブラリ (Library)</b> とは、<b class="marker">よく使われる関数や機能をまとめたプログラムの集合体</b>です。まさに「プログラムの図書館」で、ここから必要な機能（本）を借りてくることで、複雑な処理も簡単に実装できます。数値計算、グラフ描画、AIなど、目的別の便利なライブラリが世界中で開発・公開されています。</p>
+
+            <h3 id="sec6_3">6.3 API：プログラム間の連携</h3>
+            <p><b class="text-problem">API (Application Programming Interface)</b> とは、あるプログラムの機能やデータを、<b class="marker">他のプログラムから利用するための「窓口」や「呼び出しルール」</b>のことです。特に、インターネットを介して利用されるAPIを<b class="text-action">Web API</b>と呼びます。</p>
+
+            <div class="card">
+                <div class="card-header">事例：ChatGPTをプログラムから使う</div>
+                <p>OpenAIが提供するWeb APIを使えば、自分で作ったプログラムからChatGPTの機能を呼び出すことができます。これにより、「特定の文章を要約するアプリ」や「メールの返信案を自動生成するツール」などを開発することが可能になります。</p>
+                <p>このように、Google Maps、YouTube、X (旧Twitter)など、多くのWebサービスがAPIを公開しており、それらを組み合わせることで全く新しいサービスを生み出すことができるのです。</p>
+            </div>
+
+            <div class="question-box">
+                <h4>問題6.1</h4>
+                <p>特定の処理をまとめたものを<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">関数</span></span>といいます。便利な関数などをまとめたプログラムの集合体を<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">ライブラリ</span></span>と呼びます。他のプログラムの機能を利用するための窓口やルールを<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">API</span></span>といいます。</p>
+            </div>
+            <div class="page-number">6</div>
+        </div>
+
+        <div class="button-container">
+            <a href="page5.html" class="nav-button">← 前の講座へ</a>
+            <a href="page7.html" class="nav-button">次の講座へ →</a>
+        </div>
+        
+        <div id="references" class="references">
+            <h3>参考文献・リンク</h3>
+            <ul>
+                <li>本教材は、ZEN大学（仮称・設置認可申請中）が提供する講義「ITリテラシー入門 第6回 アルゴリズムとプログラミング言語」（講師：吉村 創一朗 先生）のテキストおよび講義内容を元に作成されました。</li>
+            </ul>
+        </div>
+    </div>
+    <script>
+        function toggleAnswer(element) {
+            const answer = element.querySelector('.answer');
+            if (answer) {
+                answer.classList.toggle('visible');
+            }
+        }
+    </script>
+</body>
+</html>

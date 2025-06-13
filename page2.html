@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ITリテラシー入門 第2回 生活の中のインターネット</title>
+    <style>
+        :root {
+            --primary-color: #0d47a1; /* 濃い青 */
+            --secondary-color: #1976d2; /* 青 */
+            --accent-color: #d32f2f; /* 赤系のアクセント */
+            --background-color: #f5f8fa; /* 薄いグレーがかった背景 */
+            --text-color: #333;
+            --white-color: #ffffff;
+            --marker-yellow: #fffde7;
+            --confirm-green: #e8f5e9;
+            --action-blue: #e3f2fd;
+        }
+
+        body {
+            font-family: 'Yu Gothic UI', 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+            line-height: 1.8;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: var(--white-color);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        .page {
+            border: 1px solid #ddd;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .page-number {
+            position: absolute;
+            bottom: 10px;
+            right: 20px;
+            color: #aaa;
+            font-size: 0.9em;
+        }
+
+        h1 {
+            font-size: 2.2em;
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--secondary-color);
+            padding-bottom: 10px;
+            margin-bottom: 5px;
+            position: relative;
+        }
+        
+        h1::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -3px;
+            width: 70px;
+            border-bottom: 3px solid var(--primary-color);
+        }
+        
+        .lecturer {
+            font-size: 1.1em;
+            color: var(--secondary-color);
+            text-align: right;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            color: var(--primary-color);
+            border-left: 5px solid var(--secondary-color);
+            padding-left: 15px;
+            margin-top: 40px;
+        }
+
+        h3 {
+            font-size: 1.4em;
+            color: var(--secondary-color);
+            border-bottom: 1px dashed var(--secondary-color);
+            padding-bottom: 5px;
+            margin-top: 30px;
+        }
+
+        p {
+            margin-bottom: 1.2em;
+        }
+
+        strong, b {
+            color: var(--primary-color);
+        }
+
+        .marker {
+            background: linear-gradient(transparent 60%, var(--marker-yellow) 60%);
+        }
+        
+        .text-confirm { color: #2e7d32; font-weight: bold; }
+        .text-action { color: var(--secondary-color); font-weight: bold; }
+        .text-problem { color: var(--accent-color); font-weight: bold; }
+
+        .toc {
+            background-color: #f8fafd;
+            border: 1px solid var(--secondary-color);
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+        }
+
+        .toc h2 {
+            margin-top: 0;
+            border-left: none;
+            padding-left: 0;
+            border-bottom: 2px solid var(--secondary-color);
+        }
+
+        .toc ul { list-style-type: none; padding-left: 0; }
+        .toc ul ul { padding-left: 20px; }
+        .toc a { text-decoration: none; color: var(--primary-color); }
+        .toc a:hover { text-decoration: underline; }
+
+        .question-box {
+            border: 2px solid var(--accent-color);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            background-color: #fbe9e7;
+        }
+
+        .fill-in {
+            font-weight: bold;
+            color: var(--accent-color);
+            border-bottom: 2px dotted var(--accent-color);
+            cursor: pointer;
+            padding: 0 5px;
+        }
+
+        .answer {
+            display: none;
+            background-color: var(--marker-yellow);
+            padding: 2px 5px;
+            border-radius: 3px;
+            margin: 0 5px;
+        }
+        
+        .answer.visible { display: inline-block; }
+
+        .card {
+            background-color: #f9f9f9;
+            border-left: 5px solid var(--primary-color);
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .card-header {
+            font-weight: bold;
+            font-size: 1.2em;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .diagram {
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin: 20px 0;
+            background-color: #f8fafd;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .diagram.vertical { flex-direction: column; }
+        .diagram .box {
+            border: 2px solid var(--secondary-color);
+            background-color: var(--white-color);
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .diagram .arrow {
+            font-size: 2em;
+            color: var(--secondary-color);
+            margin: 0 5px;
+            vertical-align: middle;
+        }
+        .diagram .sub-text {
+            font-size: 0.8em;
+            color: #555;
+            text-align: center;
+            width: 100%;
+        }
+
+
+        .footnote {
+            font-size: 0.8em;
+            color: #666;
+            margin-top: 10px;
+            border-top: 1px solid #ccc;
+            padding-top: 5px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.95em;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: var(--white-color);
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        
+        .references {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #ccc;
+        }
+        
+        .references ul { list-style: none; padding: 0; }
+        .references li { margin-bottom: 10px; font-size: 0.9em; }
+        
+        .button-container {
+            text-align: center;
+            margin: 40px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .nav-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: var(--white-color);
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        
+        .nav-button:hover { background-color: var(--secondary-color); }
+        
+        @media (max-width: 768px) {
+            .container { padding: 10px; }
+            .page { padding: 1rem; }
+            h1 { font-size: 1.8em; }
+            h2 { font-size: 1.5em; }
+            h3 { font-size: 1.2em; }
+            .diagram .box, .diagram .arrow { font-size: 0.9em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ITリテラシー入門 第2回 生活の中のインターネット</h1>
+        <p class="lecturer">講師：吉村 創一朗 先生</p>
+
+        <nav class="toc">
+            <h2>目次</h2>
+            <ul>
+                <li><a href="#chap1">1. 生活に溶け込むインターネットサービス</a>
+                    <ul>
+                        <li><a href="#sec1_1">1.1 検索サービス：情報の羅針盤</a></li>
+                        <li><a href="#sec1_2">1.2 AIツールサービス：知能の拡張</a></li>
+                        <li><a href="#sec1_3">1.3 ニュースサービスとキュレーションの罠</a></li>
+                        <li><a href="#sec1_4">1.4 ストリーミングとECサイト：変わる消費スタイル</a></li>
+                    </ul>
+                </li>
+                <li><a href="#chap2">2. SNS：つながりが生む光と影</a>
+                    <ul>
+                        <li><a href="#sec2_1">2.1 SNSとは何か？</a></li>
+                        <li><a href="#sec2_2">2.2 災害時に活躍したSNS</a></li>
+                        <li><a href="#sec2_3">2.3 SNSがもたらした新たな問題</a></li>
+                    </ul>
+                </li>
+                <li><a href="#chap3">3. インターネットのはじまり：軍事技術から世界へ</a>
+                    <ul>
+                        <li><a href="#sec3_1">3.1 パケット交換方式の誕生</a></li>
+                        <li><a href="#sec3_2">3.2 ARPANETからインターネットへ</a></li>
+                        <li><a href="#sec3_3">3.3 WWWと回線高速化が普及を後押し</a></li>
+                    </ul>
+                </li>
+                <li><a href="#chap4">4. 知的財産権を理解しよう</a>
+                    <ul>
+                        <li><a href="#sec4_1">4.1 産業財産権と著作権</a></li>
+                        <li><a href="#sec4_2">4.2 著作権と著作物</a></li>
+                    </ul>
+                </li>
+                <li><a href="#chap5">5. 個人情報とサイバー犯罪</a>
+                    <ul>
+                        <li><a href="#sec5_1">5.1 個人情報保護法とは</a></li>
+                        <li><a href="#sec5_2">5.2 多様化するサイバー犯罪</a></li>
+                    </ul>
+                </li>
+                <li><a href="#chap6">6. 知っておくべきサイバーセキュリティ関連法規</a>
+                    <ul>
+                        <li><a href="#sec6_1">6.1 6つの重要法規</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="page">
+            <h2 id="chap1">1. 生活に溶け込むインターネットサービス</h2>
+            <p>今や私たちの生活は、インターネットを使ったサービス、いわゆる<b class="text-action">Webサービス</b>なしでは成り立たないほど深く結びついています。朝起きてニュースをチェックし、通学中に音楽を聴き、友人とチャットし、夜は動画を楽しむ。これらすべてがインターネットの恩恵です。</p>
+            <p>この章では、私たちの日常に溢れる多種多様なWebサービスの一部を概観し、それぞれの特性を軽く知ることから始めましょう。</p>
+            
+            <h3 id="sec1_1">1.1 検索サービス：情報の羅針盤</h3>
+            <p>Webサービスの中で最も重要と言っても過言ではないのが<b class="marker">検索サービス</b>です。GoogleやYahoo!、Bingといった検索エンジンは、インターネットという広大な情報の海を航海するための羅針盤の役割を果たします。</p>
+            <p>例えば「釣り入門 道具 購入」と検索すれば、初心者向けのガイドサイトやECサイトを瞬時に見つけ出してくれます。この検索技術と、それに連動する広告事業を核として、Googleは世界最大級のWeb企業へと成長しました。まさに現代社会のインフラの一つです。</p>
+
+            <h3 id="sec1_2">1.2 AIツールサービス：知能の拡張</h3>
+            <p>検索サービスが集めた膨大なデータを活用して生まれてきたのが、<b class="text-confirm">AI（人工知能）ツールサービス</b>です。Google翻訳やDeepLのような翻訳サービス、Midjourneyのような画像生成AI、さらにはプログラムコードや文章を生成するAIまで、その進化はとどまるところを知りません。</p>
+            <p>これらのサービスは、インターネット上の膨大な情報をAIが学習し、私たちの知的作業をサポートしてくれます。2020年以降に急速に成熟してきた分野であり、今後の社会を大きく変える可能性を秘めています。</p>
+
+            <h3 id="sec1_3">1.3 ニュースサービスとキュレーションの罠</h3>
+            <p>かつて新聞やテレビが担っていたニュースの提供も、今やWebが主戦場です。さらに、スマートニュースやYahoo!ニュースのように、<b class="text-action">様々なニュースソースから個人の興味に合わせて情報をまとめて提示してくれるサービス</b>も人気です。これを<b class="marker">キュレーション</b>と呼びます。</p>
+            <div class="card">
+                <div class="card-header">注意点：エコーチェンバー現象</div>
+                <p>キュレーションサービスやSNSは非常に便利ですが、自分の興味のある情報や、自分と似た意見ばかりが表示される傾向があります。その結果、<b class="text-problem">まるで自分の意見が世の中の総意であるかのように錯覚してしまう</b>ことがあります。この現象を、閉じた部屋で声が反響する様子になぞらえて<b class="text-problem">「エコーチェンバー」</b>と呼びます。正確な情報把握のためには、多様な情報源からバランスよく情報を得ることが重要です。</p>
+            </div>
+
+            <h3 id="sec1_4">1.4 ストリーミングとECサイト：変わる消費スタイル</h3>
+            <p>動画や音楽などの大容量データを、ダウンロード完了を待たずに再生できる<b class="text-action">ストリーミング</b>技術は、YouTubeやNetflix、Spotifyといったサービスを生み出し、エンターテイメントの楽しみ方を一変させました。</p>
+            <p>また、<b class="text-action">ECサイト（電子商取引サイト）</b>は、インターネット上でモノの売買を可能にしました。Amazonや楽天市場のような巨大モールから、個々のメーカー直販サイトまで形態は様々です。事業者が運営するため、個人間取引が中心のフリマアプリよりも信頼性が高いのが特徴です。</p>
+
+            <div class="question-box">
+                <h4>問題1.1</h4>
+                <p>インターネット上で提供されるサービスを<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">Webサービス</span></span>といいます。自分と似た意見ばかりが目に入ることで、それが世の中の多数派だと錯覚する現象を<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">エコーチェンバー</span></span>と呼びます。大容量の動画や音楽をダウンロードしながら再生する技術を<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">ストリーミング</span></span>といいます。</p>
+            </div>
+            <div class="page-number">1</div>
+        </div>
+
+        <div class="page">
+            <h2 id="chap2">2. SNS：つながりが生む光と影</h2>
+            <p>現代のコミュニケーションを語る上で欠かせないのがSNSです。この章では、SNSが社会に与えた影響と、その利用に伴うリスクについて学びます。</p>
+
+            <h3 id="sec2_1">2.1 SNSとは何か？</h3>
+            <p>SNSとは<b class="marker">Social Networking Service</b>の略で、登録された利用者同士が交流できるWebサイトの会員制サービスのことです。友人同士や同じ趣味を持つ人たちが集まる、ある程度閉ざされたコミュニティを形成することで、密なコミュニケーションを可能にします。</p>
+            <p>LINE、Twitter(X)、Instagram、Facebook、TikTokなど、時代と共に様々なサービスが登場し、メッセージ機能、動画投稿、ライブ配信など、多様な機能が統合されています。</p>
+            
+            <h3 id="sec2_2">2.2 災害時に活躍したSNS</h3>
+            <p>SNSが社会インフラとしての重要性を広く認識されるきっかけとなったのが、<b class="text-confirm">2011年の東日本大震災</b>です。当時、電話やメールが繋がりにくい中、Twitterを通じて救助要請、安否確認、支援情報などが爆発的に発信されました。</p>
+            <p>これは、インターネットが一部の通信経路が途絶えても他の経路で通信を続けられる「パケット通信」という仕組みを採用していたためです。この出来事を機に、SNSは日本社会に広く普及しました。</p>
+            
+            <h3 id="sec2_3">2.3 SNSがもたらした新たな問題</h3>
+            <p>SNSの普及は、残念ながら新たな社会問題も生み出しました。</p>
+            <ul>
+                <li><b>個人情報の流出：</b>安易な投稿から、氏名や住所、所属などが特定され、犯罪に悪用されるケースがあります。</li>
+                <li><b>ネットいじめ・誹謗中傷：</b>匿名性の陰で、特定の個人に対する攻撃が過激化しやすくなっています。</li>
+                <li><b>炎上：</b>不適切な投稿が瞬く間に拡散され、投稿者や関係者が社会的な制裁を受ける現象です。一度ネットに投稿された情報は<b class="text-problem">完全に消すことができない「デジタルタトゥー」</b>として残り続けます。</li>
+            </ul>
+            <div class="card">
+                <div class="card-header">事例：アルバイト店員の炎上事件</div>
+                <p>2013年、あるコンビニのアルバイト店員が、アイスクリームの冷凍ケースに入った写真をSNSに投稿。これが大炎上し、結果としてその店舗は閉店に追い込まれ、投稿者は個人情報を特定され、激しい社会的非難を浴びることになりました。この事件をきっかけに、多くの企業が従業員向けの<b class="text-action">ソーシャルメディアポリシー</b>を策定するようになりました。</p>
+            </div>
+            <p>こうしたリスクから子どもを守るため、保護者が利用を制限する<b class="text-action">ペアレンタルコントロール</b>という機能も重要になっています。私たちは、<b class="text-confirm">「家の扉の前に張り出しても問題ない内容か」</b>を常に意識して、SNSを利用する心構えが求められます。</p>
+
+            <div class="question-box">
+                <h4>問題2.1</h4>
+                <p>SNSとは<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">Social Networking Service</span></span>の略です。不適切な投稿がSNSで批判の的にされ、収拾がつかなくなる現象を<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">炎上</span></span>といいます。保護者が子供のインターネット利用を管理・制限する機能を<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">ペアレンタルコントロール</span></span>と呼びます。</p>
+            </div>
+            <div class="page-number">2</div>
+        </div>
+
+        <div class="page">
+            <h2 id="chap3">3. インターネットのはじまり：軍事技術から世界へ</h2>
+            <p>今では誰もが使うインターネットですが、その起源は意外なところにあります。ここでは、インターネットが誕生し、世界中に広まるまでの歴史を辿ってみましょう。</p>
+
+            <h3 id="sec3_1">3.1 パケット交換方式の誕生</h3>
+            <p>インターネットの根幹をなす<b class="marker">パケット交換方式</b>という技術は、米ソ冷戦の緊張下で生まれました。1960年代初頭、ソ連の核攻撃によってアメリカの通信網が破壊されることへの懸念が高まります。</p>
+            <p>そこで考案されたのが、データを細切れの「パケット」に分割し、それぞれに宛先情報を付けて送り出す方法です。これにより、<b class="text-confirm">一部の通信経路が破壊されても、パケットは別の経路を迂回して目的地に到達できる</b>ようになります。この分散型通信のアイデアが、インターネットの強靭さを支える基礎となりました。</p>
+            <div class="diagram">
+                <div class="box">送信データ</div>
+                <div class="arrow">→</div>
+                <div class="box" style="border-style: dashed;">パケット1</div>
+                <div class="box" style="border-style: dashed;">パケット2</div>
+                <div class="box" style="border-style: dashed;">パケット3</div>
+                <div class="arrow">→</div>
+                <div class="box">受信データ</div>
+                <p class="sub-text">データを細かく分割し、それぞれが独立して目的地を目指す</p>
+            </div>
+
+            <h3 id="sec3_2">3.2 ARPANETからインターネットへ</h3>
+            <p>しかし、このパケット交換方式は、軍事目的ではなく、大学の研究成果を共有するために活用されることになります。1969年、アメリカの大学や研究所を結ぶ最初のネットワーク<b class="text-action">「ARPANET（アーパネット）」</b>が誕生しました。これがインターネットの原型です。</p>
+            <p>その後、世界各国で同様のネットワークが作られ、それらが相互に接続されることで「ネットワークのネットワーク」である<b class="text-action">「インターネット」</b>が形成されていきました。日本でも1984年に大学間を結ぶ「JUNET」の運用が始まっています。</p>
+
+            <h3 id="sec3_3">3.3 WWWと回線高速化が普及を後押し</h3>
+            <p>1990年代初頭まで、インターネットは研究者など一部の専門家だけのものでした。しかし、2つの大きな変化が、爆発的な普及を引き起こします。</p>
+            <p>一つは、<b class="text-confirm">ワールド・ワイド・ウェブ（WWW）</b>と、それを閲覧するためのソフト「ブラウザ」の登場です。これにより、文字だけでなく画像や音声、映像といったマルチメディア情報を簡単にやり取りできるようになり、多くの人々がインターネットの魅力に惹きつけられました。</p>
+            <p>もう一つは、<b class="text-problem">回線の高速化</b>です。電話回線を使った低速なダイアルアップ接続から始まり、ADSL、光回線（FTTH）、そしてモバイル通信の5Gへと、通信速度は劇的に向上しました。これにより、高画質な動画のストリーミングなど、かつては考えられなかったリッチなコンテンツが楽しめるようになったのです。</p>
+
+            <div class="question-box">
+                <h4>問題3.1</h4>
+                <p>データを細かく分割して送信する通信方式を<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">パケット交換方式</span></span>といいます。インターネットの原型となった、1969年に米国で構築されたネットワークを<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">ARPANET</span></span>と呼びます。インターネット上の情報を閲覧するための仕組みである<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">ワールド・ワイド・ウェブ（WWW）</span></span>の登場が普及のきっかけとなりました。</p>
+            </div>
+            <div class="page-number">3</div>
+        </div>
+        
+        <div class="page">
+            <h2 id="chap4">4. 知的財産権を理解しよう</h2>
+            <p>インターネットで情報が簡単に複製・拡散できるようになったことで、クリエイターの権利を守る<b class="text-action">知的財産権</b>の重要性が増しています。他人の著作物を無断で利用すれば、大きなトラブルに発展しかねません。正しくインターネットを使うために、基本的なルールを学びましょう。</p>
+            
+            <h3 id="sec4_1">4.1 産業財産権と著作権</h3>
+            <p>知的財産権は、大きく2つのカテゴリーに分けられます。</p>
+            <div class="diagram vertical">
+                <div class="box" style="width: 60%;">知的財産権</div>
+                <div class="arrow">↓</div>
+                <div style="display: flex; gap: 20px;">
+                    <div class="box"><b>産業財産権</b><br><span style="font-size: 0.8em;">(特許庁への登録が必要)</span></div>
+                    <div class="box"><b>著作権</b><br><span style="font-size: 0.8em;">(創作した時点で発生)</span></div>
+                </div>
+            </div>
+
+            <ul>
+                <li><b>産業財産権：</b>産業の発展を目的とし、<b class="text-confirm">特許庁への出願・登録が必要（方式主義）</b>です。これには、発明を保護する「特許権」、デザインを保護する「意匠権」、商品やサービスのマークを保護する「商標権」などがあります。</li>
+                <li><b>著作権：</b>文化の発展を目的とし、小説、音楽、絵画、プログラムなどの創作物を保護します。<b class="text-problem">創作した時点で自動的に権利が発生する（無方式主義）</b>のが大きな特徴です。</li>
+            </ul>
+
+            <div class="card">
+                <div class="card-header">事例：ゲーム機は特許の塊！</div>
+                <p>例えば、Nintendo Switchは知的財産権の塊です。本体からコントローラーが着脱できる機構は「特許権」で、その独特な形状は「意匠権」で、「Nintendo Switch」という名称やロゴは「商標権」で保護されています。他社がこれらの権利を無視して類似品を製造・販売することはできません。</p>
+            </div>
+
+            <h3 id="sec4_2">4.2 著作権と著作物</h3>
+            <p>著作権は、私たちの創作活動に最も身近な権利です。著作権法では、「思想又は感情を創作的に表現したもの」を<b class="marker">著作物</b>と定義しており、言語、音楽、美術、映画、写真、コンピュータプログラムなど非常に幅広いものが含まれます。</p>
+            <p>著作権は、大きく分けて2つの権利から成り立っています。</p>
+            <ol>
+                <li><b>著作者人格権：</b>「これは自分が作ったものだ」と公表したり、自分の意に反して内容を改変されないように主張したりできる、作者の人格的な利益を守る権利。この権利は他人に譲渡できません。</li>
+                <li><b>著作権（財産権）：</b>著作物を複製したり、販売したり、インターネットで配信したりしてお金儲けができる、財産としての権利。この権利は他人に譲渡（売買）できます。</li>
+            </ol>
+            <p>原則として、著作権は作者の死後70年間保護されます。この保護期間が切れた作品を無料で公開しているのが「青空文庫」などのWebサイトです。</p>
+            
+            <div class="question-box">
+                <h4>問題4.1</h4>
+                <p>特許権や商標権など、産業に関する権利を総称して<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">産業財産権</span></span>といいます。これらは特許庁への登録が必要な<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">方式主義</span></span>です。一方、創作した時点で自動的に発生する権利を<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">著作権</span></span>といい、これは<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">無方式主義</span></span>をとります。</p>
+            </div>
+            <div class="page-number">4</div>
+        </div>
+
+        <div class="page">
+            <h2 id="chap5">5. 個人情報とサイバー犯罪</h2>
+            <p>情報化社会の進展は、個人情報の価値を高めると同時に、それを狙った新たな犯罪<b class="text-problem">「サイバー犯罪」</b>を生み出しました。ここでは、自分の情報を守り、犯罪に巻き込まれないための基礎知識を学びます。</p>
+
+            <h3 id="sec5_1">5.1 個人情報保護法とは</h3>
+            <p>個人情報とは、氏名、住所、生年月日など、<b class="marker">それらの情報を組み合わせることで特定の個人を識別できる情報</b>全般を指します。インターネットが普及し、個人情報がリスト化されて売買されたり、犯罪に悪用されたりする事件が多発したことを背景に、2003年に<b class="text-action">個人情報保護法</b>が制定されました。</p>
+            <p>この法律のポイントは以下の3つです。</p>
+            <ul>
+                <li>利用目的を明確にし、その目的以外には利用しない。</li>
+                <li>情報が漏洩しないように、安全に管理する。</li>
+                <li><b class="text-confirm">本人の同意なく、第三者に個人情報を提供してはならない。</b></li>
+            </ul>
+            <p>特に事業を運営する際には、この法律を遵守した個人情報の取り扱いが厳しく求められます。</p>
+            
+            <h3 id="sec5_2">5.2 多様化するサイバー犯罪</h3>
+            <p>サイバー犯罪は年々手口が巧妙化しており、大きく3つに分類されます。</p>
+            <div class="diagram vertical">
+                 <div class="box" style="width: 80%;">サイバー犯罪</div>
+                 <div class="arrow">↓</div>
+                 <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
+                    <div class="box">不正アクセス禁止法違反<br><span style="font-size: 0.8em;">(なりすましログインなど)</span></div>
+                    <div class="box">コンピュータ・電磁的記録対象犯罪<br><span style="font-size: 0.8em;">(ウイルス、データ改ざんなど)</span></div>
+                    <div class="box">ネットワーク利用犯罪<br><span style="font-size: 0.8em;">(誹謗中傷、詐欺など)</span></div>
+                </div>
+            </div>
+            <p>特に注意が必要なのが、<b class="text-problem">フィッシング詐欺</b>です。これは、有名企業や金融機関を装った偽のメールやSMSを送りつけ、本物そっくりの偽サイトに誘導し、IDやパスワードを盗み取る手口です。</p>
+            <div class="card">
+                <div class="card-header">事例：巧妙化する詐欺の手口</div>
+                <p>「10万円プレゼント企画に当選！」といったSNSの投稿に応募し、口座情報を教えたところ、突然100万円が振り込まれる。「手違いなので90万円を現金で返してほしい」と言われ応じたら、実は自分が振り込め詐欺の「受け子（振込先口座の提供者）」として犯罪に加担させられていた、という悪質なケースもあります。うまい話には裏があることを肝に銘じましょう。</p>
+            </div>
+            
+            <div class="question-box">
+                <h4>問題5.1</h4>
+                <p>2003年に制定された、個人の権利利益を保護するための法律を<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">個人情報保護法</span></span>といいます。金融機関などを装った偽サイトに誘導し、パスワードなどを盗む手口を<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">フィッシング詐欺</span></span>と呼びます。PC内のファイルを勝手に暗号化し、解除と引き換えに金銭を要求するマルウェアを<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">ランサムウェア</span></span>といいます。</p>
+            </div>
+            <div class="page-number">5</div>
+        </div>
+        
+        <div class="page">
+            <h2 id="chap6">6. 知っておくべきサイバーセキュリティ関連法規</h2>
+            <p>社会人として情報技術を活用する上で、「知らなかった」では済まされない重要な法律がいくつかあります。この章では、サイバーセキュリティに関わる6つの主要な法律のポイントを解説します。</p>
+            
+            <h3 id="sec6_1">6.1 6つの重要法規</h3>
+            <p>私たちが安全にインターネットを利用できるよう、以下のような法律が整備されています。</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>法律名</th>
+                        <th>主な内容</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><b>サイバーセキュリティ基本法</b></td>
+                        <td>国や国民がサイバーセキュリティの重要性を理解し、必要な注意を払うよう努めることを定めた基本の法律。</td>
+                    </tr>
+                    <tr>
+                        <td><b>不正アクセス禁止法</b></td>
+                        <td>他人のID・パスワードを無断で使用してログインする「なりすまし」行為などを禁止する法律。</td>
+                    </tr>
+                    <tr>
+                        <td><b>個人情報保護法</b></td>
+                        <td>個人情報を扱う事業者に、適切な取得・利用・管理を義務付ける法律。</td>
+                    </tr>
+                    <tr>
+                        <td><b>特定電子メール法</b></td>
+                        <td>いわゆる「迷惑メール」を規制する法律。広告メールを送るには、<b class="text-action">原則として受信者の同意が必要（オプトイン）</b>。</td>
+                    </tr>
+                    <tr>
+                        <td><b>プロバイダ責任制限法</b></td>
+                        <td>SNSなどでの権利侵害（誹謗中傷など）があった場合に、被害者が投稿者の情報を開示請求する権利などを定めた法律。</td>
+                    </tr>
+                    <tr>
+                        <td><b>不正指令電磁的記録に関する罪（ウイルス作成罪）</b></td>
+                        <td>正当な理由なく、コンピュータウイルスを作成、提供、取得、保管する行為を罰する法律。</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="card">
+                <div class="card-header">ポイント：オプトインとオプトアウト</div>
+                <p>特定電子メール法を理解する上で重要なのがこの2つの言葉です。</p>
+                <ul>
+                    <li><b class="text-confirm">オプトイン（Opt-in）：</b>「メールを受け取りますか？」という問いにチェックを入れるなど、<b>受信者が事前に承諾</b>すること。日本の広告メールはこれが原則。</li>
+                    <li><b class="text-problem">オプトアウト（Opt-out）：</b>メール本文にある「配信停止はこちら」のリンクから、<b>受信者が後から拒否</b>すること。事業者は、この仕組みを用意する義務があります。</li>
+                </ul>
+            </div>
+            <p>これらの法律は、私たちのデジタル社会での活動を守るための重要なルールです。特に、将来ビジネスの世界で活躍する皆さんにとっては、必須の知識と言えるでしょう。自分自身が加害者にならないためにも、正しく理解しておくことが大切です。
+            </p>
+
+            <div class="question-box">
+                <h4>問題6.1</h4>
+                <p>SNSでの誹謗中傷に対し、被害者が投稿者の情報開示を請求できる権利などを定めた法律を<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">プロバイダ責任制限法</span></span>といいます。広告メールを送信する際に、事前に受信者の同意を得ることを<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">オプトイン</span></span>といいます。逆に、受信者が後から配信停止の手続きをすることを<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">オプトアウト</span></span>といいます。</p>
+            </div>
+            <div class="page-number">6</div>
+        </div>
+
+        <div class="button-container">
+            <a href="page1.html" class="nav-button">← 前の講座へ</a>
+            <a href="page3.html" class="nav-button">次の講座へ →</a>
+        </div>
+        
+        <div id="references" class="references">
+            <h3>参考文献・リンク</h3>
+            <ul>
+                <li>本教材は、ZEN大学（仮称・設置認可申請中）が提供する講義「ITリテラシー入門 第2回 生活の中のインターネット」（講師：吉村 創一朗 先生）のテキストおよび講義内容を元に作成されました。</li>
+            </ul>
+        </div>
+    </div>
+    <script>
+        function toggleAnswer(element) {
+            const answer = element.querySelector('.answer');
+            if (answer) {
+                answer.classList.toggle('visible');
+            }
+        }
+    </script>
+</body>
+</html>

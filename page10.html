@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ITリテラシー入門 第10回 セキュリティ</title>
+    <style>
+        :root {
+            --primary-color: #0d47a1; /* 濃い青 */
+            --secondary-color: #1976d2; /* 青 */
+            --accent-color: #d32f2f; /* 赤系のアクセント */
+            --background-color: #f5f8fa; /* 薄いグレーがかった背景 */
+            --text-color: #333;
+            --white-color: #ffffff;
+            --marker-yellow: #fffde7;
+            --confirm-green-bg: #e8f5e9;
+            --action-blue-bg: #e3f2fd;
+            --problem-red-bg: #fbe9e7;
+            --confirm-green-text: #2e7d32;
+            --action-blue-text: var(--secondary-color);
+            --problem-red-text: var(--accent-color);
+        }
+
+        body {
+            font-family: 'Yu Gothic UI', 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+            line-height: 1.8;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: var(--white-color);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        .page {
+            border: 1px solid #ddd;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .page-number {
+            position: absolute;
+            bottom: 10px;
+            right: 20px;
+            color: #aaa;
+            font-size: 0.9em;
+        }
+
+        h1 {
+            font-size: 2.2em;
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--secondary-color);
+            padding-bottom: 10px;
+            margin-bottom: 5px;
+            position: relative;
+        }
+        
+        h1::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -3px;
+            width: 70px;
+            border-bottom: 3px solid var(--primary-color);
+        }
+        
+        .lecturer {
+            font-size: 1.1em;
+            color: var(--secondary-color);
+            text-align: right;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            color: var(--primary-color);
+            border-left: 5px solid var(--secondary-color);
+            padding-left: 15px;
+            margin-top: 40px;
+        }
+
+        h3 {
+            font-size: 1.4em;
+            color: var(--secondary-color);
+            border-bottom: 1px dashed var(--secondary-color);
+            padding-bottom: 5px;
+            margin-top: 30px;
+        }
+
+        p { margin-bottom: 1.2em; }
+        strong, b { color: var(--primary-color); }
+        .marker { background: linear-gradient(transparent 60%, var(--marker-yellow) 60%); }
+        .text-confirm { color: var(--confirm-green-text); font-weight: bold; }
+        .text-action { color: var(--action-blue-text); font-weight: bold; }
+        .text-problem { color: var(--problem-red-text); font-weight: bold; }
+
+        .toc {
+            background-color: #f8fafd;
+            border: 1px solid var(--secondary-color);
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+        }
+        .toc h2 { margin-top: 0; border-left: none; padding-left: 0; border-bottom: 2px solid var(--secondary-color); }
+        .toc ul { list-style-type: none; padding-left: 0; }
+        .toc ul ul { padding-left: 20px; }
+        .toc a { text-decoration: none; color: var(--primary-color); }
+        .toc a:hover { text-decoration: underline; }
+
+        .question-box {
+            border: 2px solid var(--accent-color);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            background-color: var(--problem-red-bg);
+        }
+
+        .fill-in {
+            font-weight: bold;
+            color: var(--accent-color);
+            border-bottom: 2px dotted var(--accent-color);
+            cursor: pointer;
+            padding: 0 5px;
+        }
+
+        .answer {
+            display: none;
+            background-color: var(--marker-yellow);
+            padding: 2px 5px;
+            border-radius: 3px;
+            margin: 0 5px;
+        }
+        .answer.visible { display: inline-block; }
+
+        .card {
+            background-color: #f9f9f9;
+            border-left: 5px solid var(--primary-color);
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .card-header {
+            font-weight: bold;
+            font-size: 1.2em;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        table {
+            width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.95em;
+        }
+        th, td { border: 1px solid #ccc; padding: 12px; text-align: left; }
+        th { background-color: var(--primary-color); color: var(--white-color); font-weight: bold; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+
+        /* --- 図式スタイル --- */
+        .diagram { text-align: center; padding: 20px 0; overflow-x: auto; }
+
+        .triangle-diagram {
+            position: relative; width: 350px; height: 300px; margin: 20px auto;
+        }
+        .triangle-diagram .node {
+            position: absolute; padding: 10px; border-radius: 50%; background-color: var(--action-blue-bg);
+            border: 2px solid var(--primary-color); font-weight: bold; min-width: 50px; text-align: center;
+        }
+        .triangle-diagram .top { top: 0; left: 50%; transform: translateX(-50%); }
+        .triangle-diagram .left { bottom: 0; left: 0; }
+        .triangle-diagram .right { bottom: 0; right: 0; }
+        .triangle-diagram .center { top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: var(--problem-red-bg); border-color: var(--accent-color); }
+        .triangle-diagram .line {
+            position: absolute; background-color: var(--secondary-color);
+            height: 3px; transform-origin: left center; z-index: -1;
+        }
+        
+        .flow-diagram {
+            display: flex; flex-direction: column; gap: 10px; padding: 15px; border: 1px solid #ccc; border-radius: 8px; background-color: #f8fafd;
+        }
+        .flow-diagram .step {
+            display: flex; align-items: center; gap: 15px; padding: 10px; background-color: var(--white-color); border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .flow-diagram .step-number {
+            background-color: var(--primary-color); color: var(--white-color); font-weight: bold; border-radius: 50%;
+            width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
+        .flow-diagram .arrow { text-align: center; font-size: 1.5em; color: var(--secondary-color); margin: 5px 0; }
+
+        .pki-diagram {
+            display: grid; grid-template-columns: 1fr 1.2fr 1fr; grid-template-rows: auto auto auto;
+            gap: 15px; align-items: center; text-align: center; padding: 20px;
+            border: 1px solid #ccc; border-radius: 8px; background-color: #f8fafd;
+        }
+        .pki-diagram .item { padding: 10px; border-radius: 5px; }
+        .pki-diagram .user { grid-column: 1; grid-row: 2; background-color: var(--confirm-green-bg); }
+        .pki-diagram .server { grid-column: 3; grid-row: 2; background-color: var(--confirm-green-bg); }
+        .pki-diagram .ca { grid-column: 2; grid-row: 1; background-color: var(--action-blue-bg); font-weight: bold; }
+        .pki-diagram .arrow-text { font-size: 0.8em; color: #555; }
+        .pki-diagram .arrow { font-size: 1.5em; color: var(--secondary-color); }
+        
+        .references { margin-top: 40px; padding-top: 20px; border-top: 1px solid #ccc; }
+        .references ul { list-style: none; padding: 0; }
+        .references li { margin-bottom: 10px; font-size: 0.9em; }
+        
+        .button-container { text-align: center; margin: 40px 0; display: flex; justify-content: space-between; }
+        .nav-button {
+            display: inline-block; padding: 10px 20px; background-color: var(--primary-color);
+            color: var(--white-color); text-decoration: none; border-radius: 5px;
+            font-weight: bold; transition: background-color 0.3s;
+        }
+        .nav-button:hover { background-color: var(--secondary-color); }
+        
+        .footnote { font-size: 0.8em; color: #666; margin-top: 1em; }
+
+        @media (max-width: 768px) {
+            .container { padding: 10px; }
+            .page { padding: 1rem; }
+            h1 { font-size: 1.8em; }
+            h2 { font-size: 1.5em; }
+            h3 { font-size: 1.2em; }
+            .pki-diagram { display: flex; flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ITリテラシー入門 第10回 セキュリティ</h1>
+        <p class="lecturer">講師：吉村 創一朗 先生</p>
+
+        <nav class="toc">
+            <h2>目次</h2>
+            <ul>
+                <li><a href="#chap1">1. 脅威と脆弱性</a></li>
+                <li><a href="#chap2">2. マルウェア</a></li>
+                <li><a href="#chap3">3. 攻撃手法</a></li>
+                <li><a href="#chap4">4. リスクマネジメントと情報セキュリティ管理</a></li>
+                <li><a href="#chap5">5. 暗号化と認証の仕組み</a></li>
+                <li><a href="#chap6">6. 公開鍵基盤 (PKI)</a></li>
+            </ul>
+        </nav>
+        
+        <div class="page">
+            <h2 id="chap1">1. 脅威と脆弱性</h2>
+            <p>「え、スマホのロック画面、パターンで設定してるの？それ、電車で後ろから覗かれたら一発でバレるよ！」そんな会話をしたことはありませんか？現代社会では、私たちの個人情報や大切なデータは常に危険に晒されています。この章では、その危険の正体である<b class="text-action">「脅威」</b>と、その侵入口となる<b class="text-action">「脆弱性」</b>について学んでいきましょう。</p>
+            
+            <h3>1.1 情報セキュリティの重要性</h3>
+            <p>ネットショッピングのアカウント、友人とのLINEのやり取り、スマホに保存された写真や動画。これらはすべて、私たちにとって価値のある<b class="text-confirm">情報資産</b>です。もし、これらの情報が流出したり、改ざんされたり、勝手に使われたりしたら…想像するだけで恐ろしいですよね。</p>
+            <p>クレジットカード情報が盗まれて不正利用されたり、恥ずかしい写真がネットにばらまかれたり、仲間内だけの会話のスクリーンショットが流出してしまったり。情報を利用した犯罪は年々高度化しており、その手口と対策を知っておくことは、社会人として必須のスキルになりつつあります。</p>
+
+            <h3>1.2 脅威と脆弱性の正体</h3>
+            <p>情報セキュリティを学ぶ上で、まず理解すべき2つのキーワードが「脅威」と「脆弱性」です。</p>
+            <ul>
+                <li><b>脅威 (Threat)</b>: 情報資産に損害を与える可能性のある<b class="marker">インシデント（好ましくない出来事）の潜在的な原因</b>のこと。大きく3つに分類されます。</li>
+                <li><b>脆弱性 (Vulnerability)</b>: ソフトウェアの欠陥（バグ）や設定ミスなど、脅威につけこまれる<b class="marker">システムやルールの弱点・脆さ</b>のこと。</li>
+            </ul>
+
+            <h4>脅威の3つの分類</h4>
+            <table>
+                <thead>
+                    <tr><th>脅威の種類</th><th>説明</th><th>具体例</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><b>人的脅威</b></td>
+                        <td>人間のミスや悪意によって生じる脅威。</td>
+                        <td>PCの置き忘れ、パスワードの使い回し、<b class="text-problem">ソーシャルエンジニアリング</b>（人の心理的な隙をつく攻撃）</td>
+                    </tr>
+                    <tr>
+                        <td><b>物理的脅威</b></td>
+                        <td>災害や破壊行為など、情報資産が物理的に被害を受ける脅威。</td>
+                        <td>地震・火災によるサーバーの破損、不正侵入による機器の破壊、通信ケーブルの切断</td>
+                    </tr>
+                    <tr>
+                        <td><b>技術的脅威</b></td>
+                        <td>IT技術を使って引き起こされる脅威。</td>
+                        <td>盗聴、データの改ざん、なりすまし、<b class="text-problem">クラッキング</b>（不正なハッキング）</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3>1.3 不正のトライアングル</h3>
+            <p>なぜ、人は不正を働いてしまうのでしょうか？犯罪研究者ドナルド・R・クレッシーは、「<b class="marker">不正行動は『動機』『機会』『正当化』の3要素が揃ったときに発生する</b>」という理論を提唱しました。これが<b class="text-action">「不正のトライアングル」</b>です。</p>
+            <ul>
+                <li><b>動機</b>: 「借金返済のために不正をするしかない…」といった、不正に至るプレッシャーや心情。</li>
+                <li><b>機会</b>: 「誰にもバレずに会社の金を持ち出せる…」といった、不正が可能な環境。</li>
+                <li><b>正当化</b>: 「これは会社への正当な報酬だ…」といった、罪悪感を乗り越えるための自分勝手な理由づけ。</li>
+            </ul>
+            <p>組織では、これらの要素をなくすためのルール作りや監視体制の強化が、不正防止に繋がります。</p>
+
+            <div class="diagram">
+                <div class="triangle-diagram">
+                    <div class="node top">動機</div>
+                    <div class="node left">機会</div>
+                    <div class="node right">正当化</div>
+                    <div class="node center">不正発生</div>
+                    <svg width="350" height="300" style="position:absolute;top:0;left:0;z-index:-1;">
+                        <line x1="175" y1="35" x2="45" y2="265" stroke="var(--secondary-color)" stroke-width="3"/>
+                        <line x1="45" y1="265" x2="305" y2="265" stroke="var(--secondary-color)" stroke-width="3"/>
+                        <line x1="305" y1="265" x2="175" y2="35" stroke="var(--secondary-color)" stroke-width="3"/>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="question-box">
+                <h4>問題1</h4>
+                <p>情報資産に危険をもたらす可能性のあるものを<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">脅威</span></span>、ソフトウェアやシステムの弱点のことを<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">脆弱性</span></span>といいます。脅威には、人的脅威、<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">物理的脅威</span></span>、技術的脅威の3つがあります。不正行動は、動機、機会、<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">正当化</span></span>の3要素が揃ったときに発生するという理論を「不正のトライアングル」といいます。</p>
+            </div>
+            <div class="page-number">1</div>
+        </div>
+        
+        <div class="page">
+            <h2 id="chap2">2. マルウェア</h2>
+            <p>「なんかパソコンの動きが重い…」「変な広告が勝手に出てくる！」それはもしかしたら、<b class="text-problem">マルウェア</b>の仕業かもしれません。マルウェアとは、ウイルスを含む悪意のあるプログラムの総称です。この章では、見えない敵であるマルウェアへの対策と、感染してしまった時の正しい対処法を学びます。</p>
+
+            <h3>2.1 マルウェアへの基本的な対策</h3>
+            <p>マルウェアは、メールの添付ファイル、怪しいWebサイト、USBメモリなど、様々な経路から侵入してきます。感染すると、アカウント乗っ取りや情報漏洩、さらには他のPCへの感染拡大など、深刻な被害に繋がります。基本的な対策は以下の2つです。</p>
+            <ol>
+                <li><b>セキュリティソフトウェアの導入と更新</b>: OSに標準で搭載されているセキュリティ機能（Windows SecurityやmacOSのXProtectなど）を常に有効にしておきましょう。そして最も重要なのが、ウイルスの特徴を記録した<b class="marker">「定義ファイル」を常に最新の状態に保つ</b>ことです。</li>
+                <li><b>ソフトウェアの更新</b>: OSやアプリケーションの脆弱性を放置すると、そこがマルウェアの侵入口になります。<b class="text-action">ソフトウェアのアップデート通知が来たら、速やかに更新する</b>習慣をつけましょう。</li>
+            </ol>
+
+            <h3>2.2 知っておきたいマルウェアの種類</h3>
+            <p>マルウェアには様々な種類があり、それぞれ異なる攻撃を仕掛けてきます。代表的なものを知っておきましょう。</p>
+            <table>
+                <thead>
+                    <tr><th>マルウェアの種類</th><th>特徴と手口</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><b>コンピューターウイルス</b></td><td>Excelなどのファイルに寄生し、自己増殖しながら感染を広げる。</td></tr>
+                    <tr><td><b>ワーム</b></td><td>ウイルスと違い、単体で活動可能。ネットワークに接続するだけで感染する場合もある。</td></tr>
+                    <tr><td><b>トロイの木馬</b></td><td>無害なアプリを装って侵入し、後から悪さをする。遠隔操作のための裏口（バックドア）を作る。</td></tr>
+                    <tr><td><b>スパイウェア</b></td><td>ユーザーの情報をこっそり盗み出す。キーボード入力を記録する「キーロガー」もこの一種。</td></tr>
+                    <tr><td><b>ランサムウェア</b></td><td>ファイルを人質（Ransom）に取り、身代金を要求する。データを勝手に暗号化し、復号のために金銭を要求する。</td></tr>
+                </tbody>
+            </table>
+            
+            <h3>2.3 もしマルウェアに感染してしまったら？</h3>
+            <p>どんなに気をつけていても、感染してしまう可能性はゼロではありません。パニックにならず、冷静に以下の手順で対処しましょう。</p>
+            <div class="flow-diagram">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div><b>ネットワークから切断する</b><br>被害の拡大を防ぐため、真っ先にWi-Fiを切るかLANケーブルを抜く。</div>
+                </div>
+                <div class="arrow">↓</div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div><b>適切な人へ連絡・報告する</b><br>会社や学校のPCなら情報システム部門へ。個人のPCなら家族や友人へ状況を伝える。</div>
+                </div>
+                <div class="arrow">↓</div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div><b>各種アカウントのパスワードを変更する</b><br>情報が盗まれている可能性を考え、感染したPCからアクセスしていた全サービスのパスワードを変更する。</div>
+                </div>
+                <div class="arrow">↓</div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div><b>システムの復元・初期化を行う</b><br>セキュリティソフトで駆除できない場合は、OSの初期化（クリーンインストール）が最も確実な対処法。</div>
+                </div>
+                <div class="arrow">↓</div>
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <div><b>恒久的な対策を立てる</b><br>感染原因を特定し、二度と同じ過ちを繰り返さないための対策（例：怪しいメールは開かない）を徹底する。</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">事例：恐怖！データを人質に取るランサムウェア攻撃</div>
+                <p>「お前の大事なデータはすべて暗号化した。元に戻してほしければ、3日以内にビットコインで10万円を支払え」…ある日突然、PCの画面にこんなメッセージが表示されたら？これが<b class="text-problem">ランサムウェア</b>の恐ろしい手口だ！卒業論文のデータも、大切な思い出の写真も、すべて開けなくなってしまう。犯人の要求通りに身代金を払っても、データが元に戻る保証はどこにもない。こんな悲劇を避けるためには、<b class="text-confirm">日頃からのバックアップ</b>が何よりも重要なんだ！重要なデータは、外付けHDDやクラウドストレージにも保存しておこうぜ！</p>
+            </div>
+
+            <div class="question-box">
+                <h4>問題2</h4>
+                <p>悪意のあるプログラムの総称を<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">マルウェア</span></span>といいます。無害なアプリを装って侵入し、後から悪さをするものを<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">トロイの木馬</span></span>、ファイルを暗号化して身代金を要求するものを<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">ランサムウェア</span></span>といいます。マルウェア感染が疑われたら、まず最初に<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">ネットワークから切断</span></span>することが重要です。</p>
+            </div>
+            <div class="page-number">2</div>
+        </div>
+
+        <div class="page">
+            <h2 id="chap3">3. 攻撃手法</h2>
+            <p>敵を知り、己を知れば百戦殆うからず。セキュリティの世界でも、敵である攻撃者の手口を知ることは、身を守るための第一歩です。この章では、パスワードを盗む古典的な手口から、最新の巧妙な攻撃まで、様々な攻撃手法のカタログを見ていきましょう。</p>
+            
+            <h3>3.1 パスワードを狙う攻撃</h3>
+            <p>今も昔も、攻撃者にとって最も価値のあるターゲットの一つがパスワードです。</p>
+            <ul>
+                <li><b>辞書攻撃</b>: パスワードによく使われる単語（password, 123456など）をリスト化した「辞書」を使い、片っ端から試す攻撃。単純なパスワードは一瞬で破られます。</li>
+                <li><b>総当たり攻撃 (ブルートフォース攻撃)</b>: 考えられるすべての文字の組み合わせを機械的に試す力任せの攻撃。短いパスワードほど破られやすくなります。</li>
+                <li><b>パスワードリスト攻撃</b>: 他のサイトから流出したIDとパスワードのリストを使い、別のサービスへのログインを試みる攻撃。<b class="marker text-problem">パスワードの使い回しは絶対にやめましょう。</b></li>
+            </ul>
+
+            <h3>3.2 Webサイトやサーバを狙った攻撃</h3>
+            <p>多くの人が利用するWebサイトやサーバも、常に攻撃の標的となっています。</p>
+            <table>
+                <thead>
+                    <tr><th>攻撃手法</th><th>概要</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><b>クロスサイトスクリプティング (XSS)</b></td><td>脆弱なWebサイトの入力フォームなどに悪意のあるスクリプトを埋め込み、訪問者の個人情報を盗む。</td></tr>
+                    <tr><td><b>SQLインジェクション</b></td><td>データベースへの命令文（SQL）を不正に操作し、情報を盗み取ったり改ざんしたりする。</td></tr>
+                    <tr><td><b>DoS / DDoS攻撃</b></td><td>大量のデータを送りつけてサーバーをダウンさせ、サービスを妨害する。DDoSは複数のPCから一斉に攻撃する。</td></tr>
+                    <tr><td><b>ゼロデイ攻撃</b></td><td>ソフトウェアの脆弱性が発見されてから、修正プログラムが提供されるまでの<b class="text-problem">無防備な期間（ゼロデイ）を狙った攻撃。</b></td></tr>
+                </tbody>
+            </table>
+            
+            <h3>3.3 通信や人を狙う巧妙な攻撃</h3>
+            <p>技術だけでなく、人間の心理や行動の隙を突く攻撃も増えています。</p>
+            <ul>
+                <li><b>中間者攻撃 (Man-in-the-Middle Attack)</b>: 通信を行う二者の間に割り込み、通信内容を盗聴・改ざんする攻撃。無料Wi-Fiの利用時には特に注意が必要です。</li>
+                <li><b>フィッシング詐欺</b>: 有名企業や金融機関を装った偽メールやSMSを送りつけ、偽サイトに誘導してID・パスワードを盗む詐欺。<b class="text-action">安易にリンクをクリックしない</b>ことが重要です。</li>
+                <li><b>水飲み場型攻撃</b>: 攻撃対象の組織がよく利用するWebサイトをあらかじめ改ざんしておき、<b class="marker">訪問者を待ち伏せしてマルウェアに感染させる攻撃。</b></li>
+            </ul>
+
+            <div class="card">
+                <div class="card-header">事例：そのメール、本物？ Amazonを騙るフィッシング詐欺の手口</div>
+                <p>「お客様のアカウントで異常なアクティビティが検出されました。セキュリティ保護のため、以下のリンクからログインしてアカウント情報を更新してください」…こんなメールがAmazonから届いたら、焦ってクリックしちまうよな？でも待て、それが<b class="text-problem">フィッシング詐欺</b>の罠だ！リンク先は本物そっくりの偽サイト。そこでIDとパスワードを入力した瞬間、君のアカウント情報は攻撃者のものになる。見分けるポイントは<b class="text-confirm">送信元のメールアドレス</b>と<b class="text-confirm">リンク先のURL</b>だ。公式とは微妙に違うドメイン名になっていないか、しっかり確認するんだぜ！怪しいと思ったら、メールのリンクからではなく、ブックマークや公式アプリからアクセスするのが鉄則だ！</p>
+            </div>
+            
+            <div class="question-box">
+                <h4>問題3</h4>
+                <p>パスワードの候補リストを使ってログインを試みる攻撃を<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">辞書攻撃</span></span>、流出したIDとパスワードのリストを使う攻撃を<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">パスワードリスト攻撃</span></span>といいます。大量のデータを送りつけサーバーを麻痺させる攻撃が<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">DoS/DDoS攻撃</span></span>です。有名企業を装った偽メールで偽サイトへ誘導する手口を<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">フィッシング詐欺</span></span>といいます。脆弱性の修正プログラムが配布されるまでの期間を狙う攻撃を<span class="fill-in" onclick="toggleAnswer(this)">(5)<span class="answer">ゼロデイ攻撃</span></span>といいます。</p>
+            </div>
+            <div class="page-number">3</div>
+        </div>
+
+        <div class="page">
+            <h2 id="chap4">4. リスクマネジメントと情報セキュリティ管理</h2>
+            <p>個人の対策だけでは、巧妙化するサイバー攻撃から組織を守りきることは困難です。そこで重要になるのが、組織全体で情報セキュリティに取り組む<b class="text-action">「リスクマネジメント」</b>の考え方です。この章では、組織としてどのようにリスクを評価し、管理していくのかを学びます。</p>
+
+            <h3>4.1 リスクの評価と対応</h3>
+            <p>まず、組織が抱えるリスクを正しく認識し、評価する<b class="text-confirm">リスクアセスメント</b>を行います。その上で、評価したリスクの大きさや性質に応じて、適切な対応を選択します。</p>
+            <h4>リスク対応の4つの選択肢</h4>
+            <table>
+                <thead>
+                    <tr><th>リスク対応</th><th>内容</th><th>具体例</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><b>リスク回避</b></td><td>リスクの原因そのものを取り除く。</td><td>情報漏洩の危険がある古いシステムの使用を完全に禁止する。</td></tr>
+                    <tr><td><b>リスク低減</b></td><td>セキュリティ対策でリスクの発生確率や損害を下げる。</td><td>USBメモリからのマルウェア感染を防ぐため、PCのUSBポートを物理的に塞ぐ。</td></tr>
+                    <tr><td><b>リスク共有 (転移)</b></td><td>リスクを他者と分担・移転する。</td><td>サイバー攻撃による損害に備え、サイバー保険に加入する。</td></tr>
+                    <tr><td><b>リスク保有 (受容)</b></td><td>影響が小さいため、リスクを許容範囲内として受け入れる。</td><td>影響の少ないフリーソフトの利用は、注意喚起に留め、ある程度許容する。</td></tr>
+                </tbody>
+            </table>
+
+            <h3>4.2 ISMSと情報セキュリティの3大要素</h3>
+            <p>組織的に情報セキュリティを管理・向上させていくための仕組みを<b class="text-action">ISMS (情報セキュリティマネジメントシステム)</b> といいます。ISMSが目指すのは、情報の<b class="marker">「機密性」「完全性」「可用性」</b>という3つの特性を維持することです。これは情報セキュリティの3大要素（CIA）と呼ばれます。</p>
+            <ul>
+                <li><b>機密性 (Confidentiality)</b>: 許可された人だけが情報にアクセスできること。</li>
+                <li><b>完全性 (Integrity)</b>: 情報が正確であり、改ざんされていないこと。</li>
+                <li><b>可用性 (Availability)</b>: 必要な時にいつでも情報にアクセスできること。</li>
+            </ul>
+            <p>近年では、これに「真正性」「責任追跡性」「否認防止」「信頼性」の4つを加えた7要素が重要視されています。</p>
+
+            <h3>4.3 組織的な取り組みと関連機関</h3>
+            <p>ISMSを効果的に運用するためには、組織内外の様々な体制や機関との連携が不可欠です。</p>
+            <ul>
+                <li><b>情報セキュリティポリシー</b>: 組織の情報セキュリティに関する<b class="marker">最高方針</b>。経営者が最終責任者となり、遵守すべきルールを明文化します。</li>
+                <li><b>CSIRT (シーサート)</b>: セキュリティインシデント（事故）が発生した際に、原因究明や対応を行う専門チーム。</li>
+                <li><b>SOC (ソック)</b>: 24時間365日体制でネットワークを監視し、サイバー攻撃の兆候を検知・分析する組織。</li>
+                <li><b>IPA (情報処理推進機構)</b>: 日本の情報セキュリティ対策を支援する公的な独立行政法人。脆弱性情報の提供や、セキュリティに関する相談窓口を設置しています。</li>
+            </ul>
+
+            <div class="question-box">
+                <h4>問題4</h4>
+                <p>リスク対応には、回避、低減、<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">共有(転移)</span></span>、保有の4つがあります。情報セキュリティの3大要素は、機密性、完全性、<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">可用性</span></span>です。組織の情報セキュリティに関する最高方針を<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">情報セキュリティポリシー</span></span>といいます。インシデント発生時に対応する専門チームが<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">CSIRT</span></span>、24時間体制で監視する組織が<span class="fill-in" onclick="toggleAnswer(this)">(5)<span class="answer">SOC</span></span>です。</p>
+            </div>
+            <div class="page-number">4</div>
+        </div>
+
+        <div class="page">
+            <h2 id="chap5">5. 暗号化と認証の仕組み</h2>
+            <p>ネットショッピングでカード情報を入力したり、友人と秘密の会話をしたり。私たちが安心してインターネットを使えるのは、<b class="text-action">「暗号化」</b>と<b class="text-action">「認証」</b>という2つの技術が舞台裏で活躍しているからです。この章では、その基本的な仕組みを解き明かしていきましょう。</p>
+
+            <h3>5.1 データを守る「暗号化」の技術</h3>
+            <p>暗号化とは、データを特定のルールで変換し、第三者には意味不明な文字列に見せる技術です。暗号化前のデータを<b class="text-confirm">平文（ひらぶん）</b>、暗号化されたデータを元に戻すことを<b class="text-confirm">復号</b>といいます。</p>
+            <h4>暗号化の3つの方式</h4>
+            <ul>
+                <li><b>共通鍵暗号方式</b>: 暗号化と復号に<b class="marker">同じ「共通鍵」</b>を使うシンプルな方式。処理は高速ですが、鍵を相手に安全に渡すのが難しいという弱点があります。</li>
+                <li><b>公開鍵暗号方式</b>: 暗号化用の「公開鍵」と復号用の「秘密鍵」という<b class="marker">ペアの鍵</b>を使います。公開鍵は誰にでも見せてOK。秘密鍵さえ守れば安全ですが、処理が複雑で時間がかかります。</li>
+                <li><b>ハイブリッド暗号方式</b>: 上記2つの「いいとこ取り」をした方式。まず公開鍵暗号方式で安全に「共通鍵」を交換し、その後は共通鍵暗号方式で高速に通信します。現在の<b class="text-confirm">HTTPS通信</b>で広く使われています。</li>
+            </ul>
+            
+            <h3>5.2 相手が本物か確かめる「認証」の技術</h3>
+            <p>認証とは、通信相手が本当に名乗っている本人なのか、データが改ざんされていないかを確認する技術です。</p>
+            <ul>
+                <li><b>デジタル署名</b>: 公開鍵暗号方式を応用し、「<b class="marker">データが改ざんされていないこと</b>」と「<b class="marker">送信者が本人であること</b>」を同時に証明する技術です。契約書などの電子文書で利用されます。</li>
+                <li><b>多要素認証 (MFA)</b>: 知識情報（パスワードなど）、所持情報（スマホやICカード）、生体情報（指紋や顔）のうち、<b class="marker">2つ以上の要素を組み合わせて</b>本人確認を行う方法。セキュリティを大幅に向上させます。</li>
+                <li><b>生体認証 (バイオメトリクス認証)</b>: 指紋、顔、虹彩など、個人の身体的特徴で認証する方法。なりすましが困難ですが、体調の変化などで認証に失敗することもあります。</li>
+                <li><b>シングルサインオン (SSO)</b>: 1つのIDとパスワードで、複数の連携サービスにログインできる仕組み。利便性が高い反面、最初の認証が破られると被害が拡大するリスクもあります。</li>
+            </ul>
+
+            <div class="card">
+                <div class="card-header">事例：最強の砦！多要素認証でアカウントを鉄壁ガード！</div>
+                <p>「パスワードだけじゃ、もう安心できない！」そんな時代に必須なのが<b class="text-action">多要素認証（MFA）</b>だ！例えば、IDとパスワードを入力した後、さらにスマホのアプリに送られてくる6桁の確認コードの入力を求められるアレ。これがMFAだ。万が一パスワードが漏れても、攻撃者は君のスマホがなければログインできない。まさに最強の二重ロック！めんどくさい？いやいや、その一手間が、君の大切なアカウントを乗っ取りから守る鉄壁の砦になるんだぜ！今すぐ主要なサービスでMFAを設定しよう！</p>
+            </div>
+            
+            <div class="question-box">
+                <h4>問題5</h4>
+                <p>暗号化と復号に同じ鍵を使う方式を<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">共通鍵暗号方式</span></span>、異なる鍵を使う方式を<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">公開鍵暗号方式</span></span>といいます。現在のWeb通信で主流なのは、両者を組み合わせた<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">ハイブリッド暗号方式</span></span>です。パスワード、スマホ、指紋など複数の要素で本人確認するのを<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">多要素認証</span></span>といいます。一度の認証で複数のサービスにログインできる仕組みを<span class="fill-in" onclick="toggleAnswer(this)">(5)<span class="answer">シングルサインオン(SSO)</span></span>といいます。</p>
+            </div>
+            <div class="page-number">5</div>
+        </div>
+
+        <div class="page">
+            <h2 id="chap6">6. 公開鍵基盤 (PKI)</h2>
+            <p>Webサイトのアドレスバーに表示される鍵マーク。あれが、私たちが安全に通信できている証です。その安全性を社会全体で支えているのが<b class="text-action">公開鍵基盤 (PKI: Public Key Infrastructure)</b> という壮大な仕組みです。この章では、その信頼のインフラについて学びます。</p>
+            
+            <h3>6.1 PKIとデジタル証明書の役割</h3>
+            <p>公開鍵暗号方式は安全ですが、「受け取った公開鍵が本当に本人のものか？」という問題が残ります。この問題を解決するのがPKIです。</p>
+            <p>PKIは、信頼できる第三者機関である<b class="text-confirm">認証局 (CA: Certification Authority)</b> が、公開鍵の持ち主が本物であることを保証する<b class="text-confirm">「デジタル証明書（電子証明書）」</b>を発行することで、社会的な信用の連鎖を築いています。</p>
+            <p>このデジタル証明書があるおかげで、私たちはWebサイトの運営者が本物であることを確認し、安心してクレジットカード情報などを入力できるのです。</p>
+            
+            <h3>6.2 HTTPS通信の舞台裏</h3>
+            <p>私たちがWebサイトを安全に閲覧できるのは、<b class="text-action">HTTPS</b>という暗号化通信のおかげです。ここでは、デジタル証明書がどのように使われているか、その流れを見てみましょう。</p>
+            <div class="flow-diagram">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div><b>サーバーから証明書の提示</b><br>ブラウザがWebサーバーにアクセスすると、サーバーは「私の公開鍵はこれです」と書かれたデジタル証明書を提示します。</div>
+                </div>
+                <div class="arrow">↓</div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div><b>ブラウザによる証明書の検証</b><br>ブラウザは、あらかじめ内蔵している信頼できる認証局のリスト（ルート証明書）を使い、受け取った証明書が本物か、有効期限は切れていないかなどを検証します。</div>
+                </div>
+                <div class="arrow">↓</div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div><b>共通鍵の安全な交換</b><br>証明書が本物だと確認できたら、ブラウザは証明書内の公開鍵を使って「共通鍵」を暗号化し、サーバーに送ります。</div>
+                </div>
+                <div class="arrow">↓</div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div><b>暗号化通信の開始</b><br>サーバーは秘密鍵で共通鍵を復号。これでブラウザとサーバーだけが知る共通鍵が共有され、安全で高速なHTTPS通信が始まります。（ハイブリッド暗号方式）</div>
+                </div>
+            </div>
+
+            <h3>6.3 認証局(CA)と信頼の連鎖</h3>
+            <p>この仕組みの根幹を支えるのが認証局(CA)の信頼性です。「その認証局自体は誰が信頼を保証するの？」という疑問が湧きますよね。</p>
+            <p>実は、認証局には階層構造があり、最上位には<b class="marker">「ルート認証局」</b>が存在します。このルート認証局が発行する「ルート証明書」は、OSやブラウザに最初から組み込まれています。この「最初から信頼されている」ルート証明書を起点として、下位の認証局やWebサイトの証明書の信頼性が次々と保証されていくのです。これがPKIにおける信頼の連鎖です。</p>
+
+            <div class="diagram">
+                <p><strong>公開鍵基盤(PKI)の信頼の仕組み</strong></p>
+                <div class="pki-diagram">
+                    <div class="item ca">認証局 (CA)</div>
+                    <div class="item user">Webサイト利用者<br>(ブラウザ)</div>
+                    <div class="item server">Webサーバー</div>
+                    <div class="arrow" style="grid-column: 2; grid-row: 2;">↔</div>
+                    <div class="arrow-text" style="grid-column: 2; grid-row: 3;">HTTPS通信</div>
+                    <div class="arrow" style="grid-column: 1; grid-row: 1; transform: rotate(45deg); align-self: end; justify-self: end;">↙</div>
+                    <div class="arrow" style="grid-column: 3; grid-row: 1; transform: rotate(-45deg); align-self: end; justify-self: start;">↘</div>
+                    <div class="arrow-text" style="grid-column: 1; grid-row: 1; align-self: start; justify-self: start; padding-top: 10px;">①証明書発行申請</div>
+                    <div class="arrow-text" style="grid-column: 3; grid-row: 1; align-self: start; justify-self: end; padding-top: 10px;">②デジタル証明書発行</div>
+                </div>
+            </div>
+
+            <div class="question-box">
+                <h4>問題6</h4>
+                <p>公開鍵暗号方式を社会で安全に使うための仕組みを<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">公開鍵基盤(PKI)</span></span>といいます。公開鍵の持ち主を証明する電子的な身分証明書が<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">デジタル証明書</span></span>です。これを第三者機関として発行するのが<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">認証局(CA)</span></span>です。認証局自体の正当性を証明する証明書を<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">ルート証明書</span></span>といい、OSやブラウザにあらかじめ組み込まれています。</p>
+            </div>
+            <div class="page-number">6</div>
+        </div>
+
+        <div class="button-container">
+            <a href="page9.html" class="nav-button">← 前の講座へ</a>
+            <a href="page11.html" class="nav-button">次の講座へ →</a>
+        </div>
+        
+        <div id="references" class="references">
+            <h3>参考文献・リンク</h3>
+            <ul>
+                <li>本教材は、ZEN大学（仮称・設置認可申請中）が提供する講義「ITリテラシー入門 第10回 セキュリティ」（講師：吉村 創一朗 先生）のテキストおよび講義内容を元に作成されました。</li>
+            </ul>
+        </div>
+    </div>
+    <script>
+        function toggleAnswer(element) {
+            const answer = element.querySelector('.answer');
+            if (answer) {
+                answer.classList.toggle('visible');
+            }
+        }
+    </script>
+</body>
+</html>

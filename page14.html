@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ITリテラシー入門 第14回 ソフトウェア</title>
+    <style>
+        :root {
+            --primary-color: #0d47a1; /* 濃い青 */
+            --secondary-color: #1976d2; /* 青 */
+            --accent-color: #d32f2f; /* 赤系のアクセント */
+            --background-color: #f5f8fa; /* 薄いグレーがかった背景 */
+            --text-color: #333;
+            --white-color: #ffffff;
+            --marker-yellow: #fff59d; /* 黄色のマーカー */
+            --confirm-green-bg: #e8f5e9;
+            --action-blue-bg: #e3f2fd;
+            --problem-red-bg: #fbe9e7;
+            --confirm-green-text: #2e7d32;
+            --action-blue-text: var(--secondary-color);
+            --problem-red-text: var(--accent-color);
+        }
+
+        body {
+            font-family: 'Yu Gothic UI', 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+            line-height: 1.8;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: var(--white-color);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        .page {
+            border: 1px solid #ddd;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .page-number {
+            position: absolute;
+            bottom: 10px;
+            right: 20px;
+            color: #aaa;
+            font-size: 0.9em;
+        }
+
+        h1 {
+            font-size: 2.2em;
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--secondary-color);
+            padding-bottom: 10px;
+            margin-bottom: 5px;
+            position: relative;
+        }
+        
+        h1::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -3px;
+            width: 70px;
+            border-bottom: 3px solid var(--primary-color);
+        }
+        
+        .lecturer {
+            font-size: 1.1em;
+            color: var(--secondary-color);
+            text-align: right;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            color: var(--primary-color);
+            border-left: 5px solid var(--secondary-color);
+            padding-left: 15px;
+            margin-top: 40px;
+        }
+
+        h3 {
+            font-size: 1.4em;
+            color: var(--secondary-color);
+            border-bottom: 1px dashed var(--secondary-color);
+            padding-bottom: 5px;
+            margin-top: 30px;
+        }
+
+        p { margin-bottom: 1.2em; }
+        strong, b { color: var(--primary-color); }
+        .marker { background: linear-gradient(transparent 60%, var(--marker-yellow) 60%); }
+        .text-confirm { color: var(--confirm-green-text); font-weight: bold; }
+        .text-action { color: var(--action-blue-text); font-weight: bold; }
+        .text-problem { color: var(--problem-red-text); font-weight: bold; }
+
+        .toc {
+            background-color: #f8fafd;
+            border: 1px solid var(--secondary-color);
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+        }
+        .toc h2 { margin-top: 0; border-left: none; padding-left: 0; border-bottom: 2px solid var(--secondary-color); }
+        .toc ul { list-style-type: none; padding-left: 0; }
+        .toc ul ul { padding-left: 20px; }
+        .toc a { text-decoration: none; color: var(--primary-color); }
+        .toc a:hover { text-decoration: underline; }
+
+        .question-box {
+            border: 2px solid var(--accent-color);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            background-color: var(--problem-red-bg);
+        }
+
+        .fill-in {
+            font-weight: bold;
+            color: var(--accent-color);
+            border-bottom: 2px dotted var(--accent-color);
+            cursor: pointer;
+            padding: 0 5px;
+        }
+
+        .answer {
+            display: none;
+            background-color: var(--marker-yellow);
+            padding: 2px 5px;
+            border-radius: 3px;
+            margin: 0 5px;
+        }
+        .answer.visible { display: inline-block; }
+
+        .card {
+            background-color: #f9f9f9;
+            border-left: 5px solid var(--primary-color);
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .card-header {
+            font-weight: bold;
+            font-size: 1.2em;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        table {
+            width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.95em;
+        }
+        th, td { border: 1px solid #ccc; padding: 12px; text-align: left; }
+        th { background-color: var(--primary-color); color: var(--white-color); font-weight: bold; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+        
+        .references { margin-top: 40px; padding-top: 20px; border-top: 1px solid #ccc; }
+        .references ul { list-style: none; padding: 0; }
+        .references li { margin-bottom: 10px; font-size: 0.9em; }
+        
+        .button-container { text-align: center; margin: 40px 0; display: flex; justify-content: space-between; }
+        .nav-button {
+            display: inline-block; padding: 10px 20px; background-color: var(--primary-color);
+            color: var(--white-color); text-decoration: none; border-radius: 5px;
+            font-weight: bold; transition: background-color 0.3s;
+        }
+        .nav-button:hover { background-color: var(--secondary-color); }
+        
+        .footnote { font-size: 0.8em; color: #666; margin-top: 1em; }
+
+        .diagram-container {
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            text-align: center;
+        }
+        .backup-diagram { display: flex; justify-content: space-around; flex-wrap: wrap; }
+        .backup-type { width: 30%; min-width: 250px; margin: 10px; }
+        .backup-type h4 { margin-top: 0; color: var(--secondary-color); }
+        .backup-timeline { display: flex; flex-direction: column; align-items: center; }
+        .backup-day { border: 1px solid #aaa; border-radius: 4px; padding: 5px; margin: 3px 0; width: 90%; }
+        .day-label { font-size: 0.8em; color: #555; }
+        .day-content { display: flex; justify-content: center; align-items: center; min-height: 30px; }
+        .data-block { width: 20px; height: 20px; margin: 2px; border: 1px solid #555; }
+        .full-backup { background-color: var(--action-blue-bg); border-color: var(--primary-color); }
+        .changed-data { background-color: var(--problem-red-bg); border-color: var(--accent-color); }
+        
+        .dir-tree { list-style: none; padding-left: 20px; }
+        .dir-tree li { position: relative; padding-left: 20px; line-height: 1.6; }
+        .dir-tree li::before, .dir-tree li::after { content: ''; position: absolute; left: 0; }
+        .dir-tree li::before { border-left: 1px solid #aaa; height: 100%; top: -0.6em; width: 1px; }
+        .dir-tree li::after { border-bottom: 1px solid #aaa; height: 1px; top: 0.5em; width: 15px; }
+        .dir-tree li:last-child::before { height: 1.1em; }
+        .dir-tree-root > li::before, .dir-tree-root > li::after { display: none; }
+        .icon-folder::before { content: '📁 '; }
+        .icon-file::before { content: '📄 '; }
+        
+        @media (max-width: 768px) {
+            .container { padding: 10px; }
+            .page { padding: 1rem; }
+            h1 { font-size: 1.8em; }
+            h2 { font-size: 1.5em; }
+            h3 { font-size: 1.2em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ITリテラシー入門 第14回 ソフトウェア</h1>
+        <p class="lecturer">講師：ZEN大学 講師陣</p>
+
+        <nav class="toc">
+            <h2>目次</h2>
+            <ul>
+                <li><a href="#chap1">1. ソフトウェアの基本</a></li>
+                <li><a href="#chap2">2. オペレーティングシステム(OS)</a></li>
+                <li><a href="#chap3">3. ファイル管理の仕組み</a></li>
+                <li><a href="#chap4">4. アプリケーションの世界</a></li>
+                <li><a href="#chap5">5. オープンソースソフトウェア(OSS)</a></li>
+            </ul>
+        </nav>
+        
+        <div class="page">
+            <span class="page-number">1 / 5</span>
+            <h2 id="chap1">1. ソフトウェアの基本</h2>
+            <p>コンピューターの頭脳がハードウェアなら、その頭脳に「何をすべきか」を教えるのがソフトウェアです。この章では、コンピューターを動かす魔法の呪文、ソフトウェアの正体に迫ります。その種類や、私たちがどうやってコンピューターと対話しているのかを見ていきましょう！</p>
+            
+            <h3>1.1 ソフトウェアとは何か？</h3>
+            <p>ソフトウェアとは、コンピューターのハードウェアを動かすための命令が書かれた<b class="text-action">プログラムの集合体</b>です。物理的な形がない「情報」であるため、<b class="marker">複製コストがほぼゼロ</b>という大きな特徴があります。CDや本と違って、コピーしても元がなくならないのと同じですね。</p>
+            <p>昔のコンピューターは、処理の手順を物理的な回路の組み合わせで表現していました。しかし、複雑な処理をさせようとすると、回路の組み替えがどんどん大変になり、コストも膨れ上がってしまいました。</p>
+            <p>そこで生まれたのが、<b class="text-confirm">プログラム内蔵方式</b>です。これは、処理の手順（プログラム）をデータとしてメモリに保存し、それをCPUが順番に読み込んで実行する画期的な方法です。この方式は、有名な数学者フォン・ノイマンの名を冠して「<b class="text-action">ノイマン型アーキテクチャ</b>」と呼ばれ、現在のほとんどのコンピューターの基本となっています。</p>
+
+            <h3>1.2 ソフトウェアの種類</h3>
+            <p>ソフトウェアは、その役割によって大きく2つに分けられます。オーケストラに例えるなら、指揮者と演奏者のような関係です。</p>
+            <ul>
+                <li><b>基本ソフトウェア (OS)</b>: ハードウェア全体を管理し、他のソフトウェアが動くための土台となる「<b class="marker">指揮者</b>」役。代表はWindowsやmacOSなどのオペレーティングシステム(OS)です。</li>
+                <li><b>アプリケーションソフトウェア</b>: ワープロやゲームなど、特定の目的のために作られた「<b class="marker">演奏者</b>」役。一般的に「アプリ」と呼ばれているのはこれです。</li>
+            </ul>
+            <p>さらに、この2つの中間に位置し、両者の橋渡しをする<b class="text-action">ミドルウェア</b>という存在もあります。データベース管理システムなどがこれにあたります。</p>
+
+            <h3>1.3 CUIとGUI：コンピューターとの対話方法</h3>
+            <p>私たちがソフトウェアを操作するための窓口を「インタフェース」と呼びます。これにも大きく2種類あります。</p>
+            <ul>
+                <li><b>CUI (Character User Interface)</b>: キーボードからコマンド（命令文）を打ち込んで操作する、<b class="marker">文字ベースのインタフェース</b>。専門家向けですが、処理が速く、作業の自動化がしやすいというメリットがあります。</li>
+                <li><b>GUI (Graphical User Interface)</b>: アイコンやメニューをクリックして直感的に操作する、<b class="marker">グラフィックベースのインタフェース</b>。初心者にも分かりやすく、現在の主流です。GUIの登場が、PCを専門家の道具からみんなの道具へと変えたのです。</li>
+            </ul>
+
+            <div class="card">
+                <div class="card-header">事例：ハッカー気分を味わえるCUIの世界！</div>
+                <p>映画で天才ハッカーが黒い画面に緑の文字をカタカタ打ち込んで、システムに侵入するシーン、見たことないか？ あれこそが<b class="text-action">CUI (Character User Interface)</b>の世界だ！</p>
+                <p>俺たちが普段マウスでカチカチやってる操作も、CUIなら「copy file.txt /backup」みたいなコマンド一つで実行できちまう。覚えるのは大変だけど、使いこなせばマウス操作より何倍も速く、複雑な作業も一瞬で終わらせられるんだ。ソフトウェア開発者やサーバー管理者がCUIを好んで使うのは、この圧倒的な効率性があるから。君もCUIをマスターすれば、周りから「こいつ、できる…！」って一目置かれること間違いなしだぜ！</p>
+            </div>
+            
+            <div class="question-box">
+                <h4>問題1</h4>
+                <p>メモリに置かれたプログラムを実行する方式を<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">プログラム内蔵方式</span></span>といい、これを考案した数学者の名から<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">ノイマン型アーキテクチャ</span></span>とも呼ばれる。ハードウェアを制御しアプリの土台となるソフトウェアを<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">基本ソフトウェア(OS)</span></span>という。文字で操作するインタフェースを<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">CUI</span></span>、アイコンなどで操作するインタフェースを<span class="fill-in" onclick="toggleAnswer(this)">(5)<span class="answer">GUI</span></span>という。</p>
+            </div>
+        </div>
+
+        <div class="page">
+            <span class="page-number">2 / 5</span>
+            <h2 id="chap2">2. オペレーティングシステム(OS)</h2>
+            <p>コンピューターのすべてを裏で支える縁の下の力持ち、それがオペレーティングシステム(OS)です。OSがなければ、私たちのPCやスマホはただの箱に過ぎません。この章では、OSが果たしている重要な役割と、代表的なOSの種類について学んでいきましょう。</p>
+            
+            <h3>2.1 OSの役割</h3>
+            <p>OSは、ハードウェアとアプリケーションの間に立ち、コンピューター全体がスムーズに動くように管理しています。主な役割は以下の通りです。</p>
+            <ul>
+                <li><b>ハードウェアとソフトウェアの仲介</b>: アプリケーションがCPUやメモリなどのハードウェアを直接操作するのは大変です。OSが間に入ることで、アプリ開発者は<b class="text-action">ハードウェアの違いを意識せずに開発</b>できるようになります。</li>
+                <li><b>リソース管理</b>: CPUの処理時間、メモリの空き容量、ファイルの保存場所といった、限りある資源（リソース）を、<b class="marker">複数のアプリケーションに公平に割り当てる</b>役割を担います。これにより、私たちは複数のアプリを同時に使う「マルチタスク」が可能になります。</li>
+                <li><b>デバイスドライバの提供</b>: プリンターやマウスなど、新しく接続された周辺機器（デバイス）を<b class="text-confirm">コンピューターが認識し、使えるようにする</b>ための特別なソフトウェア（デバイスドライバ）を管理します。</li>
+            </ul>
+
+            <h3>2.2 OSの種類</h3>
+            <p>OSには様々な種類があり、それぞれに得意な分野があります。代表的なものをいくつか見てみましょう。</p>
+            <table>
+                <thead><tr><th>OSの種類</th><th>説明</th></tr></thead>
+                <tbody>
+                    <tr><td><b>Windows</b></td><td>Microsoft社製。PC市場で世界最大のシェアを誇り、対応アプリも豊富。ビジネス用途で広く使われる。</td></tr>
+                    <tr><td><b>macOS</b></td><td>Apple社製。同社のMacに搭載。デザインや操作性が洗練されており、クリエイティブ業界で人気。</td></tr>
+                    <tr><td><b>Linux</b></td><td>UNIXを参考に作られたオープンソースのOS。無料で利用・改変が可能で、サーバや組み込みシステムで広く採用されている。</td></tr>
+                    <tr><td><b>Android</b></td><td>Google社が開発したスマホ向けOS。世界最大のシェアを持ち、様々なメーカーの端末に搭載されている。</td></tr>
+                    <tr><td><b>iOS / iPadOS</b></td><td>Apple社製のiPhone/iPad向けOS。直感的な操作性と豊富なアプリが特徴。</td></tr>
+                </tbody>
+            </table>
+            
+            <h3>2.3 OSの起動プロセス</h3>
+            <p>電源ボタンを押してからOSが立ち上がるまで、コンピューター内部では次のようなドラマが繰り広げられています。</p>
+            <ol>
+                <li>PCの電源が入ると、まずマザーボード上の<b class="text-action">ROM</b>に記録された<b class="text-problem">BIOS</b>または<b class="text-problem">UEFI</b>というプログラムが起動します。</li>
+                <li>BIOS/UEFIは、接続されているハードウェア（CPU、メモリ、ストレージなど）をチェックし、初期化します。</li>
+                <li>次に、ストレージ（SSDやHDD）に保存されているOSを起動するための小さなプログラム「<b class="text-action">ブートローダ</b>」を読み込みます。</li>
+                <li>ブートローダがOS本体（カーネル）をメモリ上に読み込み、OSの起動が開始されます。この一連の流れを<b class="text-confirm">ブートストラッピング</b>と呼びます。</li>
+            </ol>
+            <p>UEFIはBIOSの後継規格で、より高速な起動やセキュリティ機能の強化が図られています。最近のPCのほとんどはUEFIを採用しています。</p>
+
+            <div class="card">
+                <div class="card-header">事例：PC1台でWindowsもLinuxも！マルチブートの魅力</div>
+                <p>「普段はWindowsでゲームしてるけど、プログラミングの勉強でLinuxも使ってみたい…でもPCを2台買うのはちょっと…」そんな悩みを解決するのが<b class="text-action">マルチブート</b>だ！</p>
+                <p>これは、1台のPCに複数のOSをインストールして、起動時にどっちを使うか選べるようにする技術なんだ。PCの電源を入れると、BIOSやUEFIの画面で「今日はWindows！」「いや、Linuxの気分だ！」みたいに選択できる。仮想化と違ってPCの性能を100%引き出せるから、どちらのOSでも快適に作業できるのが強みだぜ。これぞまさに、一台二役の賢いPC活用術だな！</p>
+            </div>
+            
+            <div class="question-box">
+                <h4>問題2</h4>
+                <p>CPUやメモリなどの資源をアプリに割り当てる機能を<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">リソース管理</span></span>という。複数のアプリを同時に実行することを<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">マルチタスク</span></span>という。OS起動前にハードウェアを制御するプログラムには、BIOSとその次世代規格である<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">UEFI</span></span>がある。OSが起動する一連の流れを<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">ブートストラッピング</span></span>という。</p>
+            </div>
+        </div>
+
+        <div class="page">
+            <span class="page-number">3 / 5</span>
+            <h2 id="chap3">3. ファイル管理の仕組み</h2>
+            <p>文書、写真、音楽…私たちのコンピューターは大量のデータ（ファイル）で溢れています。これらが迷子にならず、いつでも取り出せるのは「ファイル管理」という仕組みのおかげです。この章では、ファイルとそれらを整理するディレクトリの概念、そして大切なデータを守るバックアップについて学びます。</p>
+            
+            <h3>3.1 ファイルとディレクトリ</h3>
+            <p>ファイル管理の基本は、この2つの要素を理解することから始まります。</p>
+            <ul>
+                <li><b>ファイル</b>: データや情報を保存するための電子的なオブジェクト。文書、画像、プログラムなど、<b class="marker">データの集まりそのもの</b>です。ファイル名には通常、その種類を示す「<b class="text-action">拡張子</b>」（.txt, .jpg, .exeなど）が付きます。</li>
+                <li><b>ディレクトリ (フォルダ)</b>: ファイルや他のディレクトリを整理し、管理するための「<b class="marker">入れ物</b>」です。ディレクトリを何層にも重ねることで、<b class="text-confirm">階層構造</b>を作り、たくさんのファイルを見つけやすく整理できます。</li>
+            </ul>
+            <div class="diagram-container">
+                <h4>ディレクトリ階層の例</h4>
+                <ul class="dir-tree dir-tree-root">
+                    <li><span class="icon-folder">写真</span>
+                        <ul class="dir-tree">
+                            <li><span class="icon-folder">2023年</span></li>
+                            <li><span class="icon-folder">2024年</span>
+                                <ul class="dir-tree">
+                                    <li><span class="icon-folder">卒業式</span>
+                                        <ul class="dir-tree">
+                                            <li><span class="icon-file">集合写真.jpg</span></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <p>この階層構造の頂点にあるのが<b class="text-action">ルートディレクトリ</b>です。WindowsではC:\、macOSやLinuxでは / と表現されます。</p>
+
+            <h3>3.2 ファイルへのアクセス方法：絶対パスと相対パス</h3>
+            <p>目的のファイルがどこにあるのかをコンピューターに伝える方法には2種類あります。</p>
+            <ul>
+                <li><b>絶対パス</b>: ルートディレクトリから目的のファイルまでの<b class="marker">全ての道のりを記述する方法</b>。「東京都千代田区〜」のように、誰が見ても同じ場所を指す住所のようなものです。</li>
+                <li><b>相対パス</b>: 現在自分がいるディレクトリ（カレントディレクトリ）を基準として、<b class="marker">目的地までの道のりを記述する方法</b>。「ここから2つ上の階層の隣の部屋」のように、現在地によって表現が変わります。</li>
+            </ul>
+
+            <h3>3.3 ファイルシステムとバックアップ</h3>
+            <p>データをストレージに記録・整理するための具体的なルールが<b class="text-action">ファイルシステム</b>です。Windowsで使われるNTFS、macOSで使われるAPFS、多くの機器で使えるexFATなど、OSや用途によって様々な種類があります。異なるファイルシステム間では、データの読み書きができないこともあるので注意が必要です。</p>
+            <p>そして、ファイル管理で最も重要なのが<b class="text-problem">バックアップ</b>です。これは、万が一のデータ消失に備えて、予備のデータを別の場所にコピーしておくことです。バックアップにはいくつかの方法があります。</p>
+
+            <div class="diagram-container">
+                <h4>バックアップの種類の比較</h4>
+                <div class="backup-diagram">
+                    <div class="backup-type">
+                        <h4>フルバックアップ</h4>
+                        <div class="backup-timeline">
+                            <div class="backup-day"><span class="day-label">Day1 (Full)</span><div class="day-content"><div class="data-block full-backup"></div><div class="data-block full-backup"></div><div class="data-block full-backup"></div></div></div>
+                            <div class="backup-day"><span class="day-label">Day2 (Full)</span><div class="day-content"><div class="data-block full-backup"></div><div class="data-block full-backup"></div><div class="data-block full-backup"></div><div class="data-block full-backup changed-data"></div></div></div>
+                        </div>
+                        <p class="footnote">全てのデータを毎回コピー。復元は楽だが時間がかかる。</p>
+                    </div>
+                    <div class="backup-type">
+                        <h4>差分バックアップ</h4>
+                        <div class="backup-timeline">
+                            <div class="backup-day"><span class="day-label">Day1 (Full)</span><div class="day-content"><div class="data-block full-backup"></div><div class="data-block full-backup"></div><div class="data-block full-backup"></div></div></div>
+                            <div class="backup-day"><span class="day-label">Day2 (Diff)</span><div class="day-content"><div class="data-block changed-data"></div></div></div>
+                        </div>
+                        <p class="footnote">フルバックアップからの変更分だけコピー。復元は最新のフル＋最新の差分。</p>
+                    </div>
+                    <div class="backup-type">
+                        <h4>増分バックアップ</h4>
+                        <div class="backup-timeline">
+                            <div class="backup-day"><span class="day-label">Day1 (Full)</span><div class="day-content"><div class="data-block full-backup"></div><div class="data-block full-backup"></div><div class="data-block full-backup"></div></div></div>
+                            <div class="backup-day"><span class="day-label">Day2 (Inc)</span><div class="day-content"><div class="data-block changed-data"></div></div></div>
+                        </div>
+                        <p class="footnote">前回のバックアップからの変更分だけコピー。復元はフル＋全ての増分が必要。</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="question-box">
+                <h4>問題3</h4>
+                <p>ファイルの種類を識別するための文字列を<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">拡張子</span></span>という。ファイルや他のディレクトリを整理する入れ物を<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">ディレクトリ</span></span>という。ルートディレクトリからのパスを<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">絶対パス</span></span>、現在地からのパスを<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">相対パス</span></span>という。バックアップには、全てのデータをコピーする<span class="fill-in" onclick="toggleAnswer(this)">(5)<span class="answer">フルバックアップ</span></span>、フルからの変更分をコピーする差分、前回からの変更分をコピーする増分がある。</p>
+            </div>
+        </div>
+
+        <div class="page">
+            <span class="page-number">4 / 5</span>
+            <h2 id="chap4">4. アプリケーションの世界</h2>
+            <p>コンピューターの力を借りて、私たちの「やりたいこと」を実現してくれるのがアプリケーション、通称「アプリ」です。この章では、PCで使うものからスマホで使うものまで、様々なアプリの形態や、それらを手に入れるための対価の支払い方法について探っていきます。</p>
+
+            <h3>4.1 アプリケーションの形態</h3>
+            <p>アプリケーションは、動作する環境によっていくつかの種類に分けられます。</p>
+            <ul>
+                <li><b>デスクトップアプリ</b>: PCに<b class="text-action">インストール</b>して使用するアプリ。Microsoft OfficeやAdobe Photoshopなどが代表例。高性能な処理が可能ですが、特定のOS（Windows用、macOS用など）でしか動作しません。</li>
+                <li><b>スマホアプリ</b>: スマートフォン上で動作するアプリ。LINEやInstagramなど、タッチ操作や小さな画面に最適化されています。Google PlayやApp Storeといった<b class="marker">アプリストア</b>から入手するのが一般的です。</li>
+                <li><b>Webアプリ</b>: Webブラウザ上で動作するアプリ。インストール不要で、インターネットに繋がっていればどこからでも利用できます。Google検索やX (旧Twitter)などがこれにあたります。常に最新版が提供されるのが特徴です。</li>
+                <li><b>ミドルウェア</b>: OSとアプリの中間に位置し、データベース管理など特定の機能を提供します。開発者がWebアプリなどを構築する際に利用します。</li>
+            </ul>
+
+            <h3>4.2 アプリケーションのジャンル</h3>
+            <p>アプリストアを覗いてみると、膨大な数のアプリがジャンルごとに分類されています。私たちの生活のあらゆる場面で、アプリが活躍していることが分かりますね。</p>
+            <table>
+                <thead><tr><th>ジャンル</th><th>代表的なアプリケーション</th></tr></thead>
+                <tbody>
+                    <tr><td>ビジネス・仕事効率化</td><td>Microsoft Office, Slack, Zoom</td></tr>
+                    <tr><td>グラフィック・動画編集</td><td>Adobe Photoshop, Final Cut Pro</td></tr>
+                    <tr><td>マルチメディア</td><td>Spotify, Netflix, Kindle</td></tr>
+                    <tr><td>ゲーム・エンタメ</td><td>Fortnite, TikTok, Pokémon GO</td></tr>
+                    <tr><td>SNS・ライフスタイル</td><td>LINE, Instagram, Pinterest</td></tr>
+                    <tr><td>ショッピング</td><td>Amazon, 楽天市場, メルカリ</td></tr>
+                    <tr><td>教育</td><td>N予備校, Duolingo, TED</td></tr>
+                </tbody>
+            </table>
+            
+            <h3>4.3 アプリケーションの対価の支払い方法</h3>
+            <p>便利なアプリですが、その多くは開発者が時間と労力をかけて作ったものです。無料で使えるものもあれば、対価を支払うことで利用できるものもあります。その支払い方法も様々です。</p>
+            <ul>
+                <li><b>買い切り</b>: 一度支払えば永続的に利用できる方式。昔のゲームソフトなど。</li>
+                <li><b class="text-action">サブスクリプション</b>: 月額や年額で利用料を支払い続ける方式。常に最新の機能やサービスが受けられます。</li>
+                <li><b>アプリ内広告</b>: 無料で利用できる代わりに広告が表示され、開発者は広告収入を得る方式。</li>
+                <li><b class="text-confirm">フリーミアム</b>: 基本機能は無料だが、より高度な機能は有料（プレミアム会員）となる方式。</li>
+                <li><b>アプリ内課金</b>: ゲームのアイテムなど、アプリ内で追加のコンテンツや機能を購入する方式。</li>
+            </ul>
+            <p>開発者がアプリを継続的にアップデートしていくためには、私たちユーザーが適切な対価を支払うことが、結果的に良質なサービスを支えることに繋がります。</p>
+
+            <div class="card">
+                <div class="card-header">事例：無料ゲームはなぜ儲かる？フリーミアムとガチャの魔法！</div>
+                <p>「このスマホゲーム、基本プレイ無料なのにどうして会社が潰れないんだ？」って思ったことないか？その秘密が<b class="text-action">フリーミアム</b>と<b class="text-problem">アプリ内課金</b>、通称「ガチャ」にあるんだ！</p>
+                <p>まず無料で遊んでもらって、ゲームの面白さを知ってもらう。そして「もっと強くなりたい！」「限定キャラが欲しい！」と思ったプレイヤーに、ガチャを回してもらったり、便利なアイテムを買ってもらったりする。ほんの一部のプレイヤーがたくさん課金してくれるだけで、会社は大きな利益を上げられるんだ。これを「<b class="marker">Pay-to-Win (勝つために支払う)</b>」なんて皮肉っぽく言うこともある。無料で楽しめるのはありがたいけど、気づいたら大金をつぎ込んでた…なんてことにならないように、賢く付き合っていきたいもんだな！</p>
+            </div>
+            
+            <div class="question-box">
+                <h4>問題4</h4>
+                <p>PCに導入するアプリを<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">デスクトップアプリ</span></span>、ブラウザで動くアプリを<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">Webアプリ</span></span>という。月額などで利用料を支払う方式を<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">サブスクリプション</span></span>という。基本機能は無料だが、高度な機能が有料の方式を<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">フリーミアム</span></span>という。</p>
+            </div>
+        </div>
+
+        <div class="page">
+            <span class="page-number">5 / 5</span>
+            <h2 id="chap5">5. オープンソースソフトウェア(OSS)</h2>
+            <p>現代のIT社会は、オープンソースソフトウェア(OSS)なしには成り立ちません。無料で使えて、中身（ソースコード）まで公開されているこの魔法のようなソフトウェア。この章では、OSSの定義やライセンスの考え方について学び、その恩恵と付き合い方を理解しましょう。</p>
+
+            <h3>5.1 OSSとは何か？</h3>
+            <p>OSS (Open Source Software)とは、その名の通り<b class="text-action">ソースコードが公開</b>されており、誰でも<b class="marker">自由に利用、改変、再配布できる</b>ソフトウェアのことです。私たちが普段使っているWebサービスやスマホのOS（Androidなど）にも、数多くのOSSが利用されています。</p>
+            <p>オープンソース・イニシアティブ(OSI)という団体が、OSSであるための10の条件を定義していますが、その中心にあるのは「自由な再配布」と「ソースコードの公開」です。</p>
+
+            <h3>5.2 コピーレフトとライセンスの種類</h3>
+            <p>OSSは自由に使えるとはいえ、無法地帯ではありません。利用するためのルールが「<b class="text-problem">ライセンス</b>」として定められています。特に注意が必要なのが「<b class="text-action">コピーレフト</b>」という考え方です。</p>
+            <ul>
+                <li><b>コピーレフト (互恵型ライセンス)</b>: オリジナルのOSSを改変して作ったソフトウェアも、<b class="marker">同じようにソースコードを公開し、OSSとして配布しなければならない</b>という制約。著作権(Copyright)が権利を守るのに対し、自由の連鎖を守るために「Left」という言葉が使われています。代表例は<b class="text-problem">GPL</b>です。</li>
+                <li><b>非コピーレフト (寛容型ライセンス)</b>: 著作権表示など、<b class="marker">簡単な条件を守れば、改変した部分のソースコードを公開する必要はない</b>ライセンス。商用利用もしやすく、多くのOSSで採用されています。代表例は<b class="text-confirm">MITライセンス</b>や<b class="text-confirm">Apacheライセンス</b>です。</li>
+            </ul>
+            
+            <table>
+                <thead><tr><th>ライセンスの種類</th><th>主な特徴</th><th>コピーレフト</th><th>代表的なOSS</th></tr></thead>
+                <tbody>
+                    <tr><td><b>GPL</b></td><td>改変した場合、ソースコード全体の公開が必要。最も強力なコピーレフト。</td><td>あり</td><td>Linuxカーネル, Git</td></tr>
+                    <tr><td><b>LGPL</b></td><td>ライブラリとして利用するだけならソースコードの公開は不要（限定的なコピーレフト）。</td><td>限定的</td><td>glibc</td></tr>
+                    <tr><td><b>MIT</b></td><td>著作権表示とライセンス表示さえ残せば、ほぼ何でもできる。非常に寛容。</td><td>なし</td><td>Ruby on Rails, Node.js</td></tr>
+                    <tr><td><b>Apache</b></td><td>MITに似ているが、特許に関する条項が含まれている。</td><td>なし</td><td>Apache HTTP Server</td></tr>
+                    <tr><td><b>BSD</b></td><td>MITとほぼ同じくらい寛容なライセンス。</td><td>なし</td><td>FreeBSD, OpenBSD</td></tr>
+                </tbody>
+            </table>
+            <p>企業がソフトウェアを開発する際、OSSのライセンスを正しく理解していないと、自社の製品のソースコードを全て公開しなければならなくなる、といった事態に陥る可能性もあります。そのため、ライセンスの確認は非常に重要です。 </p>
+
+            <div class="card">
+                <div class="card-header">事例：君のスマホもOSSのかたまりだ！Androidの正体</div>
+                <p>世界で一番使われているスマホOS、<b class="text-action">Android</b>。実はこれ、Linuxカーネルという強力なOSSをベースに、Googleが開発したオープンソースプロジェクトなんだ！</p>
+                <p>だから、SamsungやSONYみたいな色々なメーカーが、Androidを自由にカスタマイズして自分たちのスマホを作れる。ホーム画面のデザインが違ったり、メーカー独自の便利機能が追加されたりしているのはこのためだ。もしAndroidがOSSじゃなかったら、スマホはもっと高価で、選択肢も少なかったかもしれない。</p>
+                <p>俺たちが当たり前に使っているテクノロジーの裏側には、世界中の開発者たちが協力し合って作り上げたOSSの偉大な遺産があるんだぜ！</p>
+            </div>
+            
+            <div class="question-box">
+                <h4>問題5</h4>
+                <p>ソースコードが公開され、自由に利用・改変・再配布できるソフトウェアを<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">オープンソースソフトウェア(OSS)</span></span>という。OSSを改変した場合、そのソースコードもOSSとして公開する義務を課す考え方を<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">コピーレフト</span></span>という。その代表的なライセンスが<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">GPL</span></span>である。一方、ソースコードの公開義務がない寛容なライセンスの代表例として<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">MITライセンス</span></span>やApacheライセンスがある。</p>
+            </div>
+        </div>
+        
+        <div class="button-container">
+            <a href="page13.html" class="nav-button">← 前の講座へ</a>
+            <a href="page15.html" class="nav-button">次の講座へ →</a>
+        </div>
+        
+        <div id="references" class="references">
+            <h3>参考文献・リンク</h3>
+            <ul>
+                <li>本教材は、ZEN大学（仮称・設置認可申請中）が提供する講義「ITリテラシー入門 第14回 ソフトウェア」（講師：ZEN大学 講師陣）のテキストおよび講義内容を元に作成されました。</li>
+                <li>オープンソースの定義 (日本語訳), Open Source Group Japan, <a href="https://opensource.jp/osd/osd-japanese" target="_blank">https://opensource.jp/osd/osd-japanese</a></li>
+            </ul>
+        </div>
+    </div>
+    <script>
+        function toggleAnswer(element) {
+            const answer = element.querySelector('.answer');
+            if (answer) {
+                answer.classList.toggle('visible');
+            }
+        }
+    </script>
+</body>
+</html>

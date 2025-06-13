@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ITリテラシー入門 第9回 Wi-Fiと家庭でのネットワークの構築</title>
+    <style>
+        :root {
+            --primary-color: #0d47a1; /* 濃い青 */
+            --secondary-color: #1976d2; /* 青 */
+            --accent-color: #d32f2f; /* 赤系のアクセント */
+            --background-color: #f5f8fa; /* 薄いグレーがかった背景 */
+            --text-color: #333;
+            --white-color: #ffffff;
+            --marker-yellow: #fffde7;
+            --confirm-green-bg: #e8f5e9;
+            --action-blue-bg: #e3f2fd;
+            --problem-red-bg: #fbe9e7;
+            --confirm-green-text: #2e7d32;
+            --action-blue-text: var(--secondary-color);
+            --problem-red-text: var(--accent-color);
+        }
+
+        body {
+            font-family: 'Yu Gothic UI', 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+            line-height: 1.8;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: var(--white-color);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        .page {
+            border: 1px solid #ddd;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .page-number {
+            position: absolute;
+            bottom: 10px;
+            right: 20px;
+            color: #aaa;
+            font-size: 0.9em;
+        }
+
+        h1 {
+            font-size: 2.2em;
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--secondary-color);
+            padding-bottom: 10px;
+            margin-bottom: 5px;
+            position: relative;
+        }
+        
+        h1::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -3px;
+            width: 70px;
+            border-bottom: 3px solid var(--primary-color);
+        }
+        
+        .lecturer {
+            font-size: 1.1em;
+            color: var(--secondary-color);
+            text-align: right;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            color: var(--primary-color);
+            border-left: 5px solid var(--secondary-color);
+            padding-left: 15px;
+            margin-top: 40px;
+        }
+
+        h3 {
+            font-size: 1.4em;
+            color: var(--secondary-color);
+            border-bottom: 1px dashed var(--secondary-color);
+            padding-bottom: 5px;
+            margin-top: 30px;
+        }
+
+        p { margin-bottom: 1.2em; }
+        strong, b { color: var(--primary-color); }
+        .marker { background: linear-gradient(transparent 60%, var(--marker-yellow) 60%); }
+        .text-confirm { color: var(--confirm-green-text); font-weight: bold; }
+        .text-action { color: var(--action-blue-text); font-weight: bold; }
+        .text-problem { color: var(--problem-red-text); font-weight: bold; }
+
+        .toc {
+            background-color: #f8fafd;
+            border: 1px solid var(--secondary-color);
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+        }
+        .toc h2 { margin-top: 0; border-left: none; padding-left: 0; border-bottom: 2px solid var(--secondary-color); }
+        .toc ul { list-style-type: none; padding-left: 0; }
+        .toc ul ul { padding-left: 20px; }
+        .toc a { text-decoration: none; color: var(--primary-color); }
+        .toc a:hover { text-decoration: underline; }
+
+        .question-box {
+            border: 2px solid var(--accent-color);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            background-color: var(--problem-red-bg);
+        }
+
+        .fill-in {
+            font-weight: bold;
+            color: var(--accent-color);
+            border-bottom: 2px dotted var(--accent-color);
+            cursor: pointer;
+            padding: 0 5px;
+        }
+
+        .answer {
+            display: none;
+            background-color: var(--marker-yellow);
+            padding: 2px 5px;
+            border-radius: 3px;
+            margin: 0 5px;
+        }
+        .answer.visible { display: inline-block; }
+
+        .card {
+            background-color: #f9f9f9;
+            border-left: 5px solid var(--primary-color);
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .card-header {
+            font-weight: bold;
+            font-size: 1.2em;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        table {
+            width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.95em;
+        }
+        th, td { border: 1px solid #ccc; padding: 12px; text-align: left; }
+        th { background-color: var(--primary-color); color: var(--white-color); font-weight: bold; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+        
+        /* --- 図式スタイル --- */
+        .diagram { text-align: center; padding: 20px 0; overflow-x: auto; }
+        
+        .mesh-diagram {
+            position: relative;
+            width: 300px;
+            height: 250px;
+            margin: 20px auto;
+        }
+        .mesh-diagram .device {
+            position: absolute;
+            padding: 8px 12px;
+            border-radius: 8px;
+            background-color: var(--white-color);
+            font-weight: bold;
+            text-align: center;
+        }
+        .mesh-diagram .main-router {
+            top: 0; left: 50%; transform: translateX(-50%);
+            background-color: var(--action-blue-bg);
+            border: 2px solid var(--primary-color);
+        }
+        .mesh-diagram .satellite {
+            background-color: var(--confirm-green-bg);
+            border: 2px solid var(--confirm-green-text);
+        }
+        .mesh-diagram .sat-1 { top: 80px; left: 20px; }
+        .mesh-diagram .sat-2 { top: 150px; left: 50%; transform: translateX(-50%); }
+        .mesh-diagram .sat-3 { top: 80px; right: 20px; }
+        .mesh-diagram .line {
+            position: absolute;
+            background-color: var(--secondary-color);
+            height: 2px;
+            transform-origin: left;
+            z-index: -1;
+        }
+        
+        .home-network-diagram {
+            display: flex; flex-direction: column; align-items: center; gap: 15px;
+            padding: 20px; border: 1px solid #ccc; border-radius: 8px; background-color: #f8fafd;
+        }
+        .home-network-diagram .internet { font-size: 1.5em; font-weight: bold; color: var(--primary-color); }
+        .home-network-diagram .equipment {
+            padding: 10px 15px; border: 2px solid var(--secondary-color); border-radius: 5px; background-color: var(--white-color);
+        }
+        .home-network-diagram .equipment.router { background-color: var(--action-blue-bg); border-color: var(--primary-color); }
+        .home-network-diagram .line { width: 2px; background-color: #999; }
+        .home-network-diagram .vertical-line { height: 20px; }
+        .home-network-diagram .horizontal-line { width: 80%; height: 2px; margin: 5px 0; }
+        .home-network-diagram .devices-container { display: flex; justify-content: space-around; width: 100%; }
+        .home-network-diagram .device-group { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+        .home-network-diagram .device-group .connection-type { font-size: 0.8em; color: #666; }
+        
+        .references { margin-top: 40px; padding-top: 20px; border-top: 1px solid #ccc; }
+        .references ul { list-style: none; padding: 0; }
+        .references li { margin-bottom: 10px; font-size: 0.9em; }
+        
+        .button-container { text-align: center; margin: 40px 0; display: flex; justify-content: space-between; }
+        .nav-button {
+            display: inline-block; padding: 10px 20px; background-color: var(--primary-color);
+            color: var(--white-color); text-decoration: none; border-radius: 5px;
+            font-weight: bold; transition: background-color 0.3s;
+        }
+        .nav-button:hover { background-color: var(--secondary-color); }
+        
+        .footnote { font-size: 0.8em; color: #666; margin-top: 1em; }
+
+        @media (max-width: 768px) {
+            .container { padding: 10px; }
+            .page { padding: 1rem; }
+            h1 { font-size: 1.8em; }
+            h2 { font-size: 1.5em; }
+            h3 { font-size: 1.2em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ITリテラシー入門 第9回 Wi-Fiと家庭でのネットワークの構築</h1>
+        <p class="lecturer">講師：吉村 創一朗 先生</p>
+
+        <nav class="toc">
+            <h2>目次</h2>
+            <ul>
+                <li><a href="#chap1">1. 様々な無線通信技術</a>
+                    <ul>
+                        <li><a href="#sec1_1">1.1 モバイル通信：4G/LTEと5G</a></li>
+                        <li><a href="#sec1_2">1.2 近距離・中距離通信：Wi-FiとBluetooth</a></li>
+                        <li><a href="#sec1_3">1.3 長距離・省電力通信：LPWAとWiMAX</a></li>
+                    </ul>
+                </li>
+                <li><a href="#chap2">2. Wi-Fi（無線LAN）の仕組みを深掘り</a>
+                    <ul>
+                        <li><a href="#sec2_1">2.1 無線LANの規格：IEEE 802.11シリーズ</a></li>
+                        <li><a href="#sec2_2">2.2 周波数帯の特徴：2.4GHz帯と5GHz帯</a></li>
+                        <li><a href="#sec2_3">2.3 無線LANのセキュリティと接続</a></li>
+                        <li><a href="#sec2_4">2.4 Wi-Fiの応用技術：Wi-FiダイレクトとメッシュWi-Fi</a></li>
+                    </ul>
+                </li>
+                <li><a href="#chap3">3. 便利な通信サービスと関連技術</a>
+                    <ul>
+                        <li><a href="#sec3_1">3.1 ネットワークを柔軟にする技術：SDNとVPN</a></li>
+                        <li><a href="#sec3_2">3.2 スマートフォン関連の技術：ハンドオーバー, eSIM, ローミング, MIMO</a></li>
+                        <li><a href="#sec3_3">3.3 位置情報や移動体サービス：ビーコンとテレマティクス</a></li>
+                    </ul>
+                </li>
+                <li><a href="#chap4">4. 実践！家庭でのインターネット導入</a>
+                    <ul>
+                        <li><a href="#sec4_1">4.1 契約のステップ：回線業者とプロバイダ</a></li>
+                        <li><a href="#sec4_2">4.2 回線の種類と選び方：光回線, CATV, モバイル回線</a></li>
+                        <li><a href="#sec4_3">4.3 プロバイダとの通信方式：PPPoEとIPoE</a></li>
+                    </ul>
+                </li>
+                 <li><a href="#chap5">5. 家庭内ネットワークの構築</a>
+                    <ul>
+                        <li><a href="#sec5_1">5.1 ネットワークの設計：要件定義の重要性</a></li>
+                        <li><a href="#sec5_2">5.2 接続方法の選択：有線LANと無線LAN（中継機・メッシュWi-Fi）</a></li>
+                        <li><a href="#sec5_3">5.3 Wi-Fiルータ運用の注意点</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+        
+        <div class="page">
+            <h2 id="chap1">1. 様々な無線通信技術</h2>
+            <p>「そろそろ一人暮らしを始めたいな。でも、自分の部屋にインターネットを引くには何を選べばいいんだろう？」そんな風に悩んでいませんか？この章では、Wi-Fiだけじゃない、私たちの周りにある様々な<b class="text-action">無線通信技術</b>について、その特徴と役割を学んでいきましょう。</p>
+            
+            <h3 id="sec1_1">1.1 モバイル通信：4G/LTEと5G</h3>
+            <p>スマホがいつでもどこでもネットに繋がるのは、<b class="text-confirm">モバイル通信</b>のおかげです。スマホの電源を入れると、最寄りの<b class="text-action">基地局</b>と電波で通信し、そこからバックボーンと呼ばれる巨大な基幹ネットワークを通じてインターネットに接続されています。</p>
+            <ul>
+                <li><b>LTE/4G (Long Term Evolution)</b>: 現在最も普及しているモバイル通信規格です。下り最大100Mbps以上の速度で、安定して高画質の動画を視聴できるレベルです。</li>
+                <li><b>5G (第5世代移動通信システム)</b>: 2020年から本格的に始まった新しい規格。「<b class="marker">高速・大容量</b>」「<b class="marker">高信頼・低遅延</b>」「<b class="marker">多数同時接続</b>」が特徴で、IoT時代を支える技術として期待されています。理論上の速度は4Gの20倍にも達します。</li>
+            </ul>
+            <p>最近では、光回線の代わりに5Gを使った「ホームルーター」サービスも登場し、工事不要で手軽に高速インターネットを導入できるようになりました。</p>
+
+            <h3 id="sec1_2">1.2 近距離・中距離通信：Wi-FiとBluetooth</h3>
+            <p>家庭やオフィスなど、比較的狭い範囲で使われる無線通信の代表格が「Wi-Fi」と「Bluetooth」です。</p>
+            <ul>
+                <li><b>Wi-Fi (Wireless Fidelity)</b>: 無線LAN規格「<b class="marker">IEEE 802.11</b>」シリーズのブランド名です。数十～数百メートルの範囲をカバーし、高速なデータ通信が可能です。家庭やオフィスのインターネット接続に広く利用されています。</li>
+                <li><b>Bluetooth</b>: 数メートル程度の<b class="marker">ごく近距離</b>で機器同士を繋ぐための規格です。ワイヤレスイヤホンやマウス、キーボードなど、消費電力の少ない小型機器の接続に使われます。</li>
+            </ul>
+            <p>Wi-FiもBluetoothも同じ2.4GHz帯の電波を使うことがあるため、同時に使うと電波が干渉し、通信が不安定になることがあります。</p>
+
+            <h3 id="sec1_3">1.3 長距離・省電力通信：LPWAとWiMAX</h3>
+            <p>もっと遠くまで、あるいはもっと省電力で通信したい、という特定のニーズに応える技術もあります。</p>
+             <ul>
+                <li><b>LPWA (Low Power, Wide Area)</b>: 名前（低消費電力・広域）の通り、<b class="marker">少ない電力で数km先まで</b>データを飛ばせるのが特徴です。通信速度は遅いですが、IoTデバイスのセンサーデータを集めるのに適しており、スマートメーターや農業・工場の遠隔監視などに利用されています。</li>
+                <li><b>WiMAX (Worldwide Interoperability for Microwave Access)</b>: マイクロ波を使い、都市部を中心に<b class="marker">広範囲なワイヤレスネットワークを提供する規格</b>です。持ち運び可能なモバイルWi-Fiルーターとして提供されることが多く、外出先でPCやタブレットをネットに繋ぎたい時に便利です。</li>
+            </ul>
+
+            <div class="question-box">
+                <h4>問題1.1</h4>
+                <p>現在最も普及しているモバイル通信規格は<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">LTE/4G</span></span>で、その次世代規格が<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">5G</span></span>です。近距離無線規格の代表格は<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">Bluetooth</span></span>で、無線LANのブランド名として知られるのが<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">Wi-Fi</span></span>です。少ない電力で長距離通信が可能なIoT向けの規格を<span class="fill-in" onclick="toggleAnswer(this)">(5)<span class="answer">LPWA</span></span>といいます。</p>
+            </div>
+            <div class="page-number">1</div>
+        </div>
+
+        <div class="page">
+            <h2 id="chap2">2. Wi-Fi（無線LAN）の仕組みを深掘り</h2>
+            <p>今や私たちの生活に欠かせないWi-Fi。しかし、その名前は実はブランド名で、正式な技術規格は「<b class="text-action">IEEE 802.11</b>（アイトリプルイー はちまるにぃ てん いちいち）」シリーズと呼ばれます。この章では、Wi-Fiの規格や周波数、セキュリティについて詳しく見ていきましょう。</p>
+            
+            <h3 id="sec2_1">2.1 無線LANの規格：IEEE 802.11シリーズ</h3>
+            <p>Wi-Fiの性能は、どの「IEEE 802.11」規格に対応しているかで決まります。規格名の末尾につくアルファベットが新しくなるほど、通信速度が向上していきます。</p>
+            <table>
+                <thead>
+                    <tr><th>無線LAN規格</th><th>通称</th><th>最大通信速度</th><th>周波数帯</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>IEEE802.11a</td><td>-</td><td>54Mbps</td><td>5GHz</td></tr>
+                    <tr><td>IEEE802.11b</td><td>-</td><td>11Mbps</td><td>2.4GHz</td></tr>
+                    <tr><td>IEEE802.11g</td><td>-</td><td>54Mbps</td><td>2.4GHz</td></tr>
+                    <tr><td>IEEE802.11n</td><td><b class="text-confirm">Wi-Fi 4</b></td><td>600Mbps</td><td>2.4GHz/5GHz</td></tr>
+                    <tr><td>IEEE802.11ac</td><td><b class="text-confirm">Wi-Fi 5</b></td><td>6.9Gbps</td><td>5GHz</td></tr>
+                    <tr><td>IEEE802.11ax</td><td><b class="text-confirm">Wi-Fi 6</b></td><td>9.6Gbps</td><td>2.4GHz/5GHz</td></tr>
+                    <tr><td>IEEE802.11be</td><td><b class="text-confirm">Wi-Fi 7</b></td><td>46Gbps</td><td>2.4GHz/5GHz/6GHz</td></tr>
+                </tbody>
+            </table>
+            <p class="footnote">※1: 本テキスト執筆時点での最新規格はWi-Fi 7 (IEEE802.11be) ですが、普及状況を鑑み、Wi-Fi 6 (IEEE802.11ax) を中心に解説します。</p>
+
+            <h3 id="sec2_2">2.2 周波数帯の特徴：2.4GHz帯と5GHz帯</h3>
+            <p>Wi-Fiルーターのスペックを見ると、必ず「2.4GHz」と「5GHz」という2つの周波数帯が記載されています。それぞれに長所と短所があるため、状況に応じて使い分けるのが賢い方法です。</p>
+            <ul>
+                <li><b>2.4GHz帯</b>:
+                    <ul style="list-style-type: '✔︎ ';">
+                        <li><b class="text-confirm">長所</b>: <b class="marker">障害物に強く、電波が遠くまで届きやすい。</b></li>
+                        <li><b class="text-problem">短所</b>: Bluetoothや電子レンジなど多くの機器で使われており、<b class="marker">電波干渉が起きやすく通信が不安定になりがち。</b></li>
+                    </ul>
+                </li>
+                 <li><b>5GHz帯</b>:
+                    <ul style="list-style-type: '✔︎ ';">
+                        <li><b class="text-confirm">長所</b>: 他の機器との干渉が少なく、<b class="marker">通信が安定していて高速。</b></li>
+                        <li><b class="text-problem">短所</b>: 障害物に弱く、<b class="marker">壁や扉を隔てると電波が弱くなりやすい。</b></li>
+                    </ul>
+                </li>
+            </ul>
+            <p>ルーターの近くで安定した高速通信をしたいなら5GHz帯、離れた部屋でとりあえず繋ぎたいなら2.4GHz帯、といった使い分けがおすすめです。</p>
+            
+            <h3 id="sec2_3">2.3 無線LANのセキュリティと接続</h3>
+            <p>無線LANは電波で通信するため、常に盗聴や不正アクセスの危険に晒されています。そのため、通信を暗号化するセキュリティ規格が非常に重要です。</p>
+            <p>過去に使われていた<b class="text-problem">WEP</b>という方式は脆弱性が発見されており、現在では安全ではありません。必ず、より強固な<b class="text-action">WPA2</b>や、さらに最新の<b class="text-action">WPA3</b>という暗号化方式を使いましょう。</p>
+            <p>Wi-Fiに接続する際には、<b class="text-confirm">SSID</b>（アクセスポイントの識別名、ネットワーク名）を選択し、パスワードを入力します。最近のルーターには<b class="text-confirm">WPS</b>というボタンがあり、これを押すだけで簡単に接続設定ができる便利な機能も搭載されています。</p>
+
+            <h3 id="sec2_4">2.4 Wi-Fiの応用技術：Wi-FiダイレクトとメッシュWi-Fi</h3>
+            <p>Wi-Fiには、ただインターネットに繋ぐ以外にも便利な応用技術があります。</p>
+            <ul>
+                <li><b>Wi-Fiダイレクト</b>: アクセスポイントを介さず、<b class="marker">機器同士を直接1対1で接続する技術</b>です。スマホからプリンターへ直接データを送って印刷する、といった使い方ができます。</li>
+                <li><b>メッシュWi-Fi</b>: 複数のアクセスポイントが<b class="marker">網の目のように連携し、家全体をカバーする</b>技術です。親機と子機を複数設置することで、広い家や階数の多い家でも、どこにいても快適なWi-Fi環境を構築できます。</li>
+            </ul>
+            
+            <div class="diagram">
+                <p><strong>メッシュWi-Fiのイメージ</strong></p>
+                <div class="mesh-diagram">
+                    <div class="device main-router">親機<br>(ルータ)</div>
+                    <div class="device satellite sat-1">子機</div>
+                    <div class="device satellite sat-2">子機</div>
+                    <div class="device satellite sat-3">子機</div>
+                    <svg width="300" height="250" style="position:absolute; top:0; left:0; z-index:-1;">
+                        <line x1="150" y1="25" x2="60" y2="105" stroke="var(--secondary-color)" stroke-width="2" stroke-dasharray="4 2"/>
+                        <line x1="150" y1="25" x2="150" y2="175" stroke="var(--secondary-color)" stroke-width="2" stroke-dasharray="4 2"/>
+                        <line x1="150" y1="25" x2="240" y2="105" stroke="var(--secondary-color)" stroke-width="2" stroke-dasharray="4 2"/>
+                        <line x1="60" y1="105" x2="150" y2="175" stroke="var(--secondary-color)" stroke-width="2" stroke-dasharray="4 2"/>
+                        <line x1="240" y1="105" x2="150" y2="175" stroke="var(--secondary-color)" stroke-width="2" stroke-dasharray="4 2"/>
+                         <line x1="60" y1="105" x2="240" y2="105" stroke="#ccc" stroke-width="1" stroke-dasharray="4 2"/>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="question-box">
+                <h4>問題2.1</h4>
+                <p>無線LANの技術規格は<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">IEEE 802.11</span></span>シリーズと呼ばれます。障害物に強いが電波干渉しやすいのが<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">2.4GHz帯</span></span>、高速で安定しているが障害物に弱いのが<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">5GHz帯</span></span>です。現在推奨されるセキュリティ規格は<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">WPA2/WPA3</span></span>です。複数の機器で網目状のネットワークを構築する技術を<span class="fill-in" onclick="toggleAnswer(this)">(5)<span class="answer">メッシュWi-Fi</span></span>といいます。</p>
+            </div>
+            <div class="page-number">2</div>
+        </div>
+        
+        <div class="page">
+            <h2 id="chap3">3. 便利な通信サービスと関連技術</h2>
+            <p>ネットワークの世界は、単にデータを送受信するだけではありません。通信をより柔軟に、より安全に、そしてより便利にするための様々なサービスや技術が存在します。この章では、知っておくと便利な通信関連のキーワードを解説します。</p>
+
+            <h3 id="sec3_1">3.1 ネットワークを柔軟にする技術：SDNとVPN</h3>
+            <ul>
+                <li><b>SDN (Software Defined Network)</b>: ネットワーク機器の設定や管理を、物理的な配線ではなく<b class="marker">ソフトウェアで一元的に制御する技術</b>です。これにより、ネットワーク構成の変更が迅速かつ柔軟になり、運用コストの削減にも繋がります。</li>
+                <li><b>VPN (Virtual Private Network)</b>: 公共のインターネット網を使いながら、あたかも専用線のように<b class="marker">安全なプライベートネットワークを仮想的に構築する技術</b>です。通信内容を暗号化することで、安全な拠点間通信や、テレワークでの社内ネットワークへのアクセスを実現します。</li>
+            </ul>
+
+            <h3 id="sec3_2">3.2 スマートフォン関連の技術：ハンドオーバー, eSIM, ローミング, MIMO</h3>
+            <p>スマートフォンを快適に使うための裏方技術も見てみましょう。</p>
+            <ul>
+                <li><b>ハンドオーバー</b>: 移動中に、接続している基地局やWi-Fiアクセスポイントを、<b class="marker">通信が途切れないように自動で切り替える</b>機能です。</li>
+                <li><b>eSIM</b>: 物理的なSIMカードではなく、スマホ本体に<b class="marker">内蔵されたSIM（埋め込みSIM）</b>です。オンラインで契約情報を書き換えられるため、海外旅行時に現地のプランを簡単に利用できます。</li>
+                <li><b>ローミング</b>: 契約している通信事業者のエリア外でも、提携先の事業者のネットワークを<b class="marker">利用して通信できるサービス</b>です。海外でそのままスマホを使える便利な機能ですが、料金が高額になる場合があるので注意が必要です。</li>
+                <li><b>MIMO (Multiple-Input Multiple-Output)</b>: 複数のアンテナで同時にデータを送受信することで、<b class="marker">通信速度や品質を向上させる技術</b>です。Wi-Fi 4以降の規格や4G/5Gで利用されています。</li>
+            </ul>
+            
+            <h3 id="sec3_3">3.3 位置情報や移動体サービス：ビーコンとテレマティクス</h3>
+             <ul>
+                <li><b>ビーコン</b>: 「のろし」を意味する言葉で、近距離に<b class="marker">定期的に情報を発信する無線技術</b>です。店舗でお得なクーポンを配信したり、紛失防止タグ（AppleのAirTagなど）として利用されたりしています。</li>
+                <li><b>テレマティクス</b>: 通信(Telecommunication)と情報科学(Informatics)を組み合わせた造語で、自動車などの<b class="marker">移動体に通信システムを通じてサービスを提供すること</b>です。運転状況に応じて保険料が変わる「テレマティクス保険」などが代表例です。</li>
+            </ul>
+             <div class="card">
+                <div class="card-header">事例：海外旅行でスマホ死守！ローミング地獄を回避する賢いネット術</div>
+                <p>海外旅行で現地の情報を調べようとスマホを使ったら、帰国後に数万円の高額請求が…！これが「ローミング地獄」だ！これを避けるには、スマホのローミング設定をOFFにしておくのが鉄則。じゃあどうやってネットに繋ぐかって？方法は主に3つ。①空港でポケットWi-Fiをレンタルする、②現地のプリペイドSIMカードを買う、そして③最近注目の<b class="text-action">eSIM</b>だ！eSIMなら、日本にいるうちからオンラインで現地の通信プランを契約・設定できるから、現地でSIMカードを探す手間も、物理的なSIMを入れ替える面倒もない。まさに次世代のスマートな海外ネット術なんだぜ！</p>
+            </div>
+
+            <div class="question-box">
+                <h4>問題3.1</h4>
+                <p>公共のネット上に仮想的な専用線を作る技術を<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">VPN</span></span>といいます。移動中に接続先を自動で切り替える機能を<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">ハンドオーバー</span></span>、スマホ内蔵型のSIMを<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">eSIM</span></span>といいます。複数のアンテナで通信を高速化する技術が<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">MIMO</span></span>です。紛失防止タグなどに使われる情報発信技術を<span class="fill-in" onclick="toggleAnswer(this)">(5)<span class="answer">ビーコン</span></span>といいます。</p>
+            </div>
+            <div class="page-number">3</div>
+        </div>
+        
+        <div class="page">
+            <h2 id="chap4">4. 実践！家庭でのインターネット導入</h2>
+            <p>いよいよ、自宅にインターネットを導入する具体的な手順を見ていきましょう。一人暮らしを始める学生さんや、引越しを機に回線を見直したい方は必見です。いくつかのステップと専門用語を理解すれば、自分にぴったりのプランを選べるようになります。</p>
+
+            <h3 id="sec4_1">4.1 契約のステップ：回線業者とプロバイダ</h3>
+            <p>家庭でインターネットを利用するには、基本的に2つの契約が必要です。</p>
+            <ol>
+                <li><b>回線事業者との契約</b>: 物理的な通信回線（光ファイバーなど）を提供してくれる会社との契約です。NTT東日本/西日本などが代表的です。</li>
+                <li><b>プロバイダ (ISP) との契約</b>: その回線を使って、インターネットに接続するサービスを提供してくれる会社との契約です。</li>
+            </ol>
+            <p>「え、2つも契約するの？」と面倒に感じるかもしれませんが、ご安心を。最近では、プロバイダが回線事業者の回線を借り受けてセットで提供する「<b class="text-action">光コラボレーション</b>」という形が主流です。これにより、<b class="marker">プロバイダの窓口一つで両方の契約を済ませる</b>ことができます。</p>
+            
+            <h3 id="sec4_2">4.2 回線の種類と選び方：光回線, CATV, モバイル回線</h3>
+            <p>インターネットに接続するための回線には、いくつかの種類があります。</p>
+            <table>
+                <thead>
+                    <tr><th>回線の種類</th><th>特徴</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><b>光回線 (FTTH)</b></td><td>光ファイバーを利用した高速・安定の固定回線。動画視聴やオンラインゲームに最適。現在主流。</td></tr>
+                    <tr><td><b>CATV回線</b></td><td>ケーブルテレビの回線を利用。テレビ契約とセットでお得になる場合がある。</td></tr>
+                    <tr><td><b>モバイル回線</b></td><td>携帯キャリアの電波を利用。工事不要で手軽だが、通信量制限や安定性に課題がある場合も。</td></tr>
+                    <tr><td><del><b>ADSL回線</b></del></td><td><del>電話回線を利用した旧世代の回線。2023年1月末で主要サービスは終了。</del></td></tr>
+                </tbody>
+            </table>
+            <p>特別な理由がなければ、<b class="text-confirm">安定性と速度に優れた光回線が最もおすすめ</b>です。ただし、お住まいの建物が光回線の工事に対応しているか、事前に回線事業者のサイトで確認する必要があります。</p>
+
+            <h3 id="sec4_3">4.3 プロバイダとの通信方式：PPPoEとIPoE</h3>
+            <p>光回線（NTTのフレッツ光など）でプロバイダと通信する方式には、主に2つの種類があります。これは通信速度に大きく影響する重要なポイントです。</p>
+            <ul>
+                <li><b>PPPoE方式</b>: 従来からの接続方式。IDとパスワードで認証しますが、夜間など利用者が多い時間帯に<b class="marker text-problem">混雑しやすく、速度が低下しやすい</b>という弱点があります。</li>
+                <li><b>IPoE方式</b>: 新しい接続方式。ID/パスワードが不要で、PPPoEの混雑ポイントを避けて通信するため、<b class="marker text-confirm">時間帯に左右されにくく安定した高速通信が期待できます</b>。</li>
+            </ul>
+            <p>現在、多くのプロバイダがIPoE方式（IPv4 over IPv6という技術を利用）を提供しています。もし長年同じ契約を続けている場合、PPPoE方式のままかもしれません。プロバイダに連絡して<b class="text-action">IPoE方式への切り替え</b>を検討するだけで、通信速度が劇的に改善される可能性があります。</p>
+            
+             <div class="card">
+                <div class="card-header">ポイント：プロバイダ選びのコツ</div>
+                <p>プロバイダは数多くあり、どこを選べばいいか迷いますよね。料金だけでなく、以下の点も考慮すると良いでしょう。</p>
+                <ul style="padding-left: 20px; list-style-type: '✔︎ ';">
+                    <li><b>スマホとのセット割</b>: 利用している携帯キャリアと同じ系列のプロバイダを選ぶと、月々の料金が割引されることが多いです。</li>
+                    <li><b>IPoE (IPv6) 対応</b>: 快適なネット環境のためには、IPoE方式に対応しているプロバイダを選ぶのが必須です。</li>
+                    <li><b>サポート体制</b>: 工事の対応やトラブル時のサポートが手厚いかどうかも重要なポイントです。口コミなどを参考にしましょう。</li>
+                </ul>
+            </div>
+
+            <div class="question-box">
+                <h4>問題4.1</h4>
+                <p>家庭でネットを利用するには、<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">回線事業者</span></span>と<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">プロバイダ</span></span>の2つの契約が必要です。現在主流の高速な固定回線は<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">光回線</span></span>です。従来の接続方式で混雑しやすいのが<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">PPPoE</span></span>、新しい高速な接続方式が<span class="fill-in" onclick="toggleAnswer(this)">(5)<span class="answer">IPoE</span></span>です。</p>
+            </div>
+            <div class="page-number">4</div>
+        </div>
+
+        <div class="page">
+            <h2 id="chap5">5. 家庭内ネットワークの構築</h2>
+            <p>インターネット回線の契約が済んだら、次はいよいよ家庭内のネットワーク構築です。快適なネットライフを送るためには、家の間取りや利用状況に合わせた<b class="text-action">ネットワーク設計</b>が重要になります。難しく考えず、プラモデルを組み立てるような感覚で楽しんでいきましょう！</p>
+            
+            <h3 id="sec5_1">5.1 ネットワークの設計：要件定義の重要性</h3>
+            <p>まずは、どんなネットワークを作りたいか、要件を整理します。</p>
+            <ul style="list-style-type: '● ';">
+                <li><b>利用エリア</b>: 家のどこでインターネットを使いたいですか？リビングだけ？それとも寝室や書斎も？</li>
+                <li><b>利用人数・端末数</b>: 何人で、何台の機器（PC, スマホ, ゲーム機など）を同時に接続しますか？</li>
+                <li><b>スループット要件</b>: 4K動画のストリーミングやオンラインゲームなど、高速通信が必要な使い方はしますか？</li>
+            </ul>
+            <p>これらの要件によって、必要なWi-Fiルーターの性能や、ケーブルの種類、追加機器の有無が決まってきます。</p>
+
+            <div class="diagram">
+                <p><strong>一般的な家庭内ネットワーク構成図</strong></p>
+                <div class="home-network-diagram">
+                    <div class="internet">インターネット (WAN)</div>
+                    <div class="line vertical-line"></div>
+                    <div class="equipment">ONU / モデム</div>
+                    <div class="line vertical-line"></div>
+                    <div class="equipment router">Wi-Fiルーター</div>
+                    <div class="line vertical-line"></div>
+                    <div class="line horizontal-line"></div>
+                    <div class="devices-container">
+                        <div class="device-group">
+                            <div class="line vertical-line" style="height:15px;"></div>
+                            <div class="equipment">PC</div>
+                            <div class="connection-type">有線LAN</div>
+                        </div>
+                        <div class="device-group">
+                            <div class="line vertical-line" style="height:15px; border-style: dashed;"></div>
+                            <div class="equipment">スマホ</div>
+                            <div class="connection-type">無線LAN(Wi-Fi)</div>
+                        </div>
+                        <div class="device-group">
+                            <div class="line vertical-line" style="height:15px; border-style: dashed;"></div>
+                            <div class="equipment">ゲーム機</div>
+                            <div class="connection-type">無線LAN(Wi-Fi)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <h3 id="sec5_2">5.2 接続方法の選択：有線LANと無線LAN（中継機・メッシュWi-Fi）</h3>
+            <p>Wi-Fiルーターから離れた部屋に電波が届きにくい場合、どうすればよいでしょうか？解決策は主に2つあります。</p>
+            <ul>
+                <li><b>有線LANで接続</b>: 最も安定して高速な通信が可能です。壁の中にケーブルを通す「<b class="text-confirm">隠蔽配線</b>」は専門業者への依頼が必要ですが、壁に沿ってケーブルを這わせる「<b class="text-confirm">露出配線</b>」なら自分でもできます。</li>
+                <li><b>無線でエリアを拡張</b>:
+                    <ul>
+                        <li><b>中継機</b>: 親機となるWi-Fiルーターの電波を受け取り、より遠くまで届けるための機器です。手軽ですが、速度が半減するなどのデメリットもあります。</li>
+                        <li><b>メッシュWi-Fi</b>: 親機と複数の子機が連携し、家中に網目状のWi-Fi網を構築します。家の中を移動しても最適な電波に自動で切り替わり、広範囲で安定した通信が可能です。</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h3 id="sec5_3">5.3 Wi-Fiルータ運用の注意点</h3>
+            <p>最後に、Wi-Fiルーターを安全かつ快適に使うためのポイントを2つ紹介します。</p>
+            <ol>
+                <li><b>パスワードの変更</b>: ルーターの管理画面にログインするためのID/パスワードや、Wi-Fi接続用のパスワードは、初期設定のままにせず、<b class="text-problem">必ず自分だけのものに変更しましょう</b>。初期値のままだと、不正アクセスの原因になります。</li>
+                <li><b>電波干渉を避ける</b>: Wi-Fiの電波は、電子レンジだけでなく、<b class="marker">金属や水にも弱い</b>性質があります。スチールラックの近くや水槽のそば、鉄筋コンクリートの壁際などは電波が通りにくいため、ルーターの設置場所として避けるのが賢明です。</li>
+            </ol>
+
+            <div class="card">
+                <div class="card-header">事例：最強の家Wi-Fi環境構築！メッシュWi-Fiで家中どこでも爆速ネットを実現せよ！</div>
+                <p>「リビングは快適なのに、2階の自室だと動画がカクカク…」「トイレにスマホ持ち込んだら圏外！」そんなWi-Fi格差に悩むキミに朗報だ！救世主、その名も<b class="text-action">メッシュWi-Fi</b>！これは、複数のWi-Fiアクセスポイントを家に配置して、家全体をまるごとカバーする最強の技術。親機と子機が賢く連携して、キミがどこに移動しても一番強い電波に自動で繋ぎ直してくれるんだ。もう家中どこにいても、オンラインゲームのラグや動画の読み込みとはオサラバだぜ！ちょっとお値段は張るけど、ストレスフリーなネット環境はまさにプライスレス！最強のホームネットワークをその手で構築しろ！</p>
+            </div>
+            
+            <div class="question-box">
+                <h4>問題5.1</h4>
+                <p>ネットワークを構築する際に、まず何が必要かを整理することを<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">要件定義</span></span>といいます。離れた部屋に有線で接続する際、壁の中にケーブルを通す方法を<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">隠蔽配線</span></span>といいます。複数のWi-Fi機器で家全体を網羅する技術は<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">メッシュWi-Fi</span></span>です。ルーターの管理画面やWi-Fi接続のための<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">パスワード</span></span>は、安全のために必ず初期値から変更しましょう。Wi-Fiの電波は、電子レンジの他に<span class="fill-in" onclick="toggleAnswer(this)">(5)<span class="answer">金属や水</span></span>でも減衰しやすくなります。</p>
+            </div>
+            <div class="page-number">5</div>
+        </div>
+        
+        <div class="button-container">
+            <a href="page8.html" class="nav-button">← 前の講座へ</a>
+            <a href="page10.html" class="nav-button">次の講座へ →</a>
+        </div>
+        
+        <div id="references" class="references">
+            <h3>参考文献・リンク</h3>
+            <ul>
+                <li>本教材は、ZEN大学（仮称・設置認可申請中）が提供する講義「ITリテラシー入門 第9回 Wi-Fiと家庭でのネットワークの構築」（講師：吉村 創一朗 先生）のテキストおよび講義内容を元に作成されました。</li>
+                <li class="footnote">※1: 本テキスト執筆時点での最新規格はWi-Fi 7 (IEEE802.11be) ですが、普及状況や映像授業との整合性を考慮し、Wi-Fi 6 (IEEE802.11ax) を中心に解説する箇所もあります。</li>
+            </ul>
+        </div>
+    </div>
+    <script>
+        function toggleAnswer(element) {
+            const answer = element.querySelector('.answer');
+            if (answer) {
+                answer.classList.toggle('visible');
+            }
+        }
+    </script>
+</body>
+</html>

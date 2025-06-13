@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ITリテラシー入門 第8回 ネットワーク</title>
+    <style>
+        :root {
+            --primary-color: #0d47a1; /* 濃い青 */
+            --secondary-color: #1976d2; /* 青 */
+            --accent-color: #d32f2f; /* 赤系のアクセント */
+            --background-color: #f5f8fa; /* 薄いグレーがかった背景 */
+            --text-color: #333;
+            --white-color: #ffffff;
+            --marker-yellow: #fffde7;
+            --confirm-green-bg: #e8f5e9;
+            --action-blue-bg: #e3f2fd;
+            --problem-red-bg: #fbe9e7;
+            --confirm-green-text: #2e7d32;
+            --action-blue-text: var(--secondary-color);
+            --problem-red-text: var(--accent-color);
+        }
+
+        body {
+            font-family: 'Yu Gothic UI', 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+            line-height: 1.8;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: var(--white-color);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        .page {
+            border: 1px solid #ddd;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .page-number {
+            position: absolute;
+            bottom: 10px;
+            right: 20px;
+            color: #aaa;
+            font-size: 0.9em;
+        }
+
+        h1 {
+            font-size: 2.2em;
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--secondary-color);
+            padding-bottom: 10px;
+            margin-bottom: 5px;
+            position: relative;
+        }
+        
+        h1::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -3px;
+            width: 70px;
+            border-bottom: 3px solid var(--primary-color);
+        }
+        
+        .lecturer {
+            font-size: 1.1em;
+            color: var(--secondary-color);
+            text-align: right;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            color: var(--primary-color);
+            border-left: 5px solid var(--secondary-color);
+            padding-left: 15px;
+            margin-top: 40px;
+        }
+
+        h3 {
+            font-size: 1.4em;
+            color: var(--secondary-color);
+            border-bottom: 1px dashed var(--secondary-color);
+            padding-bottom: 5px;
+            margin-top: 30px;
+        }
+
+        p { margin-bottom: 1.2em; }
+        strong, b { color: var(--primary-color); }
+        .marker { background: linear-gradient(transparent 60%, var(--marker-yellow) 60%); }
+        .text-confirm { color: var(--confirm-green-text); font-weight: bold; }
+        .text-action { color: var(--action-blue-text); font-weight: bold; }
+        .text-problem { color: var(--problem-red-text); font-weight: bold; }
+
+        .toc {
+            background-color: #f8fafd;
+            border: 1px solid var(--secondary-color);
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+        }
+        .toc h2 { margin-top: 0; border-left: none; padding-left: 0; border-bottom: 2px solid var(--secondary-color); }
+        .toc ul { list-style-type: none; padding-left: 0; }
+        .toc ul ul { padding-left: 20px; }
+        .toc a { text-decoration: none; color: var(--primary-color); }
+        .toc a:hover { text-decoration: underline; }
+
+        .question-box {
+            border: 2px solid var(--accent-color);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            background-color: var(--problem-red-bg);
+        }
+
+        .fill-in {
+            font-weight: bold;
+            color: var(--accent-color);
+            border-bottom: 2px dotted var(--accent-color);
+            cursor: pointer;
+            padding: 0 5px;
+        }
+
+        .answer {
+            display: none;
+            background-color: var(--marker-yellow);
+            padding: 2px 5px;
+            border-radius: 3px;
+            margin: 0 5px;
+        }
+        .answer.visible { display: inline-block; }
+
+        .card {
+            background-color: #f9f9f9;
+            border-left: 5px solid var(--primary-color);
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .card-header {
+            font-weight: bold;
+            font-size: 1.2em;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        table {
+            width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.95em;
+        }
+        th, td { border: 1px solid #ccc; padding: 12px; text-align: left; }
+        th { background-color: var(--primary-color); color: var(--white-color); font-weight: bold; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+
+        /* --- 図式スタイル --- */
+        .diagram {
+            font-family: 'Yu Gothic UI', sans-serif;
+            text-align: center;
+            padding: 20px 0;
+            overflow-x: auto;
+        }
+        
+        .network-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #f8fafd;
+        }
+        .network-diagram .device {
+            padding: 10px 15px;
+            border: 2px solid var(--secondary-color);
+            border-radius: 5px;
+            background-color: var(--white-color);
+        }
+        .network-diagram .device.router {
+            background-color: var(--action-blue-bg);
+            border-color: var(--primary-color);
+        }
+        .network-diagram .area {
+            padding: 20px 30px;
+            border: 2px dashed var(--secondary-color);
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        .network-diagram .lan { background-color: var(--confirm-green-bg); }
+        .network-diagram .wan { background-color: var(--action-blue-bg); }
+        .network-diagram .arrow { font-size: 1.5em; color: var(--primary-color); }
+        
+        .topology-diagram {
+            position: relative;
+            width: 250px;
+            height: 250px;
+            margin: 30px auto;
+        }
+        .topology-diagram .center-device {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            line-height: 60px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: var(--white-color);
+            font-weight: bold;
+            z-index: 10;
+        }
+        .topology-diagram .node {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            line-height: 50px;
+            background-color: var(--confirm-green-bg);
+            border: 2px solid var(--confirm-green-text);
+            border-radius: 8px;
+            z-index: 5;
+        }
+        .topology-diagram .node::before {
+            content: '';
+            position: absolute;
+            background-color: var(--secondary-color);
+            z-index: 1;
+        }
+        /* スター型配置と線 */
+        .star-topology .node-1 { top: 0; left: 50%; transform: translateX(-50%); }
+        .star-topology .node-2 { top: 50%; right: 0; transform: translateY(-50%); }
+        .star-topology .node-3 { bottom: 0; left: 50%; transform: translateX(-50%); }
+        .star-topology .node-4 { top: 50%; left: 0; transform: translateY(-50%); }
+        .star-topology .node::before {
+            background: var(--secondary-color);
+            width: 2px;
+            height: 85px;
+            left: 50%;
+            top: 50%;
+            transform-origin: top;
+        }
+        .star-topology .node-1::before { transform: translateX(-50%) rotate(0deg); }
+        .star-topology .node-2::before { transform: translateX(-50%) rotate(90deg); }
+        .star-topology .node-3::before { transform: translateX(-50%) rotate(180deg); }
+        .star-topology .node-4::before { transform: translateX(-50%) rotate(270deg); }
+
+        .references { margin-top: 40px; padding-top: 20px; border-top: 1px solid #ccc; }
+        .references ul { list-style: none; padding: 0; }
+        .references li { margin-bottom: 10px; font-size: 0.9em; }
+        
+        .button-container { text-align: center; margin: 40px 0; display: flex; justify-content: space-between; }
+        .nav-button {
+            display: inline-block; padding: 10px 20px; background-color: var(--primary-color);
+            color: var(--white-color); text-decoration: none; border-radius: 5px;
+            font-weight: bold; transition: background-color 0.3s;
+        }
+        .nav-button:hover { background-color: var(--secondary-color); }
+        
+        .footnote { font-size: 0.8em; color: #666; margin-top: 1em; }
+
+        @media (max-width: 768px) {
+            .container { padding: 10px; }
+            .page { padding: 1rem; }
+            h1 { font-size: 1.8em; }
+            h2 { font-size: 1.5em; }
+            h3 { font-size: 1.2em; }
+            .network-diagram { flex-direction: column; gap: 15px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ITリテラシー入門 第8回 ネットワーク</h1>
+        <p class="lecturer">講師：吉村 創一朗 先生</p>
+
+        <nav class="toc">
+            <h2>目次</h2>
+            <ul>
+                <li><a href="#chap1">1. コンピューターネットワークの全体像</a>
+                    <ul>
+                        <li><a href="#sec1_1">1.1 LANとWAN：ネットワークの分類</a></li>
+                        <li><a href="#sec1_2">1.2 ネットワークの構成要素：ルータとハブ</a></li>
+                        <li><a href="#sec1_3">1.3 有線LANと無線LAN（Wi-Fi）</a></li>
+                    </ul>
+                </li>
+                <li><a href="#chap2">2. ネットワークアーキテクチャとプロトコル</a>
+                    <ul>
+                        <li><a href="#sec2_1">2.1 プロトコル：通信世界の共通言語</a></li>
+                        <li><a href="#sec2_2">2.2 OSI参照モデル：通信機能の7階層</a></li>
+                        <li><a href="#sec2_3">2.3 TCP/IP階層モデル：インターネットの標準モデル</a></li>
+                    </ul>
+                </li>
+                <li><a href="#chap3">3. インターネットを支える様々なプロトコル</a>
+                    <ul>
+                        <li><a href="#sec3_1">3.1 Web通信のプロトコル：HTTPとHTTPS</a></li>
+                        <li><a href="#sec3_2">3.2 電子メールのプロトコル：SMTP, POP, IMAP</a></li>
+                        <li><a href="#sec3_3">3.3 ファイル転送と時刻同期のプロトコル：FTP, SFTP, NTP</a></li>
+                        <li><a href="#sec3_4">3.4 データ転送の基礎：TCP, UDP, IP</a></li>
+                    </ul>
+                </li>
+                 <li><a href="#chap4">4. 通信相手を特定する端末情報</a>
+                    <ul>
+                        <li><a href="#sec4_1">4.1 3つの重要アドレス：MACアドレス, IPアドレス, ポート番号</a></li>
+                        <li><a href="#sec4_2">4.2 IPアドレスの仕組み：IPv4とIPv6</a></li>
+                        <li><a href="#sec4_3">4.3 グローバルIPアドレスとプライベートIPアドレス</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+        
+        <div class="page">
+            <h2 id="chap1">1. コンピューターネットワークの全体像</h2>
+            <p>スマホやPCがインターネットに繋がっているのは当たり前。でも、その「繋がり」がどういう仕組みで成り立っているか、考えたことはありますか？この章では、コンピュータ同士が情報をやり取りする通信網、<b class="text-action">コンピューターネットワーク</b>の基本的な構造について学んでいきましょう。</p>
+            
+            <h3 id="sec1_1">1.1 LANとWAN：ネットワークの分類</h3>
+            <p>以前、「インターネットはネットワークのネットワークだ」と学びましたが、その「ネットワーク」とは、まさにコンピューターネットワークのことです。そして、このネットワークは規模によって大きく2つに分けられます。</p>
+            <ul>
+                <li><b>LAN (Local Area Network)</b>: 学校や会社、自宅のホームネットワークなど、<b class="marker">限られた区域のネットワーク</b>です。「ラン」と読みます。皆さんの家のWi-FiもLANの一種です。</li>
+                <li><b>WAN (Wide Area Network)</b>: 通信事業者の回線などを利用した<b class="marker">広域のネットワーク</b>です。「ワン」と読みます。複数のLAN同士を繋ぎ合わせ、インターネットのような巨大なネットワークを形成します。</li>
+            </ul>
+            <p>多くの場合、私たちのPCやスマホはまず自宅や会社の<b class="text-confirm">LAN</b>に所属し、そこから<b class="text-action">ルータ</b>という機器を通じてプロバイダが提供する<b class="text-confirm">WAN</b>に接続することで、インターネットを利用しています。</p>
+            
+            <div class="diagram">
+                 <div class="network-diagram">
+                    <div class="device">PC/スマホ</div>
+                    <div class="arrow">↔</div>
+                    <div class="area lan">LAN (家庭・社内)</div>
+                    <div class="arrow">↔</div>
+                    <div class="device router">ルータ</div>
+                    <div class="arrow">↔</div>
+                    <div class="area wan">WAN (プロバイダ網)</div>
+                    <div class="arrow">↔</div>
+                    <div class="device">インターネット</div>
+                </div>
+            </div>
+
+            <h3 id="sec1_2">1.2 ネットワークの構成要素：ルータとハブ</h3>
+            <p>ネットワークを構築するには、データを中継してくれる機器が必要です。代表的なものが「ルータ」と「ハブ」です。</p>
+            <ul>
+                <li><b class="text-action">ルータ (Router)</b>: <b class="marker">異なるネットワーク同士を接続</b>し、データの行き先を判断して適切なルートに振り分ける、いわば「交通整理員」です。上の図では、家庭のLANと外部のWANを繋ぐ役割を担っています。</li>
+                <li><b class="text-action">ハブ (Hub)</b>: LAN内部で、<b class="marker">複数の機器をケーブルで繋ぐための集線装置</b>です。ハブにPCやプリンタなどを接続し、さらにハブ同士を繋ぐことで、たくさんの機器をネットワークに参加させることができます。</li>
+            </ul>
+            <p>最近の家庭用ルータは、Wi-Fiのアクセスポイント（無線版ハブのようなもの）の機能を兼ね備えていることが多いですが、大規模なオフィスなどではルータとハブ、アクセスポイントはそれぞれ別の機器として設置されます。</p>
+
+            <h3 id="sec1_3">1.3 有線LANと無線LAN（Wi-Fi）</h3>
+            <p>LANの接続方法には、ケーブルを使う「有線LAN」と、電波を使う「無線LAN」があります。</p>
+            <p><b>有線LAN</b>は、ツイストペアケーブル（LANケーブル）などを使い、物理的に機器を接続します。一般的に普及している規格は<b class="text-confirm">イーサネット (Ethernet)</b> と呼ばれ、ハブを中心に各機器を繋ぐ<b class="text-action">スター型</b>という接続形態（ネットワークトポロジー）が主流です。</p>
+
+            <div class="diagram">
+                <p><strong>スター型ネットワークトポロジー</strong></p>
+                <div class="topology-diagram star-topology">
+                    <div class="center-device">ハブ</div>
+                    <div class="node node-1">PC</div>
+                    <div class="node node-2">PC</div>
+                    <div class="node node-3">プリンタ</div>
+                    <div class="node node-4">NAS</div>
+                </div>
+            </div>
+
+            <p><b>無線LAN</b>は、一般的に<b class="text-confirm">Wi-Fi (ワイファイ)</b> として知られています。ケーブルが不要な手軽さが魅力ですが、有線LANに比べて通信が不安定になることがあります。これは、利用する周波数帯（2.4GHz帯や5GHz帯）が他の家電製品の電波と干渉することが原因です。</p>
+
+            <div class="card">
+                <div class="card-header">事例：オンラインゲームと電子レンジの悲劇</div>
+                <p>Wi-Fiで白熱のネット対戦ゲーム！勝利は目前…！その時、家族が電子レンジを使い始めた途端、ネットが切断されて負けてしまった…なんて経験、ありませんか？これは、多くの電子レンジがWi-Fiと同じ2.4GHz帯の電波を使っているために起こる「電波干渉」が原因です。一瞬のラグも許されないゲーマーたちが有線LANを好むのは、こうした通信の安定性を重視しているからなのです。</p>
+            </div>
+
+            <div class="question-box">
+                <h4>問題1.1</h4>
+                <p>限られた区域のネットワークを<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">LAN</span></span>、広域ネットワークを<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">WAN</span></span>といいます。異なるネットワーク同士を繋ぐ機器が<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">ルータ</span></span>で、LAN内の機器を集約する装置が<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">ハブ</span></span>です。ハブを中心に機器を接続する形態を<span class="fill-in" onclick="toggleAnswer(this)">(5)<span class="answer">スター型</span></span>トポロジーと呼びます。</p>
+            </div>
+            <div class="page-number">1</div>
+        </div>
+
+        <div class="page">
+            <h2 id="chap2">2. ネットワークアーキテクチャとプロトコル</h2>
+            <p>異なるメーカーのPCやスマホが、なぜ問題なく通信できるのでしょうか？それは、世界共通の「通信ルール」に従っているからです。この章では、そのルールである<b class="text-action">プロトコル</b>と、その全体設計図である<b class="text-confirm">ネットワークアーキテクチャ</b>について掘り下げていきます。</p>
+
+            <h3 id="sec2_1">2.1 プロトコル：通信世界の共通言語</h3>
+            <p><b class="text-action">プロトコル (Protocol)</b> とは、コンピューター同士が通信をする際の「<b class="marker">決まりごと・手順</b>」のことです。人間が言葉でコミュニケーションをとるように、コンピューターはプロトコルという共通言語で対話します。</p>
+            <p>このプロトコルが世界中で標準化されているおかげで、私たちはメーカーや国境を越えて、あらゆる機器とデータをやり取りできるのです。現在、インターネットでは<b class="text-confirm">TCP/IP</b>というネットワークアーキテクチャ（プロトコルの体系）が事実上の世界標準（デファクトスタンダード）となっています。</p>
+            
+            <h3 id="sec2_2">2.2 OSI参照モデル：通信機能の7階層</h3>
+            <p>昔は企業ごとにバラバラなプロトコルが乱立し、互換性のなさが大きな問題でした。この問題を解決するため、国際標準化機構（ISO）が通信機能を7つの階層に整理したモデルを提唱しました。それが<b class="text-action">OSI参照モデル</b>です。</p>
+            <p>このモデルは、複雑なネットワークの仕組みを機能ごとに分割し、各層の役割を明確にすることで、開発や学習を容易にしました。プロトコル自体はTCP/IPに取って代わられましたが、この<b class="marker">階層化の考え方は今でもネットワークを理解する上で非常に重要</b>です。</p>
+
+            <table>
+                <thead>
+                    <tr><th>階層</th><th>名称</th><th>主な役割と機能</th><th>プロトコルの例</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><b>第7層</b></td><td>アプリケーション層</td><td>アプリケーション固有の通信サービス（メール、Web閲覧など）を提供</td><td>HTTP, FTP, SMTP</td></tr>
+                    <tr><td><b>第6層</b></td><td>プレゼンテーション層</td><td>データの表現形式（文字コードなど）を統一・変換</td><td>(TLS/SSL)</td></tr>
+                    <tr><td><b>第5層</b></td><td>セッション層</td><td>通信の開始から終了までの一連の流れ（セッション）を管理</td><td>(TLS/SSL)</td></tr>
+                    <tr><td><b>第4層</b></td><td>トランスポート層</td><td>通信相手のプログラムにデータを確実に届ける</td><td>TCP, UDP</td></tr>
+                    <tr><td><b>第3層</b></td><td>ネットワーク層</td><td>通信相手のコンピューターまでの最適な経路を選択し、データを届ける</td><td>IP</td></tr>
+                    <tr><td><b>第2層</b></td><td>データリンク層</td><td>直接接続された機器間でのデータ転送を管理</td><td>Ethernet, Wi-Fi</td></tr>
+                    <tr><td><b>第1層</b></td><td>物理層</td><td>データを電気信号や光信号に変換し、ケーブルなどを通して物理的に送受信</td><td>LANケーブル, 光ファイバー</td></tr>
+                </tbody>
+            </table>
+            
+            <div class="card">
+                <div class="card-header">事例：「L2スイッチ」「L3スイッチ」って何？</div>
+                <p>ネットワーク機器の仕様書などで「L2スイッチ」や「L3スイッチ」という言葉を見たことはありませんか？この「L」はOSI参照モデルの「レイヤー（層）」を意味しています。L2スイッチは第2層（データリンク層）で動作し、MACアドレスを見てデータを中継します。一方、L3スイッチは第3層（ネットワーク層）で動作し、IPアドレスを見て賢くルーティング（経路選択）もできる高機能なスイッチなのです。このように、OSI参照モデルは現場で機器の性能を理解する上での共通言語としても使われています。</p>
+            </div>
+
+            <h3 id="sec2_3">2.3 TCP/IP階層モデル</h3>
+            <p>OSI参照モデルは7階層と少し細かいため、より実践的なモデルとして<b class="text-action">TCP/IP階層モデル</b>がよく使われます。これはOSI参照モデルを4つの階層に簡略化したものです。</p>
+             <table>
+                <thead>
+                    <tr><th>TCP/IPモデル</th><th>OSI参照モデルとの対応</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>アプリケーション層</td><td>第7層、第6層、第5層</td></tr>
+                    <tr><td>トランスポート層</td><td>第4層</td></tr>
+                    <tr><td>インターネット層</td><td>第3層</td></tr>
+                    <tr><td>ネットワークインタフェース層</td><td>第2層、第1層</td></tr>
+                </tbody>
+            </table>
+
+            <div class="question-box">
+                <h4>問題2.1</h4>
+                <p>コンピューター同士が通信する際の決まり事を<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">プロトコル</span></span>といいます。通信機能を7階層に整理したモデルを<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">OSI参照モデル</span></span>と呼びます。第3層は<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">ネットワーク層</span></span>で、IPアドレスによる経路選択を行います。第4層は<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">トランスポート層</span></span>で、TCPやUDPが該当します。これを4階層に簡略化したものが<span class="fill-in" onclick="toggleAnswer(this)">(5)<span class="answer">TCP/IP階層モデル</span></span>です。</p>
+            </div>
+            <div class="page-number">2</div>
+        </div>
+        
+        <div class="page">
+            <h2 id="chap3">3. インターネットを支える様々なプロトコル</h2>
+            <p>私たちが普段何気なく使っているWebサイトの閲覧やメールの送受信。その裏側では、目的ごとに特化した様々なプロトコルが活躍しています。この章では、代表的なプロトコルとその役割を見ていきましょう。</p>
+            
+            <h3 id="sec3_1">3.1 Web通信のプロトコル：HTTPとHTTPS</h3>
+            <p>Webサイトの情報を私たちのブラウザに届けてくれるのが<b class="text-action">HTTP (Hypertext Transfer Protocol)</b>です。Webサーバーに「このページの情報ください！」とリクエストを送り、サーバーが「はい、どうぞ」と情報を返す、というやり取りのルールを定めています。</p>
+            <p>最近では、このHTTPの通信内容を暗号化して安全性を高めた<b class="text-confirm">HTTPS (HTTP over SSL/TLS)</b> が主流です。URLの冒頭が`https://`で始まっていたり、ブラウザのアドレスバーに鍵マークが表示されていたりするのがその印です。個人情報やパスワードを扱うサイトでは必須の技術となっています。</p>
+
+            <h3 id="sec3_2">3.2 電子メールのプロトコル：SMTP, POP, IMAP</h3>
+            <p>電子メールの送受信には、主に3つのプロトコルが関わっています。</p>
+            <ul>
+                <li><b>SMTP (Simple Mail Transfer Protocol)</b>: <b class="marker">メールを送信する</b>ときに使われるプロトコルです。私たちが書いたメールを、相手のメールサーバーまで届ける郵便配達員のような役割を担います。</li>
+                <li><b>POP (Post Office Protocol)</b>: メールサーバーに届いた<b class="marker">メールを受信する（ダウンロードする）</b>ためのプロトコルです。郵便受けに届いた手紙をまとめて取り出すイメージです。一度ダウンロードすると、サーバーからメールが削除される設定が一般的です。</li>
+                <li><b>IMAP (Internet Message Access Protocol)</b>: こちらもメールを受信するためのプロトコルですが、POPとは異なり、<b class="marker">メールをサーバー上で管理</b>します。スマホやPCなど複数の端末から同じメールを読んだり、フォルダ分けしたりするのに便利です。GmailなどのWebメールサービスで広く使われています。</li>
+            </ul>
+
+            <h3 id="sec3_3">3.3 ファイル転送と時刻同期のプロトコル：FTP, SFTP, NTP</h3>
+            <p>その他にも、特定の目的を持ったプロトコルがあります。</p>
+            <ul>
+                <li><b>FTP (File Transfer Protocol) / SFTP (SSH File Transfer Protocol)</b>: サーバーとの間で<b class="marker">ファイルを送受信（アップロード・ダウンロード）する</b>ためのプロトコルです。Webサイトのデータをサーバーにアップする際などによく使われます。SFTPはFTPの通信を暗号化した、より安全なバージョンです。</li>
+                <li><b>NTP (Network Time Protocol)</b>: ネットワーク上のコンピューターの<b class="marker">時刻を正確に合わせる（同期する）</b>ためのプロトコルです。サーバーやルーターの時刻がバラバラだと、通信ログの解析などで問題が起きるため、非常に重要な役割を果たしています。</li>
+            </ul>
+
+            <h3 id="sec3_4">3.4 データ転送の基礎：TCP, UDP, IP</h3>
+            <p>ここまで紹介したプロトコル（HTTP, SMTPなど）は全て、より基礎的なプロトコルの上で成り立っています。その土台となるのが、TCP/IPの名の由来にもなっている<b class="text-action">TCP</b>、<b class="text-action">UDP</b>、そして<b class="text-action">IP</b>です。</p>
+            <ul>
+                <li><b class="text-confirm">IP (Internet Protocol)</b>: データの宛先となる住所（IPアドレス）を定め、目的地までデータを届ける「配送ルート」を決める役割です。（OSI第3層）</li>
+                <li><b class="text-confirm">TCP (Transmission Control Protocol)</b>: IPの上で動作し、通信相手としっかり接続を確認してから、データを<b class="marker">確実かつ順番通りに届ける</b>「信頼性の高い宅配便」です。データの抜け漏れがないか確認しながら送るため、Webページの閲覧やメール送信など、正確性が求められる通信で使われます。（OSI第4層）</li>
+                <li><b class="text-confirm">UDP (User Datagram Protocol)</b>: TCPと同じくIPの上で動作しますが、こちらは信頼性よりも<b class="marker">速度とリアルタイム性を重視</b>します。データを一方的に送りつける「速達郵便」のようなもので、多少データが欠けても問題ない動画ストリーミングやオンラインゲームなどで利用されます。（OSI第4層）</li>
+            </ul>
+
+            <div class="question-box">
+                <h4>問題3.1</h4>
+                <p>Webページの通信で使われるプロトコルは<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">HTTP</span></span>、メール送信で使われるのは<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">SMTP</span></span>です。信頼性の高いデータ転送を実現するのは<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">TCP</span></span>、速度重視の転送は<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">UDP</span></span>、そして通信相手の住所を管理するのが<span class="fill-in" onclick="toggleAnswer(this)">(5)<span class="answer">IP</span></span>です。</p>
+            </div>
+            <div class="page-number">3</div>
+        </div>
+
+        <div class="page">
+            <h2 id="chap4">4. 通信相手を特定する端末情報</h2>
+            <p>手紙を届けるには住所と氏名が必要なように、ネットワーク上でデータをやり取りするには、送信元と送信先を特定するための「アドレス」が必要です。この章では、コンピューター通信で使われる重要な3つのアドレスについて学びます。</p>
+
+            <h3 id="sec4_1">4.1 3つの重要アドレス：MACアドレス, IPアドレス, ポート番号</h3>
+            <p>コンピューター通信では、OSI参照モデルの異なる階層で、それぞれ役割の違うアドレスが使われています。</p>
+            <ul>
+                <li><b class="text-action">MACアドレス (Media Access Control Address)</b>: LANカードなど、<b class="marker">ネットワーク機器（ハードウェア）に割り振られた固有の番号</b>です。世界中で重複しないように製造段階で割り当てられ、「物理アドレス」とも呼ばれます。（第2層: データリンク層）</li>
+                <li><b class="text-action">IPアドレス (Internet Protocol Address)</b>: ネットワークに接続された<b class="marker">コンピューターを識別するための番号</b>です。ネットワーク上の「住所」にあたり、このアドレスを頼りにデータが届けられます。（第3層: ネットワーク層）</li>
+                <li><b class="text-action">ポート番号 (Port Number)</b>: コンピューター内で動作している<b class="marker">特定のアプリケーション（プログラム）を識別するための番号</b>です。IPアドレスが建物の住所なら、ポート番号は「部屋番号」に相当します。（第4層: トランスポート層）</li>
+            </ul>
+            <p>これら3つのアドレスを組み合わせることで、「どのコンピューターの、どのプログラム」にデータを届けるかを正確に指定できるのです。</p>
+
+            <h3 id="sec4_2">4.2 IPアドレスの仕組み：IPv4とIPv6</h3>
+            <p>IPアドレスには現在、主に2つのバージョンが使われています。</p>
+            <p><b>IPv4 (Internet Protocol version 4)</b><br>
+            「`192.168.1.1`」のように、0から255までの数字を4つ組み合わせた形式でおなじみのアドレスです。32ビットの数値で表現され、約43億個のアドレスを割り当てることができます。しかし、インターネットの爆発的な普及により、この<b class="text-problem">IPv4アドレスはすでに枯渇</b>してしまっています。</p>
+
+            <p><b>IPv6 (Internet Protocol version 6)</b><br>
+            IPv4の枯渇問題を解決するために登場した新しい規格です。128ビットという膨大な長さを持つため、そのアドレス数は<b class="text-confirm">事実上、無限</b>と言えるほどです（約340澗個！）。セキュリティ機能が標準で組み込まれているなどの利点もあります。現在、IPv4とIPv6は併用されており、徐々にIPv6への移行が進んでいます。</p>
+
+            <h3 id="sec4_3">4.3 グローバルIPアドレスとプライベートIPアドレス</h3>
+            <p>IPv4アドレスの枯渇に対応するため、IPアドレスを2種類に分けて効率的に利用する仕組みが生まれました。</p>
+            <ul>
+                <li><b class="text-confirm">グローバルIPアドレス</b>: インターネット上で<b class="marker">世界的に一意（ユニーク）なアドレス</b>です。インターネットに直接接続するために必要で、ICANNなどの組織によって管理されています。</li>
+                <li><b class="text-confirm">プライベートIPアドレス</b>: 家庭や会社などの<b class="marker">LAN内部でのみ使用できるアドレス</b>です。この範囲のアドレスは自由に設定でき、異なるLAN内であれば同じアドレスを再利用できます。</li>
+            </ul>
+            <p>私たちのPCやスマホには通常、プライベートIPアドレスが割り当てられています。そして、インターネットに接続する際には、ルータが持つ<b class="text-action">NAT (Network Address Translation)</b> という機能によって、プライベートIPアドレスとグローバルIPアドレスが相互に変換されます。この仕組みのおかげで、限られたグローバルIPアドレスを多くの機器で共有できるのです。</p>
+            
+            <div class="card">
+                <div class="card-header">事例：自分のグローバルIPアドレスを調べてみよう！</div>
+                <p>自分のPCがインターネットの世界からどう見えているか、気になりませんか？Webサイトで「IPアドレス 確認」と検索すると、あなたのPCが現在使っている「グローバルIPアドレス」を教えてくれるサービスがたくさんあります。表示されたアドレスは、あなたの家のルータにプロバイダから割り当てられたものです。家の中のPCやスマホは全て、この一つのグローバルIPアドレスを共有してインターネットに接続しているんだぜ！</p>
+            </div>
+
+            <div class="question-box">
+                <h4>問題4.1</h4>
+                <p>ネットワーク機器固有の番号を<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">MACアドレス</span></span>、ネットワーク上のコンピューターの住所を<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">IPアドレス</span></span>、アプリケーションを識別する番号を<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">ポート番号</span></span>といいます。IPアドレスには枯渇問題がある<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">IPv4</span></span>と、新しい規格の<span class="fill-in" onclick="toggleAnswer(this)">(5)<span class="answer">IPv6</span></span>があります。LAN内で使うIPアドレスを<span class="fill-in" onclick="toggleAnswer(this)">(6)<span class="answer">プライベートIPアドレス</span></span>といい、これをインターネット用のグローバルIPアドレスに変換する技術を<span class="fill-in" onclick="toggleAnswer(this)">(7)<span class="answer">NAT</span></span>といいます。</p>
+            </div>
+            <div class="page-number">4</div>
+        </div>
+        
+        <div class="button-container">
+            <a href="page7.html" class="nav-button">← 前の講座へ</a>
+            <a href="page9.html" class="nav-button">次の講座へ →</a>
+        </div>
+        
+        <div id="references" class="references">
+            <h3>参考文献・リンク</h3>
+            <ul>
+                <li>本教材は、ZEN大学（仮称・設置認可申請中）が提供する講義「ITリテラシー入門 第8回 ネットワーク」（講師：吉村 創一朗 先生）のテキストおよび講義内容を元に作成されました。</li>
+                <li class="footnote">※1: 無線LAN規格の最大通信速度について、Wi-Fi 7 (IEEE802.11be) では最大46Gbpsに達する見込みです。本テキストでは一般的な規格を中心に記載しています。</li>
+            </ul>
+        </div>
+    </div>
+    <script>
+        function toggleAnswer(element) {
+            const answer = element.querySelector('.answer');
+            if (answer) {
+                answer.classList.toggle('visible');
+            }
+        }
+    </script>
+</body>
+</html>

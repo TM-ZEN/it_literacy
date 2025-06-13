@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ITリテラシー入門 第12回 経営と法律</title>
+    <style>
+        :root {
+            --primary-color: #0d47a1; /* 濃い青 */
+            --secondary-color: #1976d2; /* 青 */
+            --accent-color: #d32f2f; /* 赤系のアクセント */
+            --background-color: #f5f8fa; /* 薄いグレーがかった背景 */
+            --text-color: #333;
+            --white-color: #ffffff;
+            --marker-yellow: #fffde7;
+            --confirm-green-bg: #e8f5e9;
+            --action-blue-bg: #e3f2fd;
+            --problem-red-bg: #fbe9e7;
+            --confirm-green-text: #2e7d32;
+            --action-blue-text: var(--secondary-color);
+            --problem-red-text: var(--accent-color);
+        }
+
+        body {
+            font-family: 'Yu Gothic UI', 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+            line-height: 1.8;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: var(--white-color);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        .page {
+            border: 1px solid #ddd;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .page-number {
+            position: absolute;
+            bottom: 10px;
+            right: 20px;
+            color: #aaa;
+            font-size: 0.9em;
+        }
+
+        h1 {
+            font-size: 2.2em;
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--secondary-color);
+            padding-bottom: 10px;
+            margin-bottom: 5px;
+            position: relative;
+        }
+        
+        h1::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -3px;
+            width: 70px;
+            border-bottom: 3px solid var(--primary-color);
+        }
+        
+        .lecturer {
+            font-size: 1.1em;
+            color: var(--secondary-color);
+            text-align: right;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            color: var(--primary-color);
+            border-left: 5px solid var(--secondary-color);
+            padding-left: 15px;
+            margin-top: 40px;
+        }
+
+        h3 {
+            font-size: 1.4em;
+            color: var(--secondary-color);
+            border-bottom: 1px dashed var(--secondary-color);
+            padding-bottom: 5px;
+            margin-top: 30px;
+        }
+
+        p { margin-bottom: 1.2em; }
+        strong, b { color: var(--primary-color); }
+        .marker { background: linear-gradient(transparent 60%, var(--marker-yellow) 60%); }
+        .text-confirm { color: var(--confirm-green-text); font-weight: bold; }
+        .text-action { color: var(--action-blue-text); font-weight: bold; }
+        .text-problem { color: var(--problem-red-text); font-weight: bold; }
+
+        .toc {
+            background-color: #f8fafd;
+            border: 1px solid var(--secondary-color);
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+        }
+        .toc h2 { margin-top: 0; border-left: none; padding-left: 0; border-bottom: 2px solid var(--secondary-color); }
+        .toc ul { list-style-type: none; padding-left: 0; }
+        .toc ul ul { padding-left: 20px; }
+        .toc a { text-decoration: none; color: var(--primary-color); }
+        .toc a:hover { text-decoration: underline; }
+
+        .question-box {
+            border: 2px solid var(--accent-color);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            background-color: var(--problem-red-bg);
+        }
+
+        .fill-in {
+            font-weight: bold;
+            color: var(--accent-color);
+            border-bottom: 2px dotted var(--accent-color);
+            cursor: pointer;
+            padding: 0 5px;
+        }
+
+        .answer {
+            display: none;
+            background-color: var(--marker-yellow);
+            padding: 2px 5px;
+            border-radius: 3px;
+            margin: 0 5px;
+        }
+        .answer.visible { display: inline-block; }
+
+        .card {
+            background-color: #f9f9f9;
+            border-left: 5px solid var(--primary-color);
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .card-header {
+            font-weight: bold;
+            font-size: 1.2em;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        table {
+            width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.95em;
+        }
+        th, td { border: 1px solid #ccc; padding: 12px; text-align: left; }
+        th { background-color: var(--primary-color); color: var(--white-color); font-weight: bold; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+        
+        .break-even-point-chart {
+            width: 100%; height: 300px; border: 1px solid #ccc; position: relative;
+            background: linear-gradient(90deg, #eee 1px, transparent 1px), linear-gradient(#eee 1px, transparent 1px);
+            background-size: 20% 20%;
+            font-size: 0.8em;
+        }
+        .break-even-point-chart .line { position: absolute; }
+        .break-even-point-chart .sales-line { width: 100%; height: 100%; clip-path: polygon(0 100%, 100% 0, 100% 100%); background-color: rgba(25, 118, 210, 0.4); }
+        .break-even-point-chart .cost-line { width: 100%; height: 100%; clip-path: polygon(0 80%, 100% 40%, 100% 80%); background-color: rgba(211, 47, 47, 0.4); }
+        .break-even-point-chart .fixed-cost-line { position: absolute; bottom: 20%; left: 0; width: 100%; border-top: 2px dashed #666; }
+        .break-even-point-chart .break-even { position: absolute; left: 50%; top: 50%; width: 10px; height: 10px; background-color: var(--accent-color); border-radius: 50%; transform: translate(-50%, -50%); }
+        .break-even-point-chart .label { position: absolute; background: white; padding: 2px 4px; border-radius: 3px; }
+        .break-even-point-chart .label.sales { color: var(--secondary-color); left: 70%; top: 25%; }
+        .break-even-point-chart .label.cost { color: var(--accent-color); left: 70%; top: 45%; }
+        .break-even-point-chart .label.fixed-cost { color: #555; left: 5%; bottom: 22%; }
+        .break-even-point-chart .label.break-even-point { color: var(--accent-color); left: 52%; top: 52%; }
+        .break-even-point-chart .label.profit { color: var(--confirm-green-text); left: 80%; top: 10%; transform: rotate(-25deg); }
+        .break-even-point-chart .label.loss { color: var(--problem-red-text); left: 20%; top: 85%; }
+        .break-even-point-chart .axis-x { position: absolute; bottom: 0; left: 0; right: 0; text-align: center; color: #555; }
+        .break-even-point-chart .axis-y { position: absolute; top: 0; bottom: 0; left: -2px; transform: rotate(180deg); writing-mode: vertical-lr; text-align: center; color: #555; }
+
+        .references { margin-top: 40px; padding-top: 20px; border-top: 1px solid #ccc; }
+        .references ul { list-style: none; padding: 0; }
+        .references li { margin-bottom: 10px; font-size: 0.9em; }
+        
+        .button-container { text-align: center; margin: 40px 0; display: flex; justify-content: space-between; }
+        .nav-button {
+            display: inline-block; padding: 10px 20px; background-color: var(--primary-color);
+            color: var(--white-color); text-decoration: none; border-radius: 5px;
+            font-weight: bold; transition: background-color 0.3s;
+        }
+        .nav-button:hover { background-color: var(--secondary-color); }
+        
+        .footnote { font-size: 0.8em; color: #666; margin-top: 1em; }
+
+        @media (max-width: 768px) {
+            .container { padding: 10px; }
+            .page { padding: 1rem; }
+            h1 { font-size: 1.8em; }
+            h2 { font-size: 1.5em; }
+            h3 { font-size: 1.2em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ITリテラシー入門 第12回 経営と法律</h1>
+        <p class="lecturer">講師：吉村 創一朗 先生</p>
+
+        <nav class="toc">
+            <h2>目次</h2>
+            <ul>
+                <li><a href="#chap1">1. 企業活動と経営の基礎</a></li>
+                <li><a href="#chap2">2. 経営管理と戦略</a></li>
+                <li><a href="#chap3">3. 財務会計の基本</a></li>
+                <li><a href="#chap4">4. 事業活動に関わる法律</a></li>
+            </ul>
+        </nav>
+        
+        <div class="page">
+            <h2 id="chap1">1. 企業活動と経営の基礎</h2>
+            <p>ITが社会の隅々まで浸透した今、社会人としてITを活用するには、その舞台となる「企業」について知っておく必要があります。この章では、現代の企業に求められる役割や、人を活かすマネジメントについて学んでいきましょう。</p>
+            
+            <h3>1.1 株式会社と企業の社会的責任</h3>
+            <p>企業は、単に利益を追求するだけの存在ではありません。特に株式会社は、多くの出資者（株主）から資金を集めて事業を行うため、その影響力は絶大です。そのため、現代の企業には、その力を社会や環境のために使うことが求められています。</p>
+            <ul>
+                <li><b>CSR (Corporate Social Responsibility)</b>: <b class="text-action">企業の社会的責任</b>のこと。利益追求だけでなく、従業員の働きやすさ、地域社会への貢献、環境への配慮といった責任を果たすべきという考え方です。</li>
+                <li><b>SDGs (Sustainable Development Goals)</b>: 2030年までに達成を目指す国際的な目標。「貧困をなくそう」「ジェンダー平等を実現しよう」など17の目標があり、企業もこれらに貢献することが投資の条件になる時代です。</li>
+                <li><b>ディスクロージャとコンプライアンス</b>: 企業が自社の情報を株主や社会に公開することを<b>ディスクロージャ（情報開示）</b>といいます。また、法律やルールを守る<b>コンプライアンス（法令遵守）</b>も、企業の信頼を支える基本です。</li>
+                <li><b>コーポレートブランド</b>: 「この会社の製品なら安心だ」といった、顧客や社会が企業に対して抱く<b class="marker">信用やイメージ</b>のこと。ブランド価値を高めることは、売上だけでなく、良い人材の確保にも繋がります。</li>
+            </ul>
+
+            <div class="card">
+                <div class="card-header">事例：「このゲーム会社、最高！」その気持ちがブランドを作る！</div>
+                <p>「このゲーム会社、いつもバグ修正が早くて神対応！」「イベントもユーザーを楽しませようって気持ちが伝わってくる！」そんな風に感じたことないか？それがまさに<b class="text-action">コーポレートブランド</b>だ！逆に、「また課金煽りか…」「この会社、従業員を大事にしないって噂だぞ」なんて評判が立てば、ブランドはガタ落ち。良いブランドは、面白いゲームを作るだけでなく、<b class="text-confirm">ユーザーや社会、従業員を大切にする姿勢</b>から生まれるんだ。その信頼が、次のヒット作への期待や、優秀なクリエイターが集まる力になるんだぜ！</p>
+            </div>
+            
+            <h3>1.2 ヒューマンリソースマネジメント (HRM)</h3>
+            <p>企業の経営資源「ヒト・モノ・カネ・情報」の中でも、最も重要なのが「ヒト」、つまり人材です。人材を活かすための仕組みが<b class="text-action">ヒューマンリソースマネジメント (HRM)</b> です。主な手法を見ていきましょう。</p>
+            <table>
+                <thead>
+                    <tr><th>手法</th><th>説明</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><b>OJT (On the Job Training)</b></td><td>実際の仕事を通じて、先輩から実務を学ぶ実践的な教育方法。</td></tr>
+                    <tr><td><b>OFF-JT (Off the Job Training)</b></td><td>研修やeラーニングで、体系的に知識を学ぶ教育方法。</td></tr>
+                    <tr><td><b>タレントマネジメント</b></td><td>個人の才能やスキルを中心に管理し、適材適所の配置を目指す手法。</td></tr>
+                    <tr><td><b>リテンション</b></td><td>人材の流出を防ぎ、定着させるための取り組み。社員の心の健康（メンタルヘルス）や、仕事への熱意・没頭度を示す<b class="text-confirm">ワークエンゲージメント</b>の向上が鍵となる。</td></tr>
+                </tbody>
+            </table>
+            <p>近年では、テレワークの導入や多様な人材が活躍できる<b class="marker">ダイバーシティ</b>の推進など、柔軟な働き方を支援することがリテンションに繋がると考えられています。</p>
+            
+            <div class="question-box">
+                <h4>問題1</h4>
+                <p>企業の社会的責任を<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">CSR</span></span>、持続可能な開発目標を<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">SDGs</span></span>といいます。実務を通じて学ぶ教育方法を<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">OJT</span></span>、人材の定着を図る取り組みを<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">リテンション</span></span>といいます。</p>
+            </div>
+        </div>
+
+        <div class="page">
+            <h2 id="chap2">2. 経営管理と戦略</h2>
+            <p>企業が目標に向かって進むためには、羅針盤となる「経営管理」が必要です。災害などの不測の事態に備える計画や、変化の速い時代に対応する意思決定方法、そして組織の形まで、経営の舵取りについて学びましょう。</p>
+
+            <h3>2.1 事業継続と意思決定</h3>
+            <ul>
+                <li><b>BCP (Business Continuity Plan：事業継続計画)</b>: 地震やシステム障害といった非常事態が発生した際に、被害を最小限に抑え、<b class="marker">事業を継続・早期復旧させるための計画</b>です。BCPを策定し、訓練や見直しを継続的に行う活動を<b>BCM (Business Continuity Management)</b> といいます。</li>
+                <li><b>OODAループ</b>: 変化の激しい状況で成果を出すための意思決定手法。「観察(Observe)→状況判断(Orient)→意思決定(Decide)→実行(Act)」のサイクルを高速で回します。<b class="text-problem">計画（Plan）を立てるPDCA</b>とは異なり、まず状況を見てすぐ行動に移すのが特徴です。</li>
+            </ul>
+
+            <h3>2.2 経営組織の形態</h3>
+            <p>企業の目的や規模によって、最適な組織の形は異なります。代表的なものを紹介します。</p>
+            <table>
+                <thead>
+                    <tr><th>組織形態</th><th>説明</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><b>事業部制組織</b></td><td>製品や地域などの事業部ごとに独立して運営される形態。各事業部が自らの業績に責任を持つ。</td></tr>
+                    <tr><td><b>職能別組織</b></td><td>開発、営業、人事など、専門的な機能（職能）ごとに部門が構成される形態。専門知識が集まりやすい。</td></tr>
+                    <tr><td><b>マトリックス組織</b></td><td>事業部制と職能別など、2つの異なる組織構造を組み合わせた形態。個人は2つの系統の指揮下に入る。</td></tr>
+                    <tr><td><b>カンパニ制組織</b></td><td>事業部制よりさらに独立性が高く、あたかも別会社のように運営される形態。ホールディングス（持株会社）体制でよく見られる。</td></tr>
+                </tbody>
+            </table>
+            
+            <div class="card">
+                <div class="card-header">事例：未知のゲームを攻略せよ！OODAループで最強プレイヤーを目指せ！</div>
+                <p>初めてプレイする超難関ゲーム、どう攻略する？攻略サイトをじっくり読んで計画を立てる（PDCA）？いや、それでは手遅れになる！まずは<b class="text-action">OODAループ</b>だ！<br>
+                ①<b>観察(Observe)</b>：敵の動きやマップの構造をよく見る！<br>
+                ②<b>状況判断(Orient)</b>：あの敵は遠距離攻撃が弱点か？あそこの壁は壊せそうだな！と仮説を立てる。<br>
+                ③<b>意思決定(Decide)</b>：よし、まずは遠くから魔法で攻撃してみよう！と決める。<br>
+                ④<b>実行(Act)</b>：実際に攻撃！<br>
+                効かなかったら、すぐさま次の観察と判断に移る。この<b class="text-confirm">「見て、考えて、即実行」の高速ループ</b>こそ、先が読めない状況を乗り切る最強の戦略なんだぜ！</p>
+            </div>
+
+            <h3>2.3 生産戦略と問題解決</h3>
+            <p>モノづくり企業にとって、生産と在庫の管理は生命線です。また、あらゆる場面で役立つ問題解決の手法も知っておきましょう。</p>
+            <ul>
+                <li><b>在庫管理</b>: 在庫がどれくらいの期間で入れ替わるかを示す<b>在庫回転期間</b>や<b>在庫回転率</b>、発注から納品までの時間である<b>リードタイム</b>が重要な指標です。</li>
+                <li><b>ブレーンストーミング</b>: 参加者が自由にアイデアを出し合う会議手法。質より量、批判禁止、便乗歓迎がルール。出たアイデアを似たグループにまとめる手法を<b>親和図法</b>といいます。</li>
+                <li><b>デシジョンテーブル</b>: ある問題の全ての条件と、それに対応する行動を一覧にした表。条件の組み合わせを網羅的に検討でき、抜け漏れを防ぎます。</li>
+            </ul>
+            
+            <div class="question-box">
+                <h4>問題2</h4>
+                <p>非常事態に備える事業継続計画を<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">BCP</span></span>といいます。観察・状況判断・意思決定・実行のサイクルを回す手法を<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">OODAループ</span></span>といいます。企業の最高経営責任者を<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">CEO</span></span>といいます。発注から納品までにかかる時間を<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">リードタイム</span></span>といいます。</p>
+            </div>
+        </div>
+
+        <div class="page">
+            <h2 id="chap3">3. 財務会計の基本</h2>
+            <p>企業の活動はすべてお金に関わってきます。会社の健康状態を示す「決算書」を読み解く力は、ビジネスパーソンにとって必須スキルです。ここでは、会計の基本である「損益計算書」と「貸借対照表」を中心に学びます。</p>
+
+            <h3>3.1 損益計算書 (P/L) と利益</h3>
+            <p><b class="text-action">損益計算書（P/L）</b>は、一定期間（通常1年間）の<b class="marker">会社の経営成績</b>を示す「成績表」です。どれだけ売上があり、どれだけ費用がかかり、最終的にいくら儲かったのか（利益）がわかります。利益には段階があり、上から順番に計算されます。</p>
+            <ol>
+                <li><b>売上総利益（粗利）</b> = 売上高 − 売上原価</li>
+                <li><b>営業利益</b> = 売上総利益 − 販売費及び一般管理費</li>
+                <li><b>経常利益</b> = 営業利益 + 営業外収益 − 営業外費用</li>
+                <li><b>税引前当期純利益</b> = 経常利益 + 特別利益 − 特別損失</li>
+                <li><b>当期純利益</b> = 税引前当期純利益 − 法人税等</li>
+            </ol>
+
+            <h3>3.2 損益分岐点：赤字と黒字の境界線</h3>
+            <p><b class="text-problem">損益分岐点</b>とは、売上と費用がちょうど同じになり、<b class="marker">利益がゼロになる売上高</b>のことです。これを超えれば黒字、下回れば赤字になります。事業を始める前に「最低でもいくら売上が必要か」を知るために不可欠な分析です。</p>
+            <p>計算するには、費用を売上の増減に関わらない<b>固定費</b>（家賃、人件費など）と、売上に連動する<b>変動費</b>（材料費、仕入費など）に分ける必要があります。</p>
+            <div class="break-even-point-chart">
+                <div class="line sales-line"></div>
+                <div class="line cost-line"></div>
+                <div class="fixed-cost-line"></div>
+                <div class="break-even"></div>
+                <div class="label sales">売上高</div>
+                <div class="label cost">総費用</div>
+                <div class="label fixed-cost">固定費</div>
+                <div class="label break-even-point">損益分岐点</div>
+                <div class="label profit">利益</div>
+                <div class="label loss">損失</div>
+                <div class="axis-x">売上高 →</div>
+                <div class="axis-y">金額 →</div>
+            </div>
+
+            <h3>3.3 貸借対照表 (B/S) と財務指標</h3>
+            <p><b class="text-action">貸借対照表（B/S）</b>は、ある特定の時点（決算日）での<b class="marker">会社の財産状況</b>を示す「財産目録」です。左側に資産（お金の使い道）、右側に負債と純資産（お金の集め方）が記載され、左右の合計額は必ず一致（バランス）します。</p>
+            <ul>
+                <li><b>資産</b>：会社が持っている財産（現金、商品、土地、建物など）</li>
+                <li><b>負債</b>：将来返済が必要なお金（借入金など）</li>
+                <li><b>純資産</b>：返済不要の自己資本（株主からの出資金や過去の利益の蓄積）</li>
+            </ul>
+            <p>これらの決算書の数字から、企業の収益性や安全性を分析する<b class="text-confirm">財務指標</b>を計算できます。例えば、<b>自己資本比率</b>（＝純資産 ÷ 総資本）は、会社の財務的な安定性を示す重要な指標です。</p>
+
+            <div class="card">
+                <div class="card-header">事例：同人誌即売会で黒字を目指せ！損益分岐点分析！</div>
+                <p>「よし、次のイベントで同人誌を出すぞ！」でも、一体何部売れれば赤字にならないんだ？ここで<b class="text-action">損益分岐点分析</b>の出番だ！<br>
+                まず<b>固定費</b>を計算する。イベントの参加費が10,000円。これが売上に関係なくかかる費用だ。<br>
+                次に<b>変動費</b>。一冊あたりの印刷費が300円。これは売れる数に比例して増える費用だな。<br>
+                一冊1,000円で売るとすると、一冊あたりの利益（限界利益）は700円だ。この利益で固定費の10,000円を回収するには… 10,000 ÷ 700 ≒ 15冊！<br>
+                つまり、<b class="text-confirm">15冊以上売れれば黒字になる</b>ってことだ！この目標があれば、宣伝にも力が入るぜ！</p>
+            </div>
+            
+            <div class="question-box">
+                <h4>問題3</h4>
+                <p>1年間の経営成績を示す決算書を<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">損益計算書(P/L)</span></span>、決算日時点での財産状況を示す決算書を<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">貸借対照表(B/S)</span></span>といいます。利益がゼロになる売上高を<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">損益分岐点</span></span>といいます。売上の増減に関係なく発生する費用を<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">固定費</span></span>といいます。</p>
+            </div>
+        </div>
+
+        <div class="page">
+            <h2 id="chap4">4. 事業活動に関わる法律</h2>
+            <p>ビジネスの世界は自由な競争が基本ですが、何でもありではありません。公正な取引を守り、働く人や消費者を保護するための様々な法律があります。社会人として「知らなかった」では済まされない重要な法律をしっかり押さえておきましょう。</p>
+
+            <h3>4.1 知的財産権に関する法規</h3>
+            <ul>
+                <li><b>不正競争防止法</b>: 企業の公正な競争を守るための法律です。他社の<b class="text-problem">営業秘密</b>（秘密として管理された有用な情報）を不正に取得したり、他社の商品の形をそっくり真似したり、産地を偽装したりする行為を禁止しています。</li>
+                <li><b>ソフトウェアライセンス</b>: ソフトウェアの利用許諾契約のことです。ソフトウェアは著作権で保護されており、利用者はライセンス契約に従う必要があります。1つの契約で複数台使える<b>ボリュームライセンス</b>や、期間で料金を支払う<b>サブスクリプション</b>など様々な形態があります。</li>
+            </ul>
+
+            <h3>4.2 労働関連法規</h3>
+            <p>働く人の権利を守るための法律は、特に重要です。</p>
+            <table>
+                <thead>
+                    <tr><th>法律名</th><th>内容</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><b>労働基準法</b></td><td>労働条件の最低基準（労働時間、休日、最低賃金など）を定めた、労働者を保護するための基本となる法律。</td></tr>
+                    <tr><td><b>労働契約法</b></td><td>労働者と使用者間の契約に関するルールを定め、不当な解雇などを防ぐための法律。</td></tr>
+                    <tr><td><b>労働者派遣法</b></td><td>派遣労働者の権利を守り、派遣元と派遣先の責任を明確にするための法律。</td></tr>
+                </tbody>
+            </table>
+            
+            <h3>4.3 取引関連法規</h3>
+            <p>企業間の取引や消費者との取引において、弱い立場になりがちな側を保護するための法律です。</p>
+            <ul>
+                <li><b>独占禁止法</b>: 市場の独占や不公正な取引を禁止し、自由で公正な競争を促進するための法律。</li>
+                <li><b>下請法</b>: 親事業者が下請事業者に対して、不当な代金の減額や支払遅延などを行うことを禁止する法律。</li>
+                <li><b>PL法（製造物責任法）</b>: 製品の欠陥によって消費者が損害を被った場合、製造業者が損害賠償責任を負うことを定めた法律。</li>
+                <li><b>特商法（特定商取引法）</b>: 訪問販売や通信販売など、トラブルが生じやすい取引から消費者を守る法律。一定期間内なら無条件で契約解除できる<b class="text-confirm">クーリング・オフ制度</b>もこの法律で定められています。</li>
+            </ul>
+
+            <div class="card">
+                <div class="card-header">事例：恐怖のバイトテロ！SNS投稿一つで会社の信用が地に落ちる！</div>
+                <p>「店のアイスケースに入ってみたw」あるバイトがそんな悪ふざけ動画をSNSに投稿。これが大炎上！店の衛生管理が疑われ、会社は謝罪と店舗の消毒に追われ、ブランドイメージは地に落ちた…。このバイトの行為は、会社の<b class="text-problem">営業秘密</b>（この場合は信用や衛生管理ノウハウ）を毀損するもので、<b class="text-action">不正競争防止法</b>に触れる可能性もあるんだ。さらに会社の評判が悪化する<b class="text-problem">レピュテーションリスク</b>も発生する。軽い気持ちの行動が、法律問題と経営危機を同時に引き起こす、恐ろしい例だぜ！</p>
+            </div>
+            
+            <div class="question-box">
+                <h4>問題4</h4>
+                <p>企業の営業秘密の不正利用などを禁じる法律を<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">不正競争防止法</span></span>といいます。労働条件の最低基準を定めた法律は<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">労働基準法</span></span>です。製品の欠陥による損害の責任を定めた法律を<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">PL法</span></span>、訪問販売などから消費者を守る法律を<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">特商法</span></span>といいます。</p>
+            </div>
+        </div>
+
+        <div class="button-container">
+            <a href="page11.html" class="nav-button">← 前の講座へ</a>
+            <a href="#" class="nav-button">次の講座へ →</a>
+        </div>
+        
+        <div id="references" class="references">
+            <h3>参考文献・リンク</h3>
+            <ul>
+                <li>本教材は、ZEN大学（仮称・設置認可申請中）が提供する講義「ITリテラシー入門 第12回 経営と法律」（講師：吉村 創一朗 先生）のテキストおよび講義内容を元に作成されました。</li>
+            </ul>
+        </div>
+    </div>
+    <script>
+        function toggleAnswer(element) {
+            const answer = element.querySelector('.answer');
+            if (answer) {
+                answer.classList.toggle('visible');
+            }
+        }
+    </script>
+</body>
+</html>

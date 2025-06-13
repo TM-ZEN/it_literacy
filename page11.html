@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ITリテラシー入門 第11回 システム開発</title>
+    <style>
+        :root {
+            --primary-color: #0d47a1; /* 濃い青 */
+            --secondary-color: #1976d2; /* 青 */
+            --accent-color: #d32f2f; /* 赤系のアクセント */
+            --background-color: #f5f8fa; /* 薄いグレーがかった背景 */
+            --text-color: #333;
+            --white-color: #ffffff;
+            --marker-yellow: #fffde7;
+            --confirm-green-bg: #e8f5e9;
+            --action-blue-bg: #e3f2fd;
+            --problem-red-bg: #fbe9e7;
+            --confirm-green-text: #2e7d32;
+            --action-blue-text: var(--secondary-color);
+            --problem-red-text: var(--accent-color);
+        }
+
+        body {
+            font-family: 'Yu Gothic UI', 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+            line-height: 1.8;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: var(--white-color);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        .page {
+            border: 1px solid #ddd;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .page-number {
+            position: absolute;
+            bottom: 10px;
+            right: 20px;
+            color: #aaa;
+            font-size: 0.9em;
+        }
+
+        h1 {
+            font-size: 2.2em;
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--secondary-color);
+            padding-bottom: 10px;
+            margin-bottom: 5px;
+            position: relative;
+        }
+        
+        h1::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -3px;
+            width: 70px;
+            border-bottom: 3px solid var(--primary-color);
+        }
+        
+        .lecturer {
+            font-size: 1.1em;
+            color: var(--secondary-color);
+            text-align: right;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            color: var(--primary-color);
+            border-left: 5px solid var(--secondary-color);
+            padding-left: 15px;
+            margin-top: 40px;
+        }
+
+        h3 {
+            font-size: 1.4em;
+            color: var(--secondary-color);
+            border-bottom: 1px dashed var(--secondary-color);
+            padding-bottom: 5px;
+            margin-top: 30px;
+        }
+
+        p { margin-bottom: 1.2em; }
+        strong, b { color: var(--primary-color); }
+        .marker { background: linear-gradient(transparent 60%, var(--marker-yellow) 60%); }
+        .text-confirm { color: var(--confirm-green-text); font-weight: bold; }
+        .text-action { color: var(--action-blue-text); font-weight: bold; }
+        .text-problem { color: var(--problem-red-text); font-weight: bold; }
+
+        .toc {
+            background-color: #f8fafd;
+            border: 1px solid var(--secondary-color);
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+        }
+        .toc h2 { margin-top: 0; border-left: none; padding-left: 0; border-bottom: 2px solid var(--secondary-color); }
+        .toc ul { list-style-type: none; padding-left: 0; }
+        .toc ul ul { padding-left: 20px; }
+        .toc a { text-decoration: none; color: var(--primary-color); }
+        .toc a:hover { text-decoration: underline; }
+
+        .question-box {
+            border: 2px solid var(--accent-color);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            background-color: var(--problem-red-bg);
+        }
+
+        .fill-in {
+            font-weight: bold;
+            color: var(--accent-color);
+            border-bottom: 2px dotted var(--accent-color);
+            cursor: pointer;
+            padding: 0 5px;
+        }
+
+        .answer {
+            display: none;
+            background-color: var(--marker-yellow);
+            padding: 2px 5px;
+            border-radius: 3px;
+            margin: 0 5px;
+        }
+        .answer.visible { display: inline-block; }
+
+        .card {
+            background-color: #f9f9f9;
+            border-left: 5px solid var(--primary-color);
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .card-header {
+            font-weight: bold;
+            font-size: 1.2em;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        table {
+            width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.95em;
+        }
+        th, td { border: 1px solid #ccc; padding: 12px; text-align: left; }
+        th { background-color: var(--primary-color); color: var(--white-color); font-weight: bold; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+        
+        .flow-diagram {
+            display: flex; flex-direction: column; gap: 10px; padding: 15px; border: 1px solid #ccc; border-radius: 8px; background-color: #f8fafd;
+        }
+        .flow-diagram .step {
+            display: flex; align-items: center; gap: 15px; padding: 10px; background-color: var(--white-color); border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .flow-diagram .step-number {
+            background-color: var(--primary-color); color: var(--white-color); font-weight: bold; border-radius: 50%;
+            width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
+        .flow-diagram .arrow { text-align: center; font-size: 1.5em; color: var(--secondary-color); margin: 5px 0; }
+        
+        .dfd-diagram {
+            display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; align-items: center;
+            text-align: center; padding: 20px; border: 1px solid #ccc; border-radius: 8px; background-color: #f8fafd;
+        }
+        .dfd-diagram .item { padding: 15px; border-radius: 5px; }
+        .dfd-diagram .source, .dfd-diagram .sink { background-color: var(--confirm-green-bg); border: 1px solid var(--confirm-green-text); }
+        .dfd-diagram .process { background-color: var(--action-blue-bg); border-radius: 50%; border: 1px solid var(--action-blue-text); }
+        .dfd-diagram .datastore { background-color: var(--white-color); border: 1px solid #999; border-left: 3px solid #555; border-right: 3px solid #555; }
+        .dfd-diagram .arrow { font-size: 1.5em; color: var(--secondary-color); }
+        .dfd-diagram .arrow-label { font-size: 0.8em; color: #555; padding-bottom: 25px; }
+
+        .bpmn-diagram {
+            display: flex; border: 1px solid #ccc; background-color: #f8fafd; padding: 10px;
+        }
+        .bpmn-diagram .lane {
+            flex: 1; border: 1px solid #aaa; padding: 10px; text-align: center; position: relative;
+        }
+        .bpmn-diagram .lane-title {
+            position: absolute; left: -10px; top: 50%; transform: translateY(-50%) rotate(-90deg);
+            background: var(--primary-color); color: var(--white-color); padding: 5px 10px; font-weight: bold;
+        }
+        .bpmn-diagram .flow {
+            display: flex; flex-direction: column; align-items: center; justify-content: space-around; height: 100%;
+        }
+        .bpmn-diagram .event { border: 2px solid #333; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background-color: var(--white-color); }
+        .bpmn-diagram .start { background-color: var(--confirm-green-bg); border-color: var(--confirm-green-text); }
+        .bpmn-diagram .end { background-color: var(--problem-red-bg); border-color: var(--problem-red-text); }
+        .bpmn-diagram .activity { border: 2px solid var(--secondary-color); border-radius: 5px; padding: 10px; background-color: var(--white-color); }
+        .bpmn-diagram .gateway { border: 2px solid var(--secondary-color); width: 40px; height: 40px; transform: rotate(45deg); display: flex; align-items: center; justify-content: center; background-color: var(--white-color); }
+        .bpmn-diagram .gateway-inner { transform: rotate(-45deg); font-size: 1.2em; font-weight: bold; }
+        .bpmn-diagram .arrow { margin: 10px 0; font-size: 1.5em; color: var(--secondary-color); }
+        
+        .gantt-chart { border: 1px solid #ccc; padding: 10px; font-size: 0.9em; }
+        .gantt-chart .row { display: flex; align-items: center; margin-bottom: 5px; }
+        .gantt-chart .task-name { width: 150px; flex-shrink: 0; padding-right: 10px; text-align: right; }
+        .gantt-chart .bar-container { flex-grow: 1; background-color: #e0e0e0; position: relative; height: 25px; }
+        .gantt-chart .bar { position: absolute; height: 100%; background-color: var(--secondary-color); border-radius: 3px; }
+
+        .references { margin-top: 40px; padding-top: 20px; border-top: 1px solid #ccc; }
+        .references ul { list-style: none; padding: 0; }
+        .references li { margin-bottom: 10px; font-size: 0.9em; }
+        
+        .button-container { text-align: center; margin: 40px 0; display: flex; justify-content: space-between; }
+        .nav-button {
+            display: inline-block; padding: 10px 20px; background-color: var(--primary-color);
+            color: var(--white-color); text-decoration: none; border-radius: 5px;
+            font-weight: bold; transition: background-color 0.3s;
+        }
+        .nav-button:hover { background-color: var(--secondary-color); }
+        
+        .footnote { font-size: 0.8em; color: #666; margin-top: 1em; }
+
+        @media (max-width: 768px) {
+            .container { padding: 10px; }
+            .page { padding: 1rem; }
+            h1 { font-size: 1.8em; }
+            h2 { font-size: 1.5em; }
+            h3 { font-size: 1.2em; }
+            .bpmn-diagram { flex-direction: column; }
+            .bpmn-diagram .lane { margin-bottom: 10px; }
+            .bpmn-diagram .lane-title { position: static; transform: none; width: 100%; text-align: center; margin-bottom: 10px; }
+            .bpmn-diagram .flow { flex-direction: row; flex-wrap: wrap; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ITリテラシー入門 第11回 システム開発</h1>
+        <p class="lecturer">講師：吉村 創一朗 先生</p>
+
+        <nav class="toc">
+            <h2>目次</h2>
+            <ul>
+                <li><a href="#chap1">1. システム戦略</a></li>
+                <li><a href="#chap2">2. 業務プロセスとソリューション</a></li>
+                <li><a href="#chap3">3. システム企画と要件定義</a></li>
+                <li><a href="#chap4">4. システム開発技術</a></li>
+                <li><a href="#chap5">5. プロジェクトマネジメントとサービスマネジメント</a></li>
+                <li><a href="#chap6">6. システム監査と内部統制</a></li>
+            </ul>
+        </nav>
+        
+        <div class="page">
+            <h2 id="chap1">1. システム戦略</h2>
+            <p>「この作業、もっと楽にできないかな…」「うちのチーム、情報共有がうまくいってないな…」そんな悩みを解決する強力な武器がITです。この章では、組織の目標を達成するために情報システムをどう活用するか、その設計図である<b class="text-action">「システム戦略」</b>について学んでいきましょう。</p>
+            
+            <h3>1.1 システム戦略とは</h3>
+            <p>システム戦略とは、<b class="marker">情報システムを使って経営課題を解決するための方針</b>のことです。しかし、やみくもに最新のツールを導入すれば良いわけではありません。システム戦略は、あくまでも組織の「経営理念」や「ビジョン」という大きな目的に沿っている必要があります。</p>
+            <p>そのためには、まず組織の現状、特に経営資源である<b class="text-confirm">「ヒト、モノ、カネ、情報」</b>の流れを正確に把握・分析することが不可欠です。誰がどんなスキルを持っているのか、どんな設備があるのか、予算はどれくらいか、どんな情報がどこにあるのか。これらを整理し、課題を明確にした上で、最適な解決策（ソリューション）としてシステムを位置づけていきます。</p>
+
+            <h3>1.2 エンタープライズアーキテクチャ (EA)</h3>
+            <p>組織の業務とシステムを理想的な形に近づけるための強力なフレームワークが<b class="text-action">エンタープライズアーキテクチャ (EA)</b> です。EAは、組織を以下の4つの階層で整理・分析します。</p>
+            <table>
+                <thead>
+                    <tr><th>アーキテクチャ名</th><th>内容</th><th>関連する資料の例</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><b>ビジネスアーキテクチャ</b></td><td>業務をどのように行うかを体系化したもの</td><td>業務フロー図、機能構成図</td></tr>
+                    <tr><td><b>データアーキテクチャ</b></td><td>業務で利用する情報を体系化したもの</td><td>データ定義表、E-R図</td></tr>
+                    <tr><td><b>アプリケーションアーキテクチャ</b></td><td>業務を支援するシステム機能を体系化したもの</td><td>情報システム関連図</td></tr>
+                    <tr><td><b>テクノロジアーキテクチャ</b></td><td>システムを支える技術基盤を体系化したもの</td><td>ネットワーク構成図</td></tr>
+                </tbody>
+</table>
+            <p>この4つの視点から、現状（As-is）を分析し、あるべき姿（To-be）を描きます。そして、その理想と現状の差（ギャップ）を埋めるための具体的な計画を立てる分析手法を<b class="text-confirm">ギャップ分析</b>といいます。</p>
+
+            <h3>1.3 SoRとSoE</h3>
+            <p>システムは、その目的によって大きく2つに分類できます。</p>
+            <ul>
+                <li><b>SoR (System of Record)</b>: 「記録のためのシステム」。販売管理や人事管理など、正確なデータを記録・管理することが主目的の、いわゆる<b class="marker">基幹系システム</b>です。</li>
+                <li><b>SoE (System of Engagement)</b>: 「つながりのためのシステム」。顧客との関係を強化することが目的のシステムです。レコメンド機能やSNS連携など、<b class="marker">顧客体験を向上させる</b>ための機能が中心となります。</li>
+            </ul>
+
+            <div class="card">
+                <div class="card-header">事例：文化祭のIT革命！ギャップ分析で模擬店を大成功させろ！</div>
+                <p>俺たちのクラスの模擬店、毎年どんぶり勘定で赤字寸前…。これが現状（As-is）だ！原因は、手書きの売上記録とバラバラなシフト管理。そこで、あるべき姿（To-be）として「スマホでリアルタイムに売上を管理し、全員がシフトを共有できる状態」を掲げたんだ！このギャップを埋めるため、無料の売上管理アプリとスケジュール共有アプリを導入。これが俺たちのシステム戦略だぜ！結果、無駄な仕入れが減り、シフトの穴もなくなり、過去最高の黒字を達成！小さな組織でも、<b class="text-action">現状と理想を明確にすれば、ITは最強の味方になる</b>んだ！</p>
+            </div>
+
+            <div class="question-box">
+                <h4>問題1</h4>
+                <p>情報システムを使って経営課題を解決するための方針を<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">システム戦略</span></span>といいます。業務とシステムのあるべき姿を定義するフレームワークが<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">エンタープライズアーキテクチャ(EA)</span></span>です。現状(As-is)と理想(To-be)の差を分析する手法を<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">ギャップ分析</span></span>といいます。データの記録を目的とした基幹系システムを<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">SoR</span></span>、顧客とのつながりを強化するシステムを<span class="fill-in" onclick="toggleAnswer(this)">(5)<span class="answer">SoE</span></span>といいます。</p>
+            </div>
+            <div class="page-number">1</div>
+        </div>
+        
+        <div class="page">
+            <h2 id="chap2">2. 業務プロセスとソリューション</h2>
+            <p>システム開発は、建物を建てることに似ています。どんなに立派な建材（技術）があっても、設計図（業務プロセスの理解）がなければ良い家は建ちません。この章では、業務の流れを可視化する「モデリング」手法と、課題を解決する「ソリューション」について学びます。</p>
+
+            <h3>2.1 業務プロセスを可視化するモデリング手法</h3>
+            <p>複雑な業務の流れを、誰にでも分かりやすく図で表現するのがモデリングです。代表的な3つの手法をマスターしましょう。</p>
+            <ul>
+                <li><b>E-R図 (Entity-Relationship Diagram)</b>: システムで扱う「データ（実体）」と、その「関係」を図で表現します。データベース設計の基本となる設計図です。「学生」と「科目」というデータがあり、「一人の学生は複数の科目を履修できる」といった関係性を示します。</li>
+                <li><b>DFD (Data Flow Diagram)</b>: システム内の「データの流れ」に注目した図です。誰がデータを作り（源泉）、どこに保存され（データストア）、どのように処理され（プロセス）、どこに出力されるか（吸収）を追いかけます。</li>
+                <li><b>BPMN (Business Process Model and Notation)</b>: 業務を行う人（アクター）ごとの役割分担と、プロセスの流れを時系列で表現する手法です。誰が・いつ・何をするのかが一目瞭然になります。</li>
+            </ul>
+
+            <div class="diagram">
+                <p><strong>DFDの例：学生アンケートシステム</strong></p>
+                <div class="dfd-diagram">
+                    <div class="item source">学生</div>
+                    <div class="arrow">→</div>
+                    <div class="item process">アンケート実施</div>
+                    <div class="arrow">→</div>
+                    <div class="item datastore">アンケートDB</div>
+                    <div class="arrow" style="grid-column: 4; grid-row: 2; transform: rotate(180deg);">→</div>
+                    <div class="item process" style="grid-column: 3; grid-row: 2;">ランキング作成</div>
+                    <div class="arrow" style="grid-column: 2; grid-row: 2; transform: rotate(180deg);">→</div>
+                    <div class="item sink" style="grid-column: 1; grid-row: 2;">Webサイト</div>
+                    <div class="arrow-label" style="grid-column: 2; grid-row: 1;">回答データ</div>
+                    <div class="arrow-label" style="grid-column: 4; grid-row: 1;">集計データ</div>
+                </div>
+            </div>
+
+            <h3>2.2 業務プロセスの改善とソリューション</h3>
+            <p>業務プロセスを可視化したら、次はいよいよ改善です。</p>
+            <ul>
+                <li><b>BPR (Business Process Re-engineering)</b>: 既存のやり方を根本から見直し、業務プロセスを<b class="marker">再構築</b>すること。大胆な改革を目指します。</li>
+                <li><b>BPM (Business Process Management)</b>: BPRのような一度きりの改革ではなく、業務プロセスを<b class="marker">継続的に改善</b>していく活動のことです。</li>
+            </ul>
+            <p>これらの課題解決の方法を<b class="text-action">ソリューション</b>と呼びます。ソリューションの実現方法には、自社で開発する<b class="text-confirm">インソーシング（インハウス）</b>と、外部の専門企業に委託する<b class="text-problem">アウトソーシング</b>があります。</p>
+
+            <h3>2.3 多様なソリューション提供形態</h3>
+            <p>現代では、システムを利用する方法も多様化しています。オンプレミス（自社運用）だけでなく、インターネット経由でサービスを利用する<b class="text-action">クラウドコンピューティング</b>が主流です。</p>
+            <table>
+                <thead>
+                    <tr><th>提供形態</th><th>概要</th><th>例</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><b>SaaS (サース)</b></td><td>ソフトウェアを提供するサービス</td><td>Gmail, Microsoft 365</td></tr>
+                    <tr><td><b>PaaS (パース)</b></td><td>アプリケーションの開発・実行環境を提供するサービス</td><td>Google App Engine, AWS Lambda</td></tr>
+                    <tr><td><b>IaaS (アイアース)</b></td><td>サーバーなどのインフラを提供するサービス</td><td>Amazon EC2, Google Compute Engine</td></tr>
+                    <tr><td><b>オンプレミス</b></td><td>自社でサーバー等の機器を導入・運用する方式</td><td>自社内のサーバー室で管理</td></tr>
+                </tbody>
+            </table>
+
+            <h3>2.4 働き方を変える改善手法</h3>
+            <p>大規模なシステム化以外にも、日々の業務を効率化する手法はたくさんあります。</p>
+            <ul>
+                <li><b>RPA (Robotic Process Automation)</b>: データ入力や定型的なメール送信など、PCでの単純作業をソフトウェアのロボットに<b class="text-confirm">自動化</b>させる技術です。</li>
+                <li><b>テレワーク</b>: ICTを活用し、時間や場所にとらわれずに柔軟に働くスタイル。Web会議ツール（Zoom, Teamsなど）やビジネスチャット（Slackなど）が不可欠です。</li>
+            </ul>
+
+            <div class="card">
+                <div class="card-header">事例：RPAで面倒なレポート作成を自動化！</div>
+                <p>毎週末、複数のサイトからデータを集めてExcelにコピペし、グラフを作って上司にメールで送る…。この単純作業だけで1時間もかかってたんだ。もううんざりだぜ！そこで登場したのが<b class="text-action">RPA</b>だ！一度、操作の手順をRPAツールに記憶させれば、あとはボタン一つでロボットが全部やってくれる。おかげで週末の憂鬱な作業から解放されて、もっと大事な企画立案に時間を使えるようになった！<b class="text-confirm">定型的で繰り返しの多い作業は、RPAに任せる</b>のが賢いやり方なんだな！</p>
+            </div>
+            
+            <div class="question-box">
+                <h4>問題2</h4>
+                <p>システムで扱うデータの流れを表した図を<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">DFD</span></span>、業務プロセスを根本的に見直して再構築することを<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">BPR</span></span>といいます。外部の専門企業に業務を委託することを<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">アウトソーシング</span></span>といいます。PCでの定型作業を自動化する技術を<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">RPA</span></span>、情報技術の利用格差を<span class="fill-in" onclick="toggleAnswer(this)">(5)<span class="answer">デジタルデバイド</span></span>といいます。</p>
+            </div>
+            <div class="page-number">2</div>
+        </div>
+
+        <div class="page">
+            <h2 id="chap3">3. システム企画と要件定義</h2>
+            <p>「こんなシステムがあったら便利なのに…」というアイデアを、実現可能な計画へと落とし込むのが「システム企画」と「要件定義」のフェーズです。家づくりで言えば、どんな家に住みたいか（企画）を考え、部屋の数や広さ、コンセントの位置などを決める（要件定義）段階にあたります。ここでの決定が、プロジェクト全体の成否を左右します。</p>
+
+            <h3>3.1 システム企画のプロセス</h3>
+            <p>システム企画は、大きく2つのステップで進められます。</p>
+            <ol>
+                <li><b>システム化構想</b>: 経営課題や現場のニーズに基づき、「そもそもどんなシステムが必要か」「どんな目的を達成したいか」という<b class="marker">システムの全体像を大まかに描く</b>段階です。</li>
+                <li><b>システム化計画</b>: 構想を具体化し、「開発スケジュール」「開発体制」「費用対効果」「考えられるリスク」などを盛り込んだ、<b class="marker">具体的な実施計画書を作成</b>する段階です。</li>
+            </ol>
+            <p>この計画には経営層の合意が不可欠であり、組織全体の「システム化基本方針」として策定されます。</p>
+
+            <h3>3.2 要件定義：システムの「何」を決める</h3>
+            <p>システム企画が固まったら、次は<b class="text-action">要件定義</b>です。これは、システムで実現すべき機能や性能を具体的に決める、非常に重要な作業です。要件定義は、まず利用者の「〇〇したい」という「要求」をヒアリングすることから始まります。</p>
+            <p>集めた要求は、そのまま鵜呑みにするのではなく、なぜそうしたいのかという根本的な課題を分析します。そして、利用者と開発者の間で合意形成を行い、実現すべき「要件」として定義していきます。</p>
+            
+            <h4>要件定義の3つの種類</h4>
+            <p>要件は、以下の3つの観点から整理されます。</p>
+            <ul>
+                <li><b>業務要件</b>: システム化の対象となる<b class="text-confirm">業務そのものに関する要件</b>。「毎月末に、全店舗の売上データを集計して報告書を作成する」といった、業務ルールや流れを定義します。</li>
+                <li><b>機能要件</b>: 業務要件を実現するために、<b class="text-confirm">システムが持つべき機能</b>に関する要件。「管理画面のボタンを押すと、自動で売上報告書（PDF形式）が出力される」といった、具体的なシステム機能です。</li>
+                <li><b>非機能要件</b>: 機能以外の、<b class="text-confirm">品質や性能に関する要件</b>。「ボタンを押してから3秒以内に報告書が表示されること（性能）」や「過去のシステムと同じレイアウトであること（移行性）」など、システムの使い勝手や信頼性を左右する重要な要素です。</li>
+            </ul>
+
+            <h3>3.3 調達計画とRFP</h3>
+            <p>システムを外部の企業（ベンダー）に開発してもらう場合、<b class="text-action">調達</b>というプロセスが発生します。その際、発注側がベンダーに対して「こんなシステムを作ってほしい」という要求をまとめた文書が<b class="text-problem">RFP (Request For Proposal：提案依頼書)</b>です。</p>
+            <p>RFPには、システムの目的、必要な要件、予算、納期などを明記します。ベンダーはこのRFPをもとに提案書と見積書を作成するため、RFPの出来栄えがプロジェクトの質を大きく左右します。</p>
+
+            <div class="card">
+                <div class="card-header">事例：「押しやすいボタン」の裏側を探れ！要求分析の重要性</div>
+                <p>利用者から「承認ボタンをもっと押しやすくしてほしい」という要求が上がってきた。そのままボタンを大きくする？待てよ、それが本当に解決策か？<b class="text-action">「なぜ」押しやすくしたいのか</b>、深掘りしてみるんだ！ヒアリングの結果、実は「キャンセルボタンと色が似ていて、間違えて押しちゃうから区別したい」というのが本当の課題だったことが判明！この場合、解決策はボタンを大きくすることではなく、色を変えることかもしれない。表面的な要求に惑わされず、<b class="text-confirm">根本的な課題（真の要求）を突き止める</b>のが、良い要件定義の第一歩だぜ！</p>
+            </div>
+            
+            <div class="question-box">
+                <h4>問題3</h4>
+                <p>システムで実現する機能や性能を決める作業を<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">要件定義</span></span>といいます。要件定義には、業務要件、機能要件、<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">非機能要件</span></span>の3種類があります。外部のベンダーに提案を依頼する文書を<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">RFP (提案依頼書)</span></span>といいます。システムのライフサイクルは、企画、要件定義、開発、運用、<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">保守</span></span>、廃棄という流れが一般的です。</p>
+            </div>
+            <div class="page-number">3</div>
+        </div>
+
+        <div class="page">
+            <h2 id="chap4">4. システム開発技術</h2>
+            <p>いよいよシステムを形にしていく「開発」の段階です。この章では、システムがどのような工程を経て作られるのか、そしてどんな開発スタイルがあるのかを見ていきましょう。特に、現代の開発で主流となっている<b class="text-action">「アジャイル」</b>という考え方は必見です。</p>
+
+            <h3>4.1 システム開発のプロセス</h3>
+            <p>一般的なシステム開発は、以下の5つの工程を順番に進めていきます。</p>
+            <div class="flow-diagram">
+                <div class="step"><div class="step-number">1</div><b>要件定義</b>: システムに必要な機能・性能を決定する。</div>
+                <div class="arrow">↓</div>
+                <div class="step"><div class="step-number">2</div><b>設計</b>: 要件定義に基づき、システムの構造を決定する。</div>
+                <div class="arrow">↓</div>
+                <div class="step"><div class="step-number">3</div><b>プログラミング</b>: 設計書に基づき、プログラムを作成する（コーディング）。</div>
+                <div class="arrow">↓</div>
+                <div class="step"><div class="step-number">4</div><b>テスト</b>: 作成したプログラムが正しく動作するかを検証する。</div>
+                <div class="arrow">↓</div>
+                <div class="step"><div class="step-number">5</div><b>運用・保守</b>: 完成したシステムを実際に動かし、改善や不具合対応を行う。</div>
+            </div>
+
+            <h3>4.2 テストの種類</h3>
+            <p>システムの品質を保証する「テスト」工程は、非常に重要です。テストは、小さな単位から大きな単位へと段階的に行われます。</p>
+            <ol>
+                <li><b>単体テスト (ユニットテスト)</b>: プログラムの最小単位である関数やモジュールが、個別に正しく動くかを確認します。</li>
+                <li><b>結合テスト (統合テスト)</b>: 複数のモジュールを組み合わせて、連携がうまくいくかを確認します。</li>
+                <li><b>システムテスト (総合テスト)</b>: システム全体が、要件定義通りの機能や性能を満たしているかを確認します。</li>
+                <li><b>受入テスト</b>: 最終的に、利用者が実際にシステムを使い、業務で問題なく使えるかを判断します。</li>
+            </ol>
+
+            <h3>4.3 様々な開発モデル</h3>
+            <p>開発の進め方には、いくつかの「型（モデル）」があります。</p>
+            <ul>
+                <li><b>ウォーターフォールモデル</b>: 上流工程（要件定義）から下流工程（テスト）へ、滝の水が流れるように<b class="marker">一方通行で開発を進める</b>古典的な手法。大規模で仕様変更が少ないプロジェクトに向いています。</li>
+                <li><b>プロトタイピングモデル</b>: 開発の初期段階で試作品（プロトタイプ）を作り、利用者に確認してもらいながら進める手法。<b class="marker">完成イメージのズレを防げます</b>。</li>
+                <li><b>スパイラルモデル</b>: システムを機能ごとに分割し、「設計→開発→テスト」というサイクルを<b class="marker">何度も繰り返しながら</b>全体を完成させていく手法。</li>
+                <li><b class="text-action">アジャイル開発</b>: 「俊敏な」という意味の通り、短い期間（スプリント）で「計画→設計→開発→テスト」のサイクルを高速で回し、<b class="marker">動くソフトウェアを少しずつ作っていく</b>現代的な手法。仕様変更に強く、Webサービス開発などで主流です。</li>
+            </ul>
+
+            <div class="card">
+                <div class="card-header">事例：人気ゲームの高速アップデートはアジャイル開発の賜物！</div>
+                <p>「新キャラはよ！」「このバグ、すぐ直して！」スマホゲームの運営は、ユーザーの声に素早く応えるスピードが命だ！ここで活躍するのが<b class="text-action">アジャイル開発</b>だぜ！従来のウォーターフォールモデルみたいに、半年かけて完璧なものを作るんじゃなくて、「2週間（スプリント）で新イベントを1つ追加」「次の2週間でキャラのバランス調整」みたいに、<b class="text-confirm">小さい単位で計画・開発・リリースを繰り返す</b>んだ。だからユーザーの要望に素早く応えられるし、もし失敗してもすぐに修正できる。この「作っては試し、試しては直す」の高速サイクルこそが、変化の激しい現代で勝ち抜く秘訣なんだな！</p>
+            </div>
+            
+            <div class="question-box">
+                <h4>問題4</h4>
+                <p>要件定義からテストまでを順番に行う開発手法を<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">ウォーターフォールモデル</span></span>といいます。短い期間で開発サイクルを回し、少しずつソフトウェアを作っていく手法を<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">アジャイル開発</span></span>といいます。アジャイル開発の手法の一つで、2人1組でプログラミングを行うことを<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">ペアプログラミング</span></span>といいます。プログラムの機能は変えずに内部構造を改善することを<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">リファクタリング</span></span>といいます。</p>
+            </div>
+            <div class="page-number">4</div>
+        </div>
+
+        <div class="page">
+            <h2 id="chap5">5. プロジェクトマネジメントとサービスマネジメント</h2>
+            <p>システム開発という「プロジェクト」を成功に導くためには、羅針盤が必要です。その役割を果たすのが<b class="text-action">プロジェクトマネジメント</b>です。また、完成したサービスを安定して提供し続けるためには<b class="text-action">サービスマネジメント</b>が欠かせません。この章では、この2つのマネジメント手法を学びます。</p>
+            
+            <h3>5.1 プロジェクトマネジメントとPMBOK</h3>
+            <p>プロジェクトとは、決められた期間・予算の中で、特定の目標を達成するための一連の活動です。このプロジェクトを計画通りに進めるための知識や手法を体系的にまとめたものが<b class="text-confirm">PMBOK (Project Management Body of Knowledge)</b> です。</p>
+            <p>PMBOKでは、プロジェクトを「立ち上げ」「計画」「実行」「監視・管理」「終結」という5つのプロセスに分けて管理します。そして、管理すべき対象として10の「知識エリア」が定義されています。</p>
+            <ul>
+                <li>スコープマネジメント（作業範囲の管理）</li>
+                <li>タイムマネジメント（スケジュールの管理）</li>
+                <li>コストマネジメント（予算の管理）</li>
+                <li>品質マネジメント（成果物の品質管理）</li>
+                <li>その他（リソース、コミュニケーション、リスク、調達、ステークホルダー、統合）</li>
+            </ul>
+
+            <h3>5.2 スコープとタイムの管理ツール</h3>
+            <p>特に重要なスコープとタイムの管理には、強力なツールが使われます。</p>
+            <ul>
+                <li><b>WBS (Work Breakdown Structure)</b>: プロジェクトの全作業を、大きなタスクから小さなタスクへと<b class="marker">階層的に分解</b>した図。やるべきことの全体像が明確になり、作業の抜け漏れを防ぎます。</li>
+                <li><b>ガントチャート</b>: 横軸に時間、縦軸にタスクを並べ、各タスクの期間を棒グラフで示した<b class="marker">スケジュール表</b>です。進捗状況が一目でわかります。</li>
+                <li><b>アローダイアグラム (PERT図)</b>: タスクの依存関係と所要時間を矢印で結んだ図。プロジェクト完了までの<b class="marker text-problem">最短経路（クリティカルパス）</b>を特定するのに使われます。このクリティカルパス上の作業が遅れると、プロジェクト全体の遅れに直結します。</li>
+            </ul>
+            
+            <div class="gantt-chart">
+                <div class="row">
+                    <div class="task-name">要件定義</div>
+                    <div class="bar-container"><div class="bar" style="left: 0%; width: 20%;"></div></div>
+                </div>
+                <div class="row">
+                    <div class="task-name">設計</div>
+                    <div class="bar-container"><div class="bar" style="left: 20%; width: 30%;"></div></div>
+                </div>
+                <div class="row">
+                    <div class="task-name">開発</div>
+                    <div class="bar-container"><div class="bar" style="left: 50%; width: 40%;"></div></div>
+                </div>
+                 <div class="row">
+                    <div class="task-name">テスト</div>
+                    <div class="bar-container"><div class="bar" style="left: 70%; width: 30%;"></div></div>
+                </div>
+            </div>
+
+
+            <h3>5.3 サービスマネジメントとITIL</h3>
+            <p>システムが稼働した後は、安定してサービスを提供し続けるための「守り」の管理、すなわちサービスマネジメントが重要になります。そのベストプラクティス（成功事例集）として世界的に利用されているのが<b class="text-confirm">ITIL (Information Technology Infrastructure Library)</b> です。</p>
+            <p>サービス提供者と顧客の間で、サービスの品質レベル（稼働率、障害対応時間など）を約束する契約を<b class="text-action">SLA (Service Level Agreement)</b> といいます。SLAに違反した場合、料金の減額などのペナルティが発生することもあります。</p>
+
+            <div class="card">
+                <div class="card-header">事例：文化祭の巨大ダンボール城プロジェクトをマネジメントせよ！</div>
+                <p>「文化祭でクラスのみんなと、体育館いっぱいの巨大なダンボール城を作るぞ！」これは立派なプロジェクトだ！まず<b class="text-action">WBS</b>で作業を分解。「設計」「ダンボール集め」「パーツ切り出し」「組み立て」「装飾」…。次に<b class="text-confirm">ガントチャート</b>でスケジュールを立てる。でも、一番重要なのは<b class="text-problem">クリティカルパス</b>の見極めだ！このプロジェクトでは「ダンボール集め」が遅れたら、その後の全作業がストップしてしまう。ここがクリティカルパスだ！だから、このタスクには一番多くの人員を割いて、絶対に遅れないように管理する。これがプロジェクトマネジメントの基本だぜ！</p>
+            </div>
+            
+            <div class="question-box">
+                <h4>問題5</h4>
+                <p>プロジェクト管理の知識体系をまとめたものを<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">PMBOK</span></span>といいます。プロジェクトの作業を階層的に分解した図が<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">WBS</span></span>、スケジュールを棒グラフで示すのが<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">ガントチャート</span></span>です。プロジェクト全体の最短完成期間を示す経路を<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">クリティカルパス</span></span>といいます。ITサービスの成功事例集を<span class="fill-in" onclick="toggleAnswer(this)">(5)<span class="answer">ITIL</span></span>、サービス品質の合意書を<span class="fill-in" onclick="toggleAnswer(this)">(6)<span class="answer">SLA</span></span>といいます。</p>
+            </div>
+            <div class="page-number">5</div>
+        </div>
+
+        <div class="page">
+            <h2 id="chap6">6. システム監査と内部統制</h2>
+            <p>企業や組織がルール通りに正しく運営されているか、第三者の目でチェックするのが「監査」です。そして、組織自らが不正やミスを防ぐための仕組みを築くのが「内部統制」です。この章では、システムの信頼性と安全性を担保するための、この2つの重要な活動について学びます。</p>
+            
+            <h3>6.1 システム監査とは</h3>
+            <p><b class="text-action">システム監査</b>とは、情報システムにまつわるリスクが適切に管理（コントロール）されているかを、<b class="marker">独立した第三者の立場</b>から評価することです。監査人は、システムの信頼性、安全性、効率性などを客観的に点検し、問題点や改善策を経営者に報告・助言します。</p>
+            <p>システム監査人は、監査対象から独立していることが絶対条件です。そのため、組織内の内部監査部門や、外部の専門事業者が監査を行います。また、監査で知り得た情報を漏らしてはならないという<b class="text-problem">守秘義務</b>も厳しく課せられています。</p>
+            
+            <h4>システム監査の流れ</h4>
+            <div class="flow-diagram">
+                <div class="step"><div class="step-number">1</div><b>監査計画</b>: 監査の対象や項目を決定し、計画書を作成する。</div>
+                <div class="arrow">↓</div>
+                <div class="step"><div class="step-number">2</div><b>監査手続</b>: ヒアリングや資料の点検（本調査）を行い、監査の証拠を入手する。</div>
+                <div class="arrow">↓</div>
+                <div class="step"><div class="step-number">3</div><b>監査報告</b>: 監査結果や改善提案をまとめた報告書を作成し、経営者に報告する。</div>
+                <div class="arrow">↓</div>
+                <div class="step"><div class="step-number">4</div><b>フォローアップ</b>: 改善提案が実行されているかを、定期的に確認する。</div>
+            </div>
+
+            <h3>6.2 内部統制：組織の自浄作用</h3>
+            <p><b class="text-action">内部統制</b>とは、組織の業務を健全化し、目標を達成するために、<b class="marker">組織自らがルールやプロセスを整備し、運用する</b>ことです。監査が外部からのチェックであるのに対し、内部統制は内部からの自助努力といえます。</p>
+            <p>内部統制は、以下の4つの目的を達成するために行われます。</p>
+            <ol>
+                <li>業務の有効性・効率性の向上</li>
+                <li>財務報告の信頼性の確保</li>
+                <li>法令遵守 (コンプライアンス)</li>
+                <li>資産の保全</li>
+            </ol>
+            <p>これを実現するための基本要素の一つに<b class="text-confirm">「統制活動」</b>があります。例えば、担当者ごとに役割と権限を明確にし、お互いにチェックしあえる体制（職務分掌）を整えることも、重要な統制活動です。</p>
+
+            <h3>6.3 ITガバナンスとレピュテーションリスク</h3>
+            <p>ITを効果的に活用し、組織全体の目標達成に貢献できるよう管理・統制する仕組みを<b class="text-action">ITガバナンス</b>といいます。適切な内部統制は、このITガバナンスを実現するための重要な手段です。</p>
+            <p>近年、特に重要視されているのが<b class="text-problem">レピュテーションリスク</b>の管理です。レピュテーションとは「評判」のことで、企業の不祥事や従業員の不適切な行動によって評判が悪化し、信用が低下して損失を被るリスクを指します。いわゆる「炎上」や「バイトテロ」などが典型例です。これらを未然に防ぐための従業員教育や仕組み作りも、現代の内部統制に求められる重要な役割です。</p>
+
+            <div class="card">
+                <div class="card-header">事例：恐怖のバイトテロ！SNS投稿一つで会社の信用が地に落ちる！</div>
+                <p>ある飲食店のアルバイト従業員が、ふざけて店内の食材で不適切な行為をしている動画をSNSに投稿。あっという間に拡散され、世間から大バッシング！これが<b class="text-problem">レピュテーションリスク</b>の恐ろしさだ。会社のブランドイメージは失墜し、客足は遠のき、株価は暴落…。たった一つの軽率な行動が、会社に莫大な損害を与えるんだぜ。こうした事態を防ぐために、企業は<b class="text-action">内部統制</b>の一環として、従業員へのSNS利用に関する研修を徹底したり、そもそも不適切な行動ができないような監視体制を整えたりする必要がある。個人のモラルだけに頼るのではなく、<b class="text-confirm">仕組みでリスクを管理する</b>ことが重要なんだ！</p>
+            </div>
+            
+            <div class="question-box">
+                <h4>問題6</h4>
+                <p>情報システムのリスクが適切に管理されているか、独立した第三者の立場で評価することを<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">システム監査</span></span>といいます。組織が自ら業務を健全化するための仕組みが<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">内部統制</span></span>です。ITを効果的に活用して組織を統制する仕組みを<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">ITガバナンス</span></span>といいます。企業の評判が悪化し、信用が低下するリスクを<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">レピュテーションリスク</span></span>といいます。</p>
+            </div>
+            <div class="page-number">6</div>
+        </div>
+
+        <div class="button-container">
+            <a href="page10.html" class="nav-button">← 前の講座へ</a>
+            <a href="page12.html" class="nav-button">次の講座へ →</a>
+        </div>
+        
+        <div id="references" class="references">
+            <h3>参考文献・リンク</h3>
+            <ul>
+                <li>本教材は、ZEN大学（仮称・設置認可申請中）が提供する講義「ITリテラシー入門 第11回 システム開発」（講師：吉村 創一朗 先生）のテキストおよび講義内容を元に作成されました。</li>
+            </ul>
+        </div>
+    </div>
+    <script>
+        function toggleAnswer(element) {
+            const answer = element.querySelector('.answer');
+            if (answer) {
+                answer.classList.toggle('visible');
+            }
+        }
+    </script>
+</body>
+</html>

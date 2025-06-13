@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ITリテラシー入門 第1回 なぜITを学ぶのか</title>
+    <style>
+        :root {
+            --primary-color: #0d47a1; /* 濃い青 */
+            --secondary-color: #1976d2; /* 青 */
+            --accent-color: #d32f2f; /* 赤系のアクセント */
+            --background-color: #f5f8fa; /* 薄いグレーがかった背景 */
+            --text-color: #333;
+            --white-color: #ffffff;
+            --marker-yellow: #fffde7;
+            --confirm-green: #e8f5e9;
+            --action-blue: #e3f2fd;
+        }
+
+        body {
+            font-family: 'Yu Gothic UI', 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+            line-height: 1.8;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: var(--white-color);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        .page {
+            border: 1px solid #ddd;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .page-number {
+            position: absolute;
+            bottom: 10px;
+            right: 20px;
+            color: #aaa;
+            font-size: 0.9em;
+        }
+
+        h1 {
+            font-size: 2.2em;
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--secondary-color);
+            padding-bottom: 10px;
+            margin-bottom: 5px;
+            position: relative;
+        }
+        
+        h1::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -3px;
+            width: 70px;
+            border-bottom: 3px solid var(--primary-color);
+        }
+        
+        .lecturer {
+            font-size: 1.1em;
+            color: var(--secondary-color);
+            text-align: right;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            color: var(--primary-color);
+            border-left: 5px solid var(--secondary-color);
+            padding-left: 15px;
+            margin-top: 40px;
+        }
+
+        h3 {
+            font-size: 1.4em;
+            color: var(--secondary-color);
+            border-bottom: 1px dashed var(--secondary-color);
+            padding-bottom: 5px;
+            margin-top: 30px;
+        }
+
+        p {
+            margin-bottom: 1.2em;
+        }
+
+        strong, b {
+            color: var(--primary-color);
+        }
+
+        .marker {
+            background: linear-gradient(transparent 60%, var(--marker-yellow) 60%);
+        }
+        
+        .text-confirm { color: #2e7d32; font-weight: bold; }
+        .text-action { color: var(--secondary-color); font-weight: bold; }
+        .text-problem { color: var(--accent-color); font-weight: bold; }
+
+        .toc {
+            background-color: #f8fafd;
+            border: 1px solid var(--secondary-color);
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+        }
+
+        .toc h2 {
+            margin-top: 0;
+            border-left: none;
+            padding-left: 0;
+            border-bottom: 2px solid var(--secondary-color);
+        }
+
+        .toc ul { list-style-type: none; padding-left: 0; }
+        .toc ul ul { padding-left: 20px; }
+        .toc a { text-decoration: none; color: var(--primary-color); }
+        .toc a:hover { text-decoration: underline; }
+
+        .question-box {
+            border: 2px solid var(--accent-color);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            background-color: #fbe9e7;
+        }
+
+        .fill-in {
+            font-weight: bold;
+            color: var(--accent-color);
+            border-bottom: 2px dotted var(--accent-color);
+            cursor: pointer;
+            padding: 0 5px;
+        }
+
+        .answer {
+            display: none;
+            background-color: var(--marker-yellow);
+            padding: 2px 5px;
+            border-radius: 3px;
+            margin: 0 5px;
+        }
+        
+        .answer.visible { display: inline-block; }
+
+        .card {
+            background-color: #f9f9f9;
+            border-left: 5px solid var(--primary-color);
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .card-header {
+            font-weight: bold;
+            font-size: 1.2em;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .diagram {
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin: 20px 0;
+            background-color: #f8fafd;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .diagram.vertical { flex-direction: column; }
+        .diagram .box {
+            border: 2px solid var(--secondary-color);
+            background-color: var(--white-color);
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .diagram .arrow {
+            font-size: 2em;
+            color: var(--secondary-color);
+            margin: 0 5px;
+            vertical-align: middle;
+        }
+
+        .footnote {
+            font-size: 0.8em;
+            color: #666;
+            margin-top: 10px;
+            border-top: 1px solid #ccc;
+            padding-top: 5px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.95em;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: var(--white-color);
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        
+        .references {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #ccc;
+        }
+        
+        .references ul { list-style: none; padding: 0; }
+        .references li { margin-bottom: 10px; font-size: 0.9em; }
+        
+        .button-container {
+            text-align: center;
+            margin: 40px 0;
+            display: flex;
+            justify-content: flex-end;
+        }
+        
+        .nav-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: var(--white-color);
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        
+        .nav-button:hover { background-color: var(--secondary-color); }
+        
+        @media (max-width: 768px) {
+            .container { padding: 10px; }
+            .page { padding: 1rem; }
+            h1 { font-size: 1.8em; }
+            h2 { font-size: 1.5em; }
+            h3 { font-size: 1.2em; }
+            .diagram .box, .diagram .arrow { font-size: 0.9em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ITリテラシー入門 第1回 なぜITを学ぶのか</h1>
+        <p class="lecturer">講師：吉村 創一朗 先生</p>
+
+        <nav class="toc">
+            <h2>目次</h2>
+            <ul>
+                <li><a href="#chap1">1. なぜITを学ぶのか？</a>
+                    <ul>
+                        <li><a href="#sec1_1">1.1 ITとは「情報技術」</a></li>
+                        <li><a href="#sec1_2">1.2 「読み・書き・デジタル」の時代へ</a></li>
+                    </ul>
+                </li>
+                <li><a href="#chap2">2. 社会はどう変わってきたか：情報社会の歴史</a>
+                    <ul>
+                        <li><a href="#sec2_1">2.1 Society 1.0～3.0：狩猟・農耕・工業社会</a></li>
+                        <li><a href="#sec2_2">2.2 Society 4.0：情報社会の到来</a></li>
+                        <li><a href="#sec2_3">2.3 Society 5.0：AIやロボットと共生する未来</a></li>
+                    </ul>
+                </li>
+                <li><a href="#chap3">3. 情報社会がもたらした新たな問題</a>
+                    <ul>
+                        <li><a href="#sec3_1">3.1 フェイクニュースとファクトチェック</a></li>
+                        <li><a href="#sec3_2">3.2 ネット上の誹謗中傷・著作権侵害・個人情報流出</a></li>
+                    </ul>
+                </li>
+                <li><a href="#chap4">4. 「情報」そのものの特性</a>
+                    <ul>
+                        <li><a href="#sec4_1">4.1 データ・情報・知識の違い</a></li>
+                        <li><a href="#sec4_2">4.2 情報の4つの特性とデジタルタトゥー</a></li>
+                    </ul>
+                </li>
+                <li><a href="#chap5">5. 情報を伝える「メディア」の特性</a>
+                    <ul>
+                        <li><a href="#sec5_1">5.1 表現・伝達・記録のためのメディア</a></li>
+                        <li><a href="#sec5_2">5.2 メディアリテラシーの重要性</a></li>
+                    </ul>
+                </li>
+                <li><a href="#chap6">6. ITを活用した問題解決プロセス</a>
+                    <ul>
+                        <li><a href="#sec6_1">6.1 問題とは「理想と現実のギャップ」</a></li>
+                        <li><a href="#sec6_2">6.2 問題解決のPDCAサイクル</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="page">
+            <h2 id="chap1">1. なぜITを学ぶのか？</h2>
+            <p>この「ITリテラシー」の科目では、現代社会で生きる私たちにとって非常に便利な技術である「IT」について学んでいきます。まず初回は、そもそも<b class="text-action">なぜITを学ぶ必要があるのか</b>、その根本的な理由から探っていきましょう。</p>
+            <p>皆さんの多くは、生まれたときからコンピューターやインターネットが当たり前のように身近にあった「デジタルネイティブ」世代だと思います。しかし、ほんの数十年前まで、インターネットは一般に普及しておらず、コンピューターも専門家だけが使う特別な機械でした。この劇的な変化が、ITを学ぶ重要性を生み出したのです。</p>
+
+            <h3 id="sec1_1">1.1 ITとは「情報技術」</h3>
+            <p>ITとは、<b class="marker">Information Technology、すなわち「情報技術」</b>の略です。この「情報」という言葉は、もともと軍事用語として「敵の陣地の情報」のように、何らかの知識が得られる知らせを指す言葉でした。今でもその意味合いは変わりません。</p>
+            <p>コンピューターの登場以前、人類が情報をやり取りする主な媒体は「紙」でした。しかし、コンピューターの登場により、人間が一生かかっても認知しきれないほどの<b class="text-problem">大量の情報を瞬時に扱える</b>ようになり、その情報を効率よく処理・活用するための「情報技術（IT）」が極めて重要になったのです。</p>
+
+            <h3 id="sec1_2">1.2 「読み・書き・デジタル」の時代へ</h3>
+            <p>かつて、社会で生きていくための必須スキルは「読み・書き・そろばん」と言われていました。しかし現代では、それに代わって<b class="text-confirm">「読み・書き・デジタル」</b>と言える時代が到来しつつあります。</p>
+            <div class="card">
+                <p>文字の読み書きができない生活を想像してみてください。それと同じくらい、現代では「情報技術」を使いこなせるかどうかが、人生の豊かさに直結する大きな要素になっているのです。</p>
+            </div>
+            <p>教育、医療、金融、ビジネス、行政など、社会のあらゆる領域でITは活用され、問題解決の効率化が進んでいます。私たちは、過去の人類が経験したことのない「情報の海」を生きています。この状況で豊かに生き抜くため、ITの基礎知識を学ぶことは不可欠なのです。</p>
+
+            <div class="question-box">
+                <h4>問題1.1</h4>
+                <p>ITとは<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">情報技術（Information Technology）</span></span>の略称です。コンピューターとインターネットの登場により、人類は過去にない<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">大量</span></span>の情報を扱えるようになりました。現代社会を生きる上で必須のスキルは「読み・書き・<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">デジタル</span></span>」と言われています。</p>
+            </div>
+            <div class="page-number">1</div>
+        </div>
+
+        <div class="page">
+            <h2 id="chap2">2. 社会はどう変わってきたか：情報社会の歴史</h2>
+            <p>私たちが今暮らしているのは「情報社会」です。しかし、その特殊性を理解するには、過去の社会と比較することが不可欠です。ここでは、人類の社会がどのように変遷してきたかを見ていきましょう。</p>
+            
+            <h3 id="sec2_1">2.1 Society 1.0～3.0：狩猟・農耕・工業社会</h3>
+            <p>人類の社会は、長い年月をかけて段階的に発展してきました。日本政府が提唱する「Society」の区分に沿って見てみましょう。</p>
+            <ul>
+                <li><b>Society 1.0 (狩猟社会)</b>: 1万2千年以上前。人々は狩りや採集で生活し、食料の安定供給は困難でした。</li>
+                <li><b>Society 2.0 (農耕社会)</b>: 約2400年前。農耕によって食料を安定的に生産・保存できるようになり、定住生活と貧富の差が生まれました。</li>
+                <li><b>Society 3.0 (工業社会)</b>: 約200年前。蒸気機関の発明による産業革命が起こり、機械による大量生産が可能になりました。生産性が爆発的に向上し、「工場で働く」という概念が生まれました。</li>
+            </ul>
+
+            <h3 id="sec2_2">2.2 Society 4.0：情報社会の到来</h3>
+            <p>そして工業社会の次に訪れたのが、私たちが今生きる<b class="text-action">Society 4.0 (情報社会)</b>です。コンピューターとインターネットを中心とした情報通信技術の発展が、この社会を急速に推し進めました。</p>
+            <p>情報社会の最大の特徴は、<b class="marker">情報伝達のスピードと双方向性</b>です。かつて手紙で何日もかかっていた情報のやり取りが、今や地球の裏側にいる相手とでも1秒以内に双方向で可能です。この革命的な変化は、1970年代後半のパーソナルコンピューターの登場と、その後のインターネットの普及によってもたらされました。</p>
+
+            <h3 id="sec2_3">2.3 Society 5.0：AIやロボットと共生する未来</h3>
+            <p>社会の変化の間隔は、時代が進むにつれてどんどん短くなっています。そして、情報社会の次に到来すると予測されているのが<b class="text-confirm">Society 5.0</b>です。</p>
+            
+            <div class="diagram">
+                <div class="box">Society 1.0<br>(狩猟)</div><div class="arrow">→</div>
+                <div class="box">Society 2.0<br>(農耕)</div><div class="arrow">→</div>
+                <div class="box">Society 3.0<br>(工業)</div><div class="arrow">→</div>
+                <div class="box">Society 4.0<br>(情報)</div><div class="arrow">→</div>
+                <div class="box" style="border-color: var(--accent-color);">Society 5.0<br>(未来)</div>
+            </div>
+
+            <p>これは、IoT（モノのインターネット）、ビッグデータ、AI（人工知能）、ロボットといった先端技術を最大限に活用し、<b class="text-problem">これまでの社会が抱えていた課題を解決する、人間中心の新たな社会</b>の姿として提唱されています。ファミリーレストランの配膳ロボットは、その入り口と言えるでしょう。この講座では、来るべきSociety 5.0を構成する技術についても学んでいきます。</p>
+            
+            <div class="question-box">
+                <h4>問題2.1</h4>
+                <p>人類の社会は、狩猟社会(Society 1.0)、農耕社会(Society 2.0)、<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">工業社会</span></span>(Society 3.0)、情報社会(Society 4.0)と変遷してきました。情報社会の次に到来すると予測されている、AIやロボットを活用する新たな社会の姿を<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">Society 5.0</span></span>と呼びます。</p>
+            </div>
+            <div class="page-number">2</div>
+        </div>
+
+        <div class="page">
+            <h2 id="chap3">3. 情報社会がもたらした新たな問題</h2>
+            <p>情報技術の発展は私たちの生活に大きな恩恵をもたらしましたが、同時にこれまでにない新たな問題も生み出しました。ここでは、その代表的な問題を見ていきましょう。</p>
+            
+            <h3 id="sec3_1">3.1 フェイクニュースとファクトチェック</h3>
+            <p>工業社会では新聞社やテレビ局など一部の組織しか情報発信できませんでしたが、現代ではSNSの普及により<b class="text-action">誰もが簡単に情報発信者</b>になれます。この情報発信コストの劇的な低下は、<b class="text-problem">フェイクニュース（事実と異なる偽のニュース）</b>が広く拡散する土壌となりました。</p>
+            <p>SNSでは、たとえ嘘でも面白く話題性のある情報が爆発的に広まりやすい性質があります。そのため、私たちは受け取った情報を鵜呑みにせず、その真偽を確かめる<b class="marker">「ファクトチェック（事実確認）」</b>を行う必要があります。</p>
+            <div class="card">
+                <div class="card-header">ファクトチェックの方法</div>
+                <ul>
+                    <li><b>一次情報を確認する：</b>情報の発生源となった生の情報を直接確認する。</li>
+                    <li><b>公的情報を確認する：</b>信頼できる政府や企業などの公式発表を確認する。</li>
+                    <li><b>クロスチェックを行う：</b>複数の情報源を比較・照合し、情報の信憑性を検証する。</li>
+                </ul>
+            </div>
+            
+            <h3 id="sec3_2">3.2 ネット上の誹謗中傷・著作権侵害・個人情報流出</h3>
+            <p>情報社会は、既存の問題をより深刻化させる側面も持っています。</p>
+            <ul>
+                <li><b>誹謗中傷・ネットいじめ：</b>インターネット上では、不特定多数の人間が一人の個人を攻撃することが可能になり、問題の規模が非常に大きくなっています。</li>
+                <li><b>著作権侵害：</b>データの複製や共有が容易になったことで、音楽や映像、ソフトウェアなどの著作権侵害が深刻な問題となりました。日本では違法ダウンロードを禁止する法律も整備されています。</li>
+                <li><b>個人情報流出：</b>ソフトウェアの不具合（脆弱性）を悪用され、IDやパスワードなどの個人情報が盗まれ、世界中に拡散されてしまう事件が後を絶ちません。</li>
+            </ul>
+            <p>これらの問題から身を守るためにも、私たちはITの仕組みを正しく理解し、<b class="text-confirm">二段階認証</b>などのセキュリティ対策を適切に利用していく必要があります。</p>
+
+            <div class="question-box">
+                <h4>問題3.1</h4>
+                <p>SNSなどで拡散される事実と異なるニュースを<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">フェイクニュース</span></span>といいます。情報の真偽を確かめることを<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">ファクトチェック</span></span>と呼びます。IDとパスワードの流出対策として、複数の要素で本人確認を行う<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">多要素認証（二段階認証）</span></span>などの技術が有効です。</p>
+            </div>
+            <div class="page-number">3</div>
+        </div>
+        
+        <div class="page">
+            <h2 id="chap4">4. 「情報」そのものの特性</h2>
+            <p>私たちは日々「情報」という言葉を使いますが、その本質的な特性について考えたことはあるでしょうか。ここでは、「情報」が持つユニークな性質について掘り下げていきます。</p>
+
+            <h3 id="sec4_1">4.1 データ・情報・知識の違い</h3>
+            <p>まず、似た言葉である「データ」「情報」「知識」を区別しましょう。これらは階層的な関係にあります。</p>
+            <div class="diagram">
+                 <div class="box">データ<br>(事実や数値の羅列)</div>
+                 <div class="arrow" style="text-align: center;">→<br><span style="font-size: 0.6em; display: block;">解釈・意味づけ</span></div>
+                 <div class="box">情報<br>(価値・意味のあるもの)</div>
+                 <div class="arrow" style="text-align: center;">→<br><span style="font-size: 0.6em; display: block;">一般化・体系化</span></div>
+                 <div class="box" style="border-color: #2e7d32;">知識<br>(普遍的なルールや法則)</div>
+            </div>
+            <p><b class="text-action">データ</b>とは、単なる事実や数値の羅列です。例えば、各地の気温や気圧の観測値がこれにあたります。このデータを分析・解釈し、「明日の降水確率は90%」のように人間にとって価値や意味のある形にしたものが<b class="text-action">情報</b>です。そして、その情報を積み重ねて一般化し、「梅雨前線が近づくと雨が降りやすい」といった普遍的なルールとして体系化したものが<b class="text-action">知識</b>となります。</p>
+
+            <h3 id="sec4_2">4.2 情報の4つの特性とデジタルタトゥー</h3>
+            <p>「情報」には、モノとは異なる以下のような際立った特性があります。</p>
+            <div class="card">
+                <div class="card-header">情報の4つの特性</div>
+                <ol>
+                    <li><b>形がない（非物質性）：</b>情報は物理的な形を持ちません。紙やデータは情報を記録する「媒体」であって、情報そのものではありません。</li>
+                    <li><b>消えない（残存性）：</b>一度インターネット上に公開された情報は、完全に消去することが極めて困難です。</li>
+                    <li><b>複製が容易（複製可能性）：</b>デジタル情報は、品質を劣化させることなく、ほぼゼロコストで簡単に複製できます。</li>
+                    <li><b>瞬時に伝わる（伝播性）：</b>インターネットを通じて、情報は一瞬で世界中に広まります。</li>
+                </ol>
+            </div>
+            <p>これらの特性、特に「消えない」という性質は、<b class="text-problem">「デジタルタトゥー」</b>という問題を生み出します。インターネット上に一度公開された不適切な写真や個人情報は、タトゥーのように半永久的に残り、個人の人生に深刻な影響を及ぼすことがあります。リベンジポルノ防止法のような法律も整備されていますが、私たち一人ひとりが情報の特性を理解し、その取り扱いに細心の注意を払うことが何よりも重要です。</p>
+            
+            <div class="question-box">
+                <h4>問題4.1</h4>
+                <p>単なる事実や数値の羅列を<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">データ</span></span>といい、それに意味づけしたものを<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">情報</span></span>、さらに一般化したものを<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">知識</span></span>と呼びます。一度ネットに公開されると消すのが困難なことを<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">デジタルタトゥー</span></span>の問題といいます。</p>
+            </div>
+            <div class="page-number">4</div>
+        </div>
+
+        <div class="page">
+            <h2 id="chap5">5. 情報を伝える「メディア」の特性</h2>
+            <p>情報が形を持たないのに対し、その情報を表現したり、伝えたり、記録したりする具体的な手段や媒体のことを<b class="text-action">「メディア」</b>と呼びます。メディアは、その役割によって大きく3つに分類できます。</p>
+
+            <h3 id="sec5_1">5.1 表現・伝達・記録のためのメディア</h3>
+            <ul>
+                <li><b>表現のためのメディア:</b> 情報をどのような形で表すか、という媒体です。音声、文字、画像、動画、3Dオブジェクトなどがこれにあたります。各メディアには得意・不得意があり、伝えたい内容に応じて適切に選択・組み合わせる必要があります（例：動画にテロップを入れる）。</li>
+                <li><b>伝達のためのメディア:</b> 情報を他者にどう届けるか、という媒体です。新聞、テレビ、ラジオといったマスメディアのほか、郵便、電話、メール、チャット、SNS、Webサイトなども含まれます。緊急性や重要度に応じて使い分けることが求められます。</li>
+                <li><b>記録のためのメディア:</b> 情報を保存しておくための媒体です。古くは石碑や紙、現代ではハードディスク(HDD)、SSD、SDカードなどの物理メディアや、インターネット上の<b class="marker">クラウドストレージ</b>などがあります。用途（頻繁な読み書き、長期保存など）によって最適なメディアは異なります。</li>
+            </ul>
+
+            <h3 id="sec5_2">5.2 メディアリテラシーの重要性</h3>
+            <p>メディアを通じて発信される情報は、発信者の意図や視点によって、<b class="text-problem">必ず何らかの情報が省略されたり、強調されたり</b>しています。完全に客観的な情報というものは存在しえません。</p>
+            <p>そのため、私たち情報の受け手には、その情報を鵜呑みにせず、批判的な視点で吟味する能力が求められます。このように、<b class="text-confirm">メディアの特性を理解し、発信された情報の信憑性を主体的に評価し、活用する能力</b>のことを<b class="text-confirm">「メディアリテラシー」</b>と呼びます。</p>
+            <div class="card">
+                <p>例えば、対立する二つの国の報道を片方だけ見るのではなく、双方の視点から情報を受け取ることで、物事を多角的に理解できます。SNSなど多様なメディアから情報を受け取る現代において、高いメディアリテラシーを身につけることは、情報社会を賢く生き抜くための必須スキルです。</p>
+            </div>
+            
+            <div class="question-box">
+                <h4>問題5.1</h4>
+                <p>情報を表現・伝達・記録する媒体を<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">メディア</span></span>といいます。情報を保存する媒体には、HDDやSSDのほか、インターネット上のサーバーにデータを保存する<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">クラウドストレージ</span></span>などがあります。メディアから発信される情報を主体的に評価し活用する能力を<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">メディアリテラシー</span></span>と呼びます。</p>
+            </div>
+            <div class="page-number">5</div>
+        </div>
+        
+        <div class="page">
+            <h2 id="chap6">6. ITを活用した問題解決プロセス</h2>
+            <p>ITは、私たちの身の回りのさまざまな問題を解決するための強力なツールです。ここでは、そもそも「問題解決」とは何か、その基本的なプロセスについて学んでいきましょう。</p>
+            
+            <h3 id="sec6_1">6.1 問題とは「理想と現実のギャップ」</h3>
+            <p>問題とは、<b class="marker">「あるべき姿（理想）」と「現在の状況（現実）」との間に生じるギャップ（差分）</b>のことです。例えば、「大会に出て優勝したい（理想）」のに「メンバーが足りなくて出場できない（現実）」という状況が「問題」にあたります。</p>
+            <p>この問題を解決するためには、一般的に以下の6つのステップを踏みます。</p>
+            <div class="diagram vertical">
+                 <div class="box" style="width: 80%;">1. 問題と目標の明確化</div><div class="arrow">↓</div>
+                 <div class="box" style="width: 80%;">2. 問題の整理と分析</div><div class="arrow">↓</div>
+                 <div class="box" style="width: 80%;">3. 解決策の立案</div><div class="arrow">↓</div>
+                 <div class="box" style="width: 80%;">4. 実行</div><div class="arrow">↓</div>
+                 <div class="box" style="width: 80%;">5. 評価</div><div class="arrow">↓</div>
+                 <div class="box" style="width: 80%;">6. 共有と改善</div>
+            </div>
+            <p>重要なのは、最初のステップで<b class="text-action">目標を「2名以上の新メンバーを確保する」のように具体的な数値で設定</b>することです。これにより、後の「評価」の段階で達成できたかどうかを客観的に判断できます。</p>
+
+            <h3 id="sec6_2">6.2 問題解決のPDCAサイクル</h3>
+            <p>この一連の問題解決プロセスを、継続的に繰り返して改善していくためのフレームワークが<b class="text-confirm">「PDCAサイクル」</b>です。</p>
+            <div class="card">
+                <div class="card-header">PDCAサイクル</div>
+                <ul>
+                    <li><b>Plan (計画):</b> 解決策を立案する。</li>
+                    <li><b>Do (実行):</b> 計画を実行に移す。</li>
+                    <li><b>Check (評価):</b> 結果を評価し、目標との差を分析する。</li>
+                    <li><b>Act (改善):</b> 評価結果を元に、次の計画を改善する。</li>
+                </ul>
+            </div>
+            <p>このサイクルを回すことで、一度の失敗で終わらせず、継続的に改善を重ねてより良い成果を目指すことができます。そして現代の問題解決において、<b class="text-problem">ITツールの活用は不可欠</b>です。Webアンケートでの調査、デジタルツールでの広報物作成、チャットツールでの連携など、あらゆる場面でITは問題解決の効率と質を高めてくれます。</p>
+
+            <div class="question-box">
+                <h4>問題6.1</h4>
+                <p>問題とは、「理想」と「現実」の<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">ギャップ</span></span>のことです。問題解決のプロセスを継続的に改善していくためのフレームワークとして、Plan(計画)、Do(実行)、Check(評価)、Act(改善)の頭文字をとった<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">PDCAサイクル</span></span>があります。</p>
+            </div>
+            <div class="page-number">6</div>
+        </div>
+
+        <div class="button-container">
+            <a href="page2.html" class="nav-button">次の講座へ →</a>
+        </div>
+        
+        <div id="references" class="references">
+            <h3>参考文献・リンク</h3>
+            <ul>
+                <li>本教材は、ZEN大学（仮称・設置認可申請中）が提供する講義「ITリテラシー入門 第1回 なぜITを学ぶのか」（講師：吉村 創一朗 先生）を元に作成されました。</li>
+            </ul>
+        </div>
+    </div>
+    <script>
+        function toggleAnswer(element) {
+            const answer = element.querySelector('.answer');
+            if (answer) {
+                answer.classList.toggle('visible');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ITリテラシー入門 第13回 コンピューターのしくみ</title>
+    <style>
+        :root {
+            --primary-color: #0d47a1; /* 濃い青 */
+            --secondary-color: #1976d2; /* 青 */
+            --accent-color: #d32f2f; /* 赤系のアクセント */
+            --background-color: #f5f8fa; /* 薄いグレーがかった背景 */
+            --text-color: #333;
+            --white-color: #ffffff;
+            --marker-yellow: #fffde7;
+            --confirm-green-bg: #e8f5e9;
+            --action-blue-bg: #e3f2fd;
+            --problem-red-bg: #fbe9e7;
+            --confirm-green-text: #2e7d32;
+            --action-blue-text: var(--secondary-color);
+            --problem-red-text: var(--accent-color);
+        }
+
+        body {
+            font-family: 'Yu Gothic UI', 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+            line-height: 1.8;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: var(--white-color);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        .page {
+            border: 1px solid #ddd;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .page-number {
+            position: absolute;
+            bottom: 10px;
+            right: 20px;
+            color: #aaa;
+            font-size: 0.9em;
+        }
+
+        h1 {
+            font-size: 2.2em;
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--secondary-color);
+            padding-bottom: 10px;
+            margin-bottom: 5px;
+            position: relative;
+        }
+        
+        h1::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -3px;
+            width: 70px;
+            border-bottom: 3px solid var(--primary-color);
+        }
+        
+        .lecturer {
+            font-size: 1.1em;
+            color: var(--secondary-color);
+            text-align: right;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            color: var(--primary-color);
+            border-left: 5px solid var(--secondary-color);
+            padding-left: 15px;
+            margin-top: 40px;
+        }
+
+        h3 {
+            font-size: 1.4em;
+            color: var(--secondary-color);
+            border-bottom: 1px dashed var(--secondary-color);
+            padding-bottom: 5px;
+            margin-top: 30px;
+        }
+
+        p { margin-bottom: 1.2em; }
+        strong, b { color: var(--primary-color); }
+        .marker { background: linear-gradient(transparent 60%, var(--marker-yellow) 60%); }
+        .text-confirm { color: var(--confirm-green-text); font-weight: bold; }
+        .text-action { color: var(--action-blue-text); font-weight: bold; }
+        .text-problem { color: var(--problem-red-text); font-weight: bold; }
+
+        .toc {
+            background-color: #f8fafd;
+            border: 1px solid var(--secondary-color);
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+        }
+        .toc h2 { margin-top: 0; border-left: none; padding-left: 0; border-bottom: 2px solid var(--secondary-color); }
+        .toc ul { list-style-type: none; padding-left: 0; }
+        .toc ul ul { padding-left: 20px; }
+        .toc a { text-decoration: none; color: var(--primary-color); }
+        .toc a:hover { text-decoration: underline; }
+
+        .question-box {
+            border: 2px solid var(--accent-color);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            background-color: var(--problem-red-bg);
+        }
+
+        .fill-in {
+            font-weight: bold;
+            color: var(--accent-color);
+            border-bottom: 2px dotted var(--accent-color);
+            cursor: pointer;
+            padding: 0 5px;
+        }
+
+        .answer {
+            display: none;
+            background-color: var(--marker-yellow);
+            padding: 2px 5px;
+            border-radius: 3px;
+            margin: 0 5px;
+        }
+        .answer.visible { display: inline-block; }
+
+        .card {
+            background-color: #f9f9f9;
+            border-left: 5px solid var(--primary-color);
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .card-header {
+            font-weight: bold;
+            font-size: 1.2em;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        table {
+            width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.95em;
+        }
+        th, td { border: 1px solid #ccc; padding: 12px; text-align: left; }
+        th { background-color: var(--primary-color); color: var(--white-color); font-weight: bold; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+        
+        .references { margin-top: 40px; padding-top: 20px; border-top: 1px solid #ccc; }
+        .references ul { list-style: none; padding: 0; }
+        .references li { margin-bottom: 10px; font-size: 0.9em; }
+        
+        .button-container { text-align: center; margin: 40px 0; display: flex; justify-content: space-between; }
+        .nav-button {
+            display: inline-block; padding: 10px 20px; background-color: var(--primary-color);
+            color: var(--white-color); text-decoration: none; border-radius: 5px;
+            font-weight: bold; transition: background-color 0.3s;
+        }
+        .nav-button:hover { background-color: var(--secondary-color); }
+        
+        .footnote { font-size: 0.8em; color: #666; margin-top: 1em; }
+
+        .computer-architecture-diagram {
+            display: flex; flex-direction: column; align-items: center; padding: 20px; border: 1px solid #ccc; border-radius: 8px; margin: 20px 0; background: #f9f9f9;
+        }
+        .arch-cpu { border: 2px solid var(--primary-color); padding: 10px; text-align: center; border-radius: 5px; margin-bottom: 15px; background: var(--action-blue-bg); width: 80%; }
+        .arch-cpu-inner { display: flex; justify-content: space-around; }
+        .arch-unit { border: 1px dashed var(--secondary-color); padding: 5px; margin: 5px; border-radius: 3px; flex: 1; }
+        .arch-memory { border: 2px solid var(--confirm-green-text); padding: 10px; text-align: center; border-radius: 5px; background: var(--confirm-green-bg); width: 60%; }
+        .arch-io { display: flex; justify-content: space-between; width: 100%; margin-top: 15px; }
+        .arch-input, .arch-output { border: 2px solid var(--problem-red-text); padding: 10px; text-align: center; border-radius: 5px; background: var(--problem-red-bg); width: 45%; }
+        .arch-arrow { position: relative; width: 100%; height: 20px; }
+        .arch-arrow::before { content: ''; position: absolute; left: 50%; top: 0; width: 2px; height: 100%; background: #333; }
+        .arch-arrow.down::after { content: '▼'; position: absolute; left: 50%; bottom: -5px; transform: translateX(-50%); }
+        .arch-arrow.up::after { content: '▲'; position: absolute; left: 50%; top: -5px; transform: translateX(-50%); }
+        .arch-arrow-bi::after { content: '▲▼'; position: absolute; left: 50%; top: -1px; transform: translateX(-50%); font-size: 0.9em; line-height: 1.2; letter-spacing: -2px; }
+        .arch-io-arrow { position: relative; width: 20px; height: 100%; align-self: center; }
+        .arch-io-arrow::before { content: ''; position: absolute; top: 50%; left: 0; height: 2px; width: 100%; background: #333; }
+        .arch-io-arrow.left::after { content: '◀'; position: absolute; left: -5px; top: 50%; transform: translateY(-50%); }
+        .arch-io-arrow.right::after { content: '▶'; position: absolute; right: -5px; top: 50%; transform: translateY(-50%); }
+
+        .memory-hierarchy {
+            position: relative; width: 100%; max-width: 400px; height: 250px; margin: 30px auto;
+        }
+        .hierarchy-level {
+            position: absolute; left: 50%; transform: translateX(-50%); border: 1px solid #ccc; text-align: center;
+        }
+        .level1 { top: 0; width: 20%; height: 40px; line-height: 40px; background: #fbe9e7; clip-path: polygon(25% 0%, 75% 0%, 100% 100%, 0% 100%); }
+        .level2 { top: 40px; width: 40%; height: 50px; line-height: 50px; background: #e3f2fd; clip-path: polygon(15% 0, 85% 0, 100% 100%, 0% 100%); }
+        .level3 { top: 90px; width: 70%; height: 60px; line-height: 60px; background: #e8f5e9; clip-path: polygon(10% 0, 90% 0, 100% 100%, 0% 100%); }
+        .level4 { top: 150px; width: 100%; height: 70px; line-height: 70px; background: #f5f8fa; }
+        .hierarchy-label { position: absolute; font-size: 0.9em; color: #555; }
+        .label-speed { left: -70px; top: 50%; transform: translateY(-50%) rotate(-90deg); }
+        .label-capacity { right: -70px; top: 50%; transform: translateY(-50%) rotate(90deg); }
+        .label-fast, .label-large { position: absolute; font-size: 0.8em; }
+        .label-fast { top: 0; left: -50px; }
+        .label-slow { bottom: 0; left: -50px; }
+        .label-small { top: 0; right: -50px; }
+        .label-large { bottom: 0; right: -50px; }
+        
+        @media (max-width: 768px) {
+            .container { padding: 10px; }
+            .page { padding: 1rem; }
+            h1 { font-size: 1.8em; }
+            h2 { font-size: 1.5em; }
+            h3 { font-size: 1.2em; }
+            .computer-architecture-diagram { font-size: 0.8em; }
+            .memory-hierarchy { font-size: 0.9em; max-width: 300px; }
+            .hierarchy-label { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ITリテラシー入門 第13回 コンピューターのしくみ</h1>
+        <p class="lecturer">講師：ZEN大学 講師陣</p>
+
+        <nav class="toc">
+            <h2>目次</h2>
+            <ul>
+                <li><a href="#chap1">1. コンピューターの構成</a></li>
+                <li><a href="#chap2">2. 記憶装置(メモリ)</a></li>
+                <li><a href="#chap3">3. 入出力デバイス</a></li>
+                <li><a href="#chap4">4. システムの構成と信頼性</a></li>
+            </ul>
+        </nav>
+        
+        <div class="page">
+            <h2 id="chap1">1. コンピューターの構成</h2>
+            <p>私たちが毎日使っているスマホやPC。これらはすべて「コンピューター」です。この章では、コンピューターがどのような部品で構成され、どのように動いているのか、その基本的な仕組みを探っていきます。これを理解すれば、PC選びやトラブル対応にもきっと役立ちますよ！</p>
+            
+            <h3>1.1 コンピューターとは？ハードウェアとソフトウェア</h3>
+            <p>コンピューターとは、<b class="text-action">計算や情報処理ができる電子機器</b>のこと。日本語では「電子計算機」といいます。歴史を遡ると、ENIACという巨大な計算機がその元祖とされています。今では手のひらサイズになりましたが、基本的な考え方は変わりません。</p>
+            <p>コンピューターは、大きく分けて2つの要素から成り立っています。</p>
+            <ul>
+                <li><b>ハードウェア</b>: CPUやメモリ、キーボードなど、<b class="marker">物理的な形を持つ部品や装置</b>のこと。手で触れる「硬い(Hard)」ものと覚えましょう。</li>
+                <li><b>ソフトウェア</b>: OSやアプリなど、<b class="marker">ハードウェアを動かすための命令やプログラム</b>のこと。手で触れない「柔らかい(Soft)」ものですね。</li>
+            </ul>
+            <p>この二つが協力し合うことで、コンピューターは初めてその能力を発揮するのです。</p>
+
+            <h3>1.2 ハードウェアの5大装置とデータの流れ</h3>
+            <p>ハードウェアは、さらに5つの重要な装置に分けることができます。これを<b class="text-confirm">コンピューターの5大装置</b>と呼びます。それぞれの役割を見ていきましょう。</p>
+            
+            <div class="computer-architecture-diagram">
+                <div class="arch-io">
+                    <div class="arch-input"><b>入力装置</b><br>(キーボード, マウス)</div>
+                    <div class="arch-output"><b>出力装置</b><br>(ディスプレイ, プリンタ)</div>
+                </div>
+                <div class="arch-arrow up"></div>
+                <div class="arch-cpu">
+                    <b>中央処理装置 (CPU)</b>
+                    <div class="arch-cpu-inner">
+                        <div class="arch-unit"><b>制御装置</b></div>
+                        <div class="arch-unit"><b>演算装置</b></div>
+                    </div>
+                </div>
+                <div class="arch-arrow-bi"></div>
+                <div class="arch-memory">
+                    <b>記憶装置</b><br>(メモリ, SSD)
+                </div>
+            </div>
+
+            <table>
+                <thead><tr><th>装置</th><th>役割</th><th>例</th></tr></thead>
+                <tbody>
+                    <tr><td><b>入力装置</b></td><td>人間からの指示やデータをコンピューターに伝える。</td><td>キーボード、マウス、マイク</td></tr>
+                    <tr><td><b>出力装置</b></td><td>コンピューターの処理結果を人間に見せる。</td><td>ディスプレイ、プリンター、スピーカー</td></tr>
+                    <tr><td><b>記憶装置</b></td><td>データやプログラムを保存する。</td><td>メモリ(主記憶)、SSD/HDD(補助記憶)</td></tr>
+                    <tr><td><b>演算装置</b></td><td>四則演算や比較など、計算処理を行う。</td><td>CPU, GPU</td></tr>
+                    <tr><td><b>制御装置</b></td><td>全体の司令塔。各装置の動作をコントロールする。</td><td>CPU</td></tr>
+                </tbody>
+            </table>
+            <p>データの流れは、<b class="text-action">入力装置から入った情報が、CPUと記憶装置の間でやり取りされながら処理され、最終的に出力装置から結果が表示される</b>、というイメージです。この一連の流れを制御装置が完璧にコントロールしているのです。</p>
+
+            <div class="card">
+                <div class="card-header">事例：自作PCで最強ゲーミングマシンを作ろう！</div>
+                <p>「最高の環境でゲームがしたい！」そんな夢を叶えるのが自作PCだ！パーツ選びはまさに5大装置の知識が試されるぞ。<br>
+                まず頭脳である<b class="text-action">CPU(中央処理装置)</b>は、演算と制御を司る最重要パーツ。これが速いほどゲームの動作が快適になる。<br>
+                次にグラフィック担当の<b class="text-action">GPU(画像処理装置)</b>。これも演算装置の一種で、リアルな3D映像を描き出す。これが高性能だと、映像がカクつかない！<br>
+                そして作業机の広さにあたるのが<b class="text-confirm">メモリ(主記憶装置)</b>。容量が大きいほど、多くのアプリを同時に開いてもスムーズに動く。<br>
+                データ倉庫の<b class="text-problem">SSD/HDD(補助記憶装置)</b>にゲームをインストールし、キーボードやマウス(入力装置)で操作、ディスプレイ(出力装置)に映し出す。これらのパーツをバランス良く組み合わせることが、最強マシンへの道なんだぜ！</p>
+            </div>
+            
+            <div class="question-box">
+                <h4>問題1</h4>
+                <p>コンピューターの物理的な部品を<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">ハードウェア</span></span>、それを動かすプログラムを<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">ソフトウェア</span></span>という。ハードウェアは、入力・出力・記憶・演算・<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">制御</span></span>の5大装置から構成される。このうち、演算と制御を担う中心的な部品を<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">CPU</span></span>という。</p>
+            </div>
+        </div>
+
+        <div class="page">
+            <h2 id="chap2">2. 記憶装置(メモリ)</h2>
+            <p>コンピューターの性能を語る上で欠かせないのが「記憶装置」、通称メモリです。データを一時的に覚えておく場所と、長期間保存しておく場所では、役割も性能も全く違います。この章では、その違いと構造を解き明かしていきましょう。</p>
+            
+            <h3>2.1 メインメモリ(主記憶)と補助記憶</h3>
+            <p>記憶装置は、大きく2種類に分けられます。</p>
+            <ul>
+                <li><b>メインメモリ (主記憶)</b>: CPUが直接データを読み書きする、<b class="marker">作業用の高速なメモリ</b>。机の広さに例えられます。電源を切ると内容が消えてしまう「<b class="text-problem">揮発性</b>」という特徴があります。代表的なものに<b class="text-action">RAM</b>があります。</li>
+                <li><b>補助記憶装置</b>: データやアプリを長期間保存する、<b class="marker">大容量の記憶装置</b>。本棚や倉庫に例えられます。電源を切ってもデータが消えない「<b class="text-confirm">不揮発性</b>」です。SSDやハードディスク(HDD)がこれにあたります。</li>
+            </ul>
+
+            <h3>2.2 メモリの種類と特徴</h3>
+            <p>メモリの世界は奥が深く、様々な種類があります。ここでは代表的なものを紹介します。</p>
+            <h4>半導体メモリ</h4>
+            <p>電気回路でデータを記憶する方式で、高速かつ省電力です。</p>
+            <ul>
+                <li><b>RAM (Random Access Memory)</b>: データの読み書きが自由にできる揮発性メモリ。
+                    <ul>
+                        <li><b>DRAM</b>: 主にメインメモリに使われる。比較的安価で大容量化しやすい。</li>
+                        <li><b>SRAM</b>: 非常に高速だが高価。CPU内部の<b class="text-action">キャッシュメモリ</b>に使われる。</li>
+                    </ul>
+                </li>
+                <li><b>ROM (Read Only Memory)</b>: 基本的に読み出し専用の不揮発性メモリ。ファームウェアなど書き換えの必要がないデータの保存に使う。</li>
+                <li><b>フラッシュメモリ</b>: ROMの一種で、電気的に内容を書き換え可能。USBメモリやSDカード、SSDに使われています。</li>
+            </ul>
+            <h4>磁気ディスクと光ディスク</h4>
+            <ul>
+                <li><b>ハードディスク (HDD)</b>: 磁気を利用して円盤にデータを記録。大容量で安価ですが、物理的に回転するため衝撃に弱く、SSDより低速です。</li>
+                <li><b>光ディスク</b>: レーザー光でデータを読み書き。CD, DVD, Blu-ray Discなどがあります。</li>
+            </ul>
+
+            <h3>2.3 記憶階層構造</h3>
+            <p>コンピューターは、速度と容量、コストのバランスを取るために、複数の記憶装置を階層的に使い分けています。これを<b class="text-action">記憶階層構造</b>と呼びます。</p>
+            <div class="memory-hierarchy">
+                <div class="hierarchy-label label-speed">速度</div>
+                <div class="hierarchy-label label-fast">高速・高価</div>
+                <div class="hierarchy-label label-slow">低速・安価</div>
+                <div class="hierarchy-level level1">レジスタ</div>
+                <div class="hierarchy-level level2">キャッシュメモリ</div>
+                <div class="hierarchy-level level3">主記憶 (メインメモリ)</div>
+                <div class="hierarchy-level level4">補助記憶 (SSD/HDD)</div>
+                <div class="hierarchy-label label-capacity">容量</div>
+                <div class="hierarchy-label label-small">小容量</div>
+                <div class="hierarchy-label label-large">大容量</div>
+            </div>
+            <p>CPUに近いほど高速・小容量・高価になり、遠いほど低速・大容量・安価になります。CPUはまず一番近いキャッシュメモリにデータを探しに行き、なければメインメモリ、それでもなければ補助記憶装置へと探しに行きます。この仕組みにより、体感速度を向上させているのです。</p>
+
+            <div class="card">
+                <div class="card-header">事例：SSDはなぜ速い？ゲームのロード時間を爆速にする魔法の箱！</div>
+                <p>「このゲーム、ロードなげー！」ってイライラしたことないか？その原因は補助記憶装置にあるかもしれないぞ！昔ながらの<b class="text-problem">HDD（ハードディスク）</b>は、レコードみたいに円盤をグルグル回して針でデータを読み取るから、どうしても時間がかかるんだ。</p>
+                <p>一方、最近主流の<b class="text-confirm">SSD（ソリッドステートドライブ）</b>は、中身がUSBメモリと同じ<b class="text-action">フラッシュメモリ</b>。電気信号だけでデータを読み書きするから、物理的に動く部分がなくてめちゃくちゃ速い！ゲームの起動やマップの読み込みが爆速になるのはこのためだ。一度SSDの速さを体験したら、もうHDDには戻れないぜ！</p>
+            </div>
+
+            <div class="question-box">
+                <h4>問題2</h4>
+                <p>電源を切るとデータが消える性質を<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">揮発性</span></span>、消えない性質を<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">不揮発性</span></span>という。CPUが直接アクセスする高速な作業用メモリを<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">主記憶装置(メインメモリ)</span></span>、データを長期保存する大容量の装置を<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">補助記憶装置</span></span>という。CPUと主記憶の間に置かれ、処理を高速化するメモリを<span class="fill-in" onclick="toggleAnswer(this)">(5)<span class="answer">キャッシュメモリ</span></span>という。</p>
+            </div>
+        </div>
+
+        <div class="page">
+            <h2 id="chap3">3. 入出力デバイス</h2>
+            <p>コンピューターと私たちがコミュニケーションを取るための架け橋、それが「入出力デバイス」です。キーボードで文字を打ち込み、ディスプレイで結果を見る。当たり前の操作ですが、その裏では様々な技術が動いています。この章では、身近なデバイスの仕組みに迫ります。</p>
+
+            <h3>3.1 入力デバイスの種類と仕組み</h3>
+            <p>入力デバイスは、私たちの操作をデジタル信号に変えてコンピューターに伝えます。</p>
+            <ul>
+                <li><b>キーボード</b>: 打鍵方式によって打ち心地や価格が異なります。安価な<b class="text-action">メンブレン方式</b>、しっかりした打鍵感の<b class="text-confirm">メカニカル方式</b>、高速で高耐久な<b class="text-problem">静電容量無接点方式</b>などがあります。</li>
+                <li><b>ポインティングデバイス</b>: 画面上のカーソルを操作します。マウス、ノートPCのタッチパッド、タブレットのペンなどが代表的です。</li>
+                <li><b>マイク</b>: 音を電気信号に変換します。ライブなどに使われる頑丈なダイナミックマイクと、スタジオ録音で使われる高感度なコンデンサマイクがあります。</li>
+                <li><b>Webカメラ</b>: 映像をデジタルデータに変換します。画質は<b class="marker">画素数</b>と<b class="marker">フレームレート</b>（1秒間のコマ数）で決まります。</li>
+            </ul>
+            
+            <h3>3.2 出力デバイスの種類と仕組み</h3>
+            <p>出力デバイスは、コンピューターの処理結果を私たちが理解できる形に変換します。</p>
+            <ul>
+                <li><b>ディスプレイ</b>: 現在は<b class="text-action">液晶ディスプレイ</b>が主流ですが、より高画質で鮮やかな<b class="text-confirm">有機ELディスプレイ</b>も増えています。性能は、画像の細かさを示す<b class="marker">解像度</b>（FHD, 4Kなど）や、動きの滑らかさを示す<b class="marker">リフレッシュレート</b>(Hz)で評価されます。</li>
+                <li><b>スピーカー</b>: 音声信号を振動に変えて音を出力します。左右2つの音源で立体感を出す<b class="text-action">ステレオ</b>や、さらに多くのスピーカーで臨場感を出す<b class="text-confirm">サラウンド</b>といった方式があります。</li>
+            </ul>
+
+            <h3>3.3 デバイスを繋ぐインタフェースと制御の仕組み</h3>
+            <p>これらのデバイスをPCに接続するのが<b class="text-action">入出力インタフェース</b>です。USBやHDMI、無線ではBluetoothなどが有名ですね。端子の形状やバージョンが違うと接続できないので注意が必要です。</p>
+            <p>そして、接続されたデバイスをOSが使えるように制御しているのが<b class="text-problem">デバイスドライバ</b>というソフトウェアです。最近では、デバイスを接続するだけでOSが自動でドライバをインストールしてくれる<b class="text-confirm">プラグアンドプレイ</b>機能が普及し、とても便利になりました。</p>
+
+            <div class="card">
+                <div class="card-header">事例：最強のゲーミングキーボード選び！メカニカル vs 静電容量無接点</div>
+                <p>プロゲーマーの指さばきを支えるのが、こだわりのキーボードだ！勝敗を分ける一瞬の操作には、正確で高速な入力が求められる。そこで人気なのが、<b class="text-confirm">メカニカルキーボード</b>だ！</p>
+                <p>カチッ、カチッという小気味よい打鍵感が特徴で、キーの一つ一つが独立したスイッチになっている。このスイッチの種類（軸）によって、押したときの重さや感触が全く違うんだ。自分に合った軸を見つけるのが勝利への第一歩！</p>
+                <p>さらにその上を行くのが<b class="text-problem">静電容量無接点方式</b>。物理的な接点なしにキー入力を検知するため、圧倒的な耐久性と静音性、そして羽のように軽いタッチを実現する。高価だけど、一度使ったら他のキーボードには戻れない「神の道具」とも言われているんだぜ！</p>
+            </div>
+            
+            <div class="question-box">
+                <h4>問題3</h4>
+                <p>ディスプレイの画像の細かさを示す指標を<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">解像度</span></span>、動きの滑らかさを示す指標を<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">リフレッシュレート</span></span>という。キーボードやマウスなどをPCに接続するための規格を<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">入出力インタフェース</span></span>という。周辺機器をOSが使えるように制御するソフトウェアを<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">デバイスドライバ</span></span>という。</p>
+            </div>
+        </div>
+
+        <div class="page">
+            <h2 id="chap4">4. システムの構成と信頼性</h2>
+            <p>1台のPCだけでなく、複数のコンピューターが連携して動くことで、現代の便利なサービスは成り立っています。この章では、そうした「システム」の様々な構成方法や、サービスを止めないための「信頼性」の考え方について学んでいきましょう。</p>
+            
+            <h3>4.1 システムの処理・利用形態</h3>
+            <p>システムは、その処理の仕方や使われ方によっていくつかの種類に分類されます。</p>
+            <ul>
+                <li><b>分散処理</b>: 複数のコンピューターで処理を分担する、現代の主流な形態。
+                    <ul>
+                        <li><b class="text-action">クライアントサーバシステム</b>: サービスを提供する「サーバ」と、それを要求する「クライアント」に役割分担する。Webサイトの閲覧などが典型例。</li>
+                        <li><b class="text-confirm">P2P (ピアツーピア)</b>: サーバを介さず、クライアント同士が直接データをやり取りする。LINEの無料通話などに利用。</li>
+                    </ul>
+                </li>
+                <li><b>リアルタイム処理</b>: データが入力されたら即座に処理して結果を返す方式。銀行のATMやネットショップの在庫管理など。</li>
+                <li><b>バッチ処理</b>: データを一定期間ためておき、一括で処理する方式。月末の請求書発行や給与計算など。</li>
+            </ul>
+
+            <h3>4.2 サーバの仮想化技術</h3>
+            <p>1台の物理的なサーバを、あたかも複数台のサーバがあるかのように見せかける技術が<b class="text-action">仮想化</b>です。リソースを効率的に使え、コスト削減にも繋がります。</p>
+            <ul>
+                <li><b>ハイパーバイザ型</b>: ハードウェア上に直接仮想化ソフトを置き、複数のOSを動かす。本格的なサーバ仮想化で主流。</li>
+                <li><b>コンテナ型</b>: 1つのOSを共有し、その上でアプリごとに隔離された実行環境（コンテナ）を動かす。起動が非常に高速で、Dockerというソフトウェアが有名。</li>
+            </ul>
+
+            <h3>4.3 信頼性を高めるシステム構成</h3>
+            <p>絶対に止まってはならないシステムでは、故障に備えて機器を複数用意する<b class="text-confirm">冗長化</b>が行われます。</p>
+            <ul>
+                <li><b>デュアルシステム</b>: 2つのシステムで全く同じ処理を行い、結果を照合する。片方が故障しても、もう片方が処理を継続。銀行のシステムなど高い信頼性が求められる場面で使われる。</li>
+                <li><b>デュプレックスシステム</b>: 同じシステムを2組用意し、片方を現役機（主系）、もう片方を待機機（従系）とする構成。</li>
+                <li><b>クラスタシステム</b>: 複数のコンピューターを連携させ、1つのシステムとして動かす。1台が故障しても他のマシンが処理を引き継ぐ。</li>
+                <li><b>RAID</b>: 複数のHDD/SSDを組み合わせて、1台が故障してもデータが失われないようにする技術。</li>
+            </ul>
+            
+            <h3>4.4 システムの評価指標</h3>
+            <p>システムの良し悪しは、性能・信頼性・経済性の3つの観点から評価されます。</p>
+            <table>
+                <thead><tr><th>評価観点</th><th>主な指標</th><th>説明</th></tr></thead>
+                <tbody>
+                    <tr><td><b>性能</b></td><td><b>レスポンスタイム</b><br><b>スループット</b></td><td>要求から応答までの時間。<br>単位時間あたりに処理できる仕事量。</td></tr>
+                    <tr><td><b>信頼性</b></td><td><b>稼働率</b><br><b>MTBF / MTTR</b></td><td>システムが正常に動いている時間の割合。<br>平均故障間隔 / 平均修復時間。</td></tr>
+                    <tr><td><b>経済性</b></td><td><b>TCO</b></td><td>初期コストと運用コストを合わせた総所有コスト。</td></tr>
+                </tbody>
+            </table>
+            <p>信頼性を高めるには、故障しにくい時間を長くし(<b class="text-confirm">MTBF: Mean Time Between Failures</b>)、復旧にかかる時間を短くする(<b class="text-problem">MTTR: Mean Time To Repair</b>)ことが重要です。</p>
+
+            <div class="card">
+                <div class="card-header">事例：オンラインゲームのサーバーはなぜ落ちない？</div>
+                <p>大型アップデート当日、何百万人ものプレイヤーが一斉にログイン！それでもサービスが止まらないのは、<b class="text-action">システムの信頼性</b>を極限まで高めているからだ！<br>
+                まず、ゲームサーバーは<b class="text-confirm">クラスタシステム</b>で構成され、何台ものコンピューターが連携している。1台が故障しても、瞬時に別のマシンが処理を引き継ぐんだ。<br>
+                プレイヤーの大事なセーブデータは、<b class="text-problem">RAID</b>技術で冗長化されたストレージに保存。HDDが1台壊れてもデータは絶対に消えない。<br>
+                さらに、システムに異常な負荷がかかった際は、<b class="text-action">フェールセーフ</b>機能で一部の機能を制限してでも、システム全体のダウンを防ぐ。こうした幾重もの備えが、私たちの楽しいゲーム体験を守っているんだぜ！</p>
+            </div>
+            
+            <div class="question-box">
+                <h4>問題4</h4>
+                <p>サービスを提供する側を<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">サーバ</span></span>、サービスを要求する側を<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">クライアント</span></span>という。データを一定期間ためて一括処理する方式を<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">バッチ処理</span></span>という。システムの平均故障間隔を<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">MTBF</span></span>、平均修復時間を<span class="fill-in" onclick="toggleAnswer(this)">(5)<span class="answer">MTTR</span></span>という。</p>
+            </div>
+        </div>
+        
+        <div class="button-container">
+            <a href="page12.html" class="nav-button">← 前の講座へ</a>
+            <a href="page14.html" class="nav-button">次の講座へ →</a>
+        </div>
+        
+        <div id="references" class="references">
+            <h3>参考文献・リンク</h3>
+            <ul>
+                <li>本教材は、ZEN大学（仮称・設置認可申請中）が提供する講義「ITリテラシー入門 第13回 コンピューターのしくみ」（講師：ZEN大学 講師陣）のテキストおよび講義内容を元に作成されました。</li>
+            </ul>
+        </div>
+    </div>
+    <script>
+        function toggleAnswer(element) {
+            const answer = element.querySelector('.answer');
+            if (answer) {
+                answer.classList.toggle('visible');
+            }
+        }
+    </script>
+</body>
+</html>

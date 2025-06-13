@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ITリテラシー入門 総復習テスト</title>
+    <style>
+        :root {
+            --primary-color: #0d47a1; /* 濃い青 */
+            --secondary-color: #1976d2; /* 青 */
+            --accent-color: #d32f2f; /* 赤系のアクセント */
+            --background-color: #f5f8fa; /* 薄いグレーがかった背景 */
+            --text-color: #333;
+            --white-color: #ffffff;
+            --marker-yellow: #fffde7;
+            --confirm-green: #28a745;
+            --confirm-green-bg: #e8f5e9;
+            --incorrect-red: #dc3545;
+            --incorrect-red-bg: #f8d7da;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Yu Gothic UI', 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+            line-height: 1.8;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: var(--white-color);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        .page-section {
+            padding-top: 2rem;
+            margin-top: -2rem; /* アンカーリンクのずれ補正 */
+        }
+        
+        .page-section h1.section-title {
+            font-size: 2.0em;
+            color: var(--primary-color);
+            text-align: center;
+            border-bottom: 2px solid var(--secondary-color);
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+        }
+        
+        h1:not(.section-title) {
+            font-size: 2.2em;
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--secondary-color);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+        
+        h1:not(.section-title)::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -3px;
+            width: 70px;
+            border-bottom: 3px solid var(--primary-color);
+        }
+
+        h2 {
+            font-size: 1.8em;
+            color: var(--primary-color);
+            border-left: 5px solid var(--secondary-color);
+            padding-left: 15px;
+            margin-top: 40px;
+        }
+        
+        .toc {
+            background-color: #f0f5f9;
+            border: 1px solid var(--secondary-color);
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+        }
+        .toc h2 {
+            margin-top: 0;
+            border-left: none;
+            padding-left: 0;
+            border-bottom: 2px solid var(--secondary-color);
+        }
+        .toc ul {
+            list-style-type: none;
+            padding-left: 0;
+            columns: 2;
+            -webkit-columns: 2;
+            -moz-columns: 2;
+        }
+        .toc li { margin-bottom: 8px; }
+        .toc a {
+            text-decoration: none;
+            color: var(--primary-color);
+            font-size: 0.95em;
+        }
+        .toc a:hover { text-decoration: underline; }
+
+        .quiz-item {
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            background-color: #fdfdfd;
+        }
+        .question-text {
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .option {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .option:hover {
+            background-color: #f0f5f9;
+        }
+        .option input[type="radio"] {
+            margin-right: 10px;
+        }
+        .show-answer-btn {
+            display: block;
+            margin: 15px 0 10px auto;
+            padding: 8px 16px;
+            background-color: var(--primary-color);
+            color: var(--white-color);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .show-answer-btn:hover {
+            background-color: var(--secondary-color);
+        }
+        .show-answer-btn:disabled {
+            background-color: #aaa;
+            cursor: not-allowed;
+        }
+        .answer-explanation {
+            display: none;
+            padding: 15px;
+            margin-top: 10px;
+            border-radius: 5px;
+            background-color: var(--confirm-green-bg);
+            border-left: 5px solid var(--confirm-green);
+        }
+        .answer-explanation strong {
+            color: var(--confirm-green);
+        }
+
+        .option.correct {
+            background-color: var(--confirm-green-bg);
+            border-color: var(--confirm-green);
+            font-weight: bold;
+        }
+        .option.incorrect {
+            background-color: var(--incorrect-red-bg);
+            border-color: var(--incorrect-red);
+        }
+
+        .button-container {
+            text-align: center;
+            margin: 40px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+        .nav-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: var(--white-color);
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        .nav-button:hover {
+            background-color: var(--secondary-color);
+        }
+        .nav-button.invisible {
+            visibility: hidden;
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 10px; }
+            h1 { font-size: 1.8em; }
+            h2 { font-size: 1.5em; }
+            .toc ul { columns: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ITリテラシー入門 総復習テスト</h1>
+        <p>各講座の重要ポイントを網羅した確認テストです。選択肢を選んで「解答を見る」ボタンを押し、理解度をチェックしましょう。全問正解目指して、レッツチャレンジ！</p>
+
+        <nav class="toc">
+            <h2>テスト一覧</h2>
+            <ul>
+                <li><a href="#quiz-set-1">第1〜5回 テスト</a></li>
+                <li><a href="#quiz1">第1回 なぜITを学ぶのか</a></li>
+                <li><a href="#quiz2">第2回 生活の中のインターネット</a></li>
+                <li><a href="#quiz3">第3回 AIとデータサイエンス</a></li>
+                <li><a href="#quiz4">第4回 メディア</a></li>
+                <li><a href="#quiz5">第5回 デジタル・シティズンシップ</a></li>
+                <li><a href="#quiz-set-2">第6〜10回 テスト</a></li>
+                <li><a href="#quiz6">第6回 アルゴリズムとプログラミング</a></li>
+                <li><a href="#quiz7">第7回 データ構造と2進数</a></li>
+                <li><a href="#quiz8">第8回 ネットワーク</a></li>
+                <li><a href="#quiz9">第9回 Wi-Fiと家庭でのネットワーク</a></li>
+                <li><a href="#quiz10">第10回 セキュリティ</a></li>
+                <li><a href="#quiz-set-3">第11〜15回 テスト</a></li>
+                <li><a href="#quiz11">第11回 システム開発</a></li>
+                <li><a href="#quiz12">第12回 経営と法律</a></li>
+                <li><a href="#quiz13">第13回 コンピューターのしくみ</a></li>
+                <li><a href="#quiz14">第14回 ソフトウェア</a></li>
+                <li><a href="#quiz15">第15回 データベース</a></li>
+            </ul>
+        </nav>
+        
+        <!-- === ページセクション 1 (1-5回) === -->
+        <div class="page-section" id="quiz-set-1">
+            <h1 class="section-title">第1〜5回 確認テスト</h1>
+            
+            <div id="quiz1">
+                <h2>第1回 なぜITを学ぶのか</h2>
+                <div class="quiz-item" data-quiz-id="1-1">
+                    <p class="question-text">問1. 日本政府が提唱する、AIやIoTなどの先端技術を活用して社会課題を解決する人間中心の新たな社会の姿を何と呼ぶか？</p>
+                    <div class="options-container">
+                        <label class="option"><input type="radio" name="q1-1"> 1. Society 3.0</label>
+                        <label class="option"><input type="radio" name="q1-1"> 2. Society 4.0</label>
+                        <label class="option" data-correct="true"><input type="radio" name="q1-1"> 3. Society 5.0</label>
+                        <label class="option"><input type="radio" name="q1-1"> 4. GIGAスクール構想</label>
+                    </div>
+                    <button class="show-answer-btn">解答を見る</button>
+                    <div class="answer-explanation">
+                        <p><strong>正解は3番です。</strong>Society 5.0は、狩猟社会(1.0)、農耕社会(2.0)、工業社会(3.0)、情報社会(4.0)に続く、新たな社会の姿として提唱されています。</p>
+                    </div>
+                </div>
+                <div class="quiz-item" data-quiz-id="1-2">
+                    <p class="question-text">問2. 偽のニュースである「フェイクニュース」を見分けるために、情報の真偽を確かめる行為を何と呼ぶか？</p>
+                    <div class="options-container">
+                        <label class="option"><input type="radio" name="q1-2"> 1. クロスチェック</label>
+                        <label class="option" data-correct="true"><input type="radio" name="q1-2"> 2. ファクトチェック</label>
+                        <label class="option"><input type="radio" name="q1-2"> 3. デジタルタトゥー</label>
+                        <label class="option"><input type="radio" name="q1-2"> 4. メディアリテラシー</label>
+                    </div>
+                    <button class="show-answer-btn">解答を見る</button>
+                    <div class="answer-explanation">
+                        <p><strong>正解は2番です。</strong>「ファクトチェック」は、情報の信憑性を検証する重要なスキルです。その手段として、一次情報を確認したり、複数の情報源を比較する「クロスチェック」などがあります。</p>
+                    </div>
+                </div>
+                 <div class="quiz-item" data-quiz-id="1-3">
+                    <p class="question-text">問3. 問題解決のプロセスを継続的に改善していくためのフレームワークで、Plan(計画)、Do(実行)、Check(評価)、Act(改善)の頭文字をとったものを何と呼ぶか？</p>
+                    <div class="options-container">
+                        <label class="option"><input type="radio" name="q1-3"> 1. OODAループ</label>
+                        <label class="option" data-correct="true"><input type="radio" name="q1-3"> 2. PDCAサイクル</label>
+                        <label class="option"><input type="radio" name="q1-3"> 3. SWOT分析</label>
+                        <label class="option"><input type="radio" name="q1-3"> 4. 5W1H</label>
+                    </div>
+                    <button class="show-answer-btn">解答を見る</button>
+                    <div class="answer-explanation">
+                        <p><strong>正解は2番です。</strong>PDCAサイクルは、業務改善や学習など、様々な場面で活用される基本的な問題解決のフレームワークです。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="quiz2">
+                <h2>第2回 生活の中のインターネット</h2>
+                <div class="quiz-item" data-quiz-id="2-1">
+                    <p class="question-text">問1. SNSやキュレーションサービスなどで、自分の興味のある情報や似た意見ばかりが表示されることで、それが世の中の総意であるかのように錯覚してしまう現象を何と呼ぶか？</p>
+                    <div class="options-container">
+                        <label class="option"><input type="radio" name="q2-1"> 1. フィルターバブル</label>
+                        <label class="option" data-correct="true"><input type="radio" name="q2-1"> 2. エコーチェンバー</label>
+                        <label class="option"><input type="radio" name="q2-1"> 3. サイレントマジョリティ</label>
+                        <label class="option"><input type="radio" name="q2-1"> 4. デジタルタトゥー</label>
+                    </div>
+                    <button class="show-answer-btn">解答を見る</button>
+                    <div class="answer-explanation">
+                        <p><strong>正解は2番です。</strong>「エコーチェンバー」は、閉じた部屋で声が反響するように、同じ意見ばかりが返ってくる状況を指します。「フィルターバブル」は、アルゴリズムによって自分に都合の良い情報に包まれてしまう現象で、エコーチェンバーの原因の一つとされます。</p>
+                    </div>
+                </div>
+                 <div class="quiz-item" data-quiz-id="2-2">
+                    <p class="question-text">問2. 創作した時点で自動的に権利が発生する著作権の性質を、登録が必要な特許権などと対比して何と呼ぶか？</p>
+                    <div class="options-container">
+                        <label class="option" data-correct="true"><input type="radio" name="q2-2"> 1. 無方式主義</label>
+                        <label class="option"><input type="radio" name="q2-2"> 2. 方式主義</label>
+                        <label class="option"><input type="radio" name="q2-2"> 3. 属地主義</label>
+                        <label class="option"><input type="radio" name="q2-2"> 4. 著作者人格権</label>
+                    </div>
+                    <button class="show-answer-btn">解答を見る</button>
+                    <div class="answer-explanation">
+                        <p><strong>正解は1番です。</strong>著作権は、特別な手続きなしに創作した時点で発生する「無方式主義」をとります。一方、特許権や商標権などの産業財産権は、特許庁への出願・登録が必要な「方式主義」をとります。</p>
+                    </div>
+                </div>
+                <div class="quiz-item" data-quiz-id="2-3">
+                    <p class="question-text">問3. いわゆる「迷惑メール」を規制する特定電子メール法において、広告メールを送信する際に原則として必要となる、受信者の事前の承諾を何と呼ぶか？</p>
+                    <div class="options-container">
+                        <label class="option"><input type="radio" name="q2-3"> 1. オプトアウト</label>
+                        <label class="option"><input type="radio" name="q2-3"> 2. ダブルオプトイン</label>
+                        <label class="option"><input type="radio" name="q2-3"> 3. プロバイダ責任制限法</label>
+                        <label class="option" data-correct="true"><input type="radio" name="q2-3"> 4. オプトイン</label>
+                    </div>
+                    <button class="show-answer-btn">解答を見る</button>
+                    <div class="answer-explanation">
+                        <p><strong>正解は4番です。</strong>「オプトイン」は、受信者が事前に承諾する方式です。これに対し、受信者が後から配信停止の手続きをする方式を「オプトアウト」と呼びます。日本の広告メールはオプトインが原則です。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="quiz3">
+                <h2>第3回 AIとデータサイエンス</h2>
+                 <div class="quiz-item" data-quiz-id="3-1">
+                    <p class="question-text">問1. 機械学習の手法のうち、正解データ（教師データ）を与えずに、データの中から似たもの同士のグループを見つけ出させる手法はどれか？</p>
+                    <div class="options-container">
+                        <label class="option"><input type="radio" name="q3-1"> 1. 教師あり学習</label>
+                        <label class="option" data-correct="true"><input type="radio" name="q3-1"> 2. 教師なし学習</label>
+                        <label class="option"><input type="radio" name="q3-1"> 3. 強化学習</label>
+                        <label class="option"><input type="radio" name="q3-1"> 4. ディープラーニング</label>
+                    </div>
+                    <button class="show-answer-btn">解答を見る</button>
+                    <div class="answer-explanation">
+                        <p><strong>正解は2番です。</strong>「教師なし学習」は、正解ラベルのないデータからパターンや構造を見つけ出す手法で、クラスタリング（グループ分け）などに利用されます。</p>
+                    </div>
+                </div>
+                 <div class="quiz-item" data-quiz-id="3-2">
+                    <p class="question-text">問2. 統計調査において、一部のサンプルを調査して全体を推測する「標本調査」に対し、調査対象の集団全員を調査する方法を何と呼ぶか？</p>
+                    <div class="options-container">
+                        <label class="option"><input type="radio" name="q3-2"> 1. 無作為抽出</label>
+                        <label class="option" data-correct="true"><input type="radio" name="q3-2"> 2. 全数調査</label>
+                        <label class="option"><input type="radio" name="q3-2"> 3. 仮説検定</label>
+                        <label class="option"><input type="radio" name="q3-2"> 4. 母集団調査</label>
+                    </div>
+                    <button class="show-answer-btn">解答を見る</button>
+                    <div class="answer-explanation">
+                        <p><strong>正解は2番です。</strong>「全数調査」は、調査対象の全員を調べるため正確ですが、コストと時間がかかります。日本の国勢調査が代表例です。</p>
+                    </div>
+                </div>
+                <div class="quiz-item" data-quiz-id="3-3">
+                    <p class="question-text">問3. 「アイスの売上が伸びると、水難事故が増える」というデータには正の相関が見られるが、これは因果関係を意味しない。このような、見かけ上の相関を生み出している第三の要因（この場合は気温）を何と呼ぶか？</p>
+                    <div class="options-container">
+                        <label class="option"><input type="radio" name="q3-3"> 1. 疑似相関</label>
+                        <label class="option"><input type="radio" name="q3-3"> 2. 交互作用</label>
+                        <label class="option" data-correct="true"><input type="radio" name="q3-3"> 3. 交絡因子</label>
+                        <label class="option"><input type="radio" name="q3-3"> 4. 負の相関</label>
+                    </div>
+                    <button class="show-answer-btn">解答を見る</button>
+                    <div class="answer-explanation">
+                        <p><strong>正解は3番です。</strong>「交絡因子」は、原因と結果の両方に関係し、あたかも両者に因果関係があるかのように見せかける第三の変数のことです。相関関係と因果関係を混同しないためには、交絡因子の存在を常に疑う必要があります。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="quiz4">
+                <h2>第4回 メディア</h2>
+                <div class="quiz-item" data-quiz-id="4-1">
+                    <p class="question-text">問1. 音声のアナログデータをデジタル化する際の3つのステップの正しい順序はどれか？</p>
+                    <div class="options-container">
+                        <label class="option"><input type="radio" name="q4-1"> 1. 量子化 → 標本化 → 符号化</label>
+                        <label class="option" data-correct="true"><input type="radio" name="q4-1"> 2. 標本化 → 量子化 → 符号化</label>
+                        <label class="option"><input type="radio" name="q4-1"> 3. 符号化 → 量子化 → 標本化</label>
+                        <label class="option"><input type="radio" name="q4-1"> 4. 標本化 → 符号化 → 量子化</label>
+                    </div>
+                    <button class="show-answer-btn">解答を見る</button>
+                    <div class="answer-explanation">
+                        <p><strong>正解は2番です。</strong>音のデジタル化（PCM方式）は、①音の波を一定間隔で採取する「標本化」、②採取した値を段階的な数値に割り当てる「量子化」、③その数値を2進数に変換する「符号化」という手順で行われます。</p>
+                    </div>
+                </div>
+                <div class="quiz-item" data-quiz-id="4-2">
+                    <p class="question-text">問2. データを圧縮しても完全に元のデータに戻すことができる圧縮方式を何と呼ぶか？</p>
+                    <div class="options-container">
+                        <label class="option" data-correct="true"><input type="radio" name="q4-2"> 1. 可逆圧縮</label>
+                        <label class="option"><input type="radio" name="q4-2"> 2. 非可逆圧縮</label>
+                        <label class="option"><input type="radio" name="q4-2"> 3. ハフマン符号化</label>
+                        <label class="option"><input type="radio" name="q4-2"> 4. ランレングス法</label>
+                    </div>
+                    <button class="show-answer-btn">解答を見る</button>
+                    <div class="answer-explanation">
+                        <p><strong>正解は1番です。</strong>「可逆圧縮」は、テキストファイルやプログラムなど、1ビットの情報も欠けてはいけないデータに使われます。これに対し、画像や音声で使われる、元に戻せないが高い圧縮率の方式が「非可逆圧縮」です。</p>
+                    </div>
+                </div>
+                 <div class="quiz-item" data-quiz-id="4-3">
+                    <p class="question-text">問3. デジタル画像の表現方法で、点とそれを結ぶ線や曲線の数式データとして画像を表現し、拡大・縮小しても劣化しない形式はどちらか？</p>
+                    <div class="options-container">
+                        <label class="option"><input type="radio" name="q4-3"> 1. ビットマップ画像</label>
+                        <label class="option" data-correct="true"><input type="radio" name="q4-3"> 2. ベクトル画像</label>
+                        <label class="option"><input type="radio" name="q4-3"> 3. ラスタ画像</label>
+                        <label class="option"><input type="radio" name="q4-3"> 4. フレーム</label>
+                    </div>
+                    <button class="show-answer-btn">解答を見る</button>
+                    <div class="answer-explanation">
+                        <p><strong>正解は2番です。</strong>「ベクトル画像」は数式で表現されるため、拡大しても劣化しません。ロゴや図形に適しています。一方、写真のような点の集まりで表現する形式が「ビットマップ画像（ラスタ画像）」です。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="quiz5">
+                <h2>第5回 デジタル・シティズンシップ教育</h2>
+                <div class="quiz-item" data-quiz-id="5-1">
+                    <p class="question-text">問1. テクノロジーの危険性を強調し「〜してはいけない」と教える情報モラル教育に対し、テクノロジーを積極的に活用して社会に貢献することを目指す、よりポジティブな教育アプローチを何と呼ぶか？</p>
+                    <div class="options-container">
+                        <label class="option" data-correct="true"><input type="radio" name="q5-1"> 1. デジタル・シティズンシップ教育</label>
+                        <label class="option"><input type="radio" name="q5-1"> 2. GIGAスクール構想</label>
+                        <label class="option"><input type="radio" name="q5-1"> 3. メディアリテラシー教育</label>
+                        <label class="option"><input type="radio" name="q5-1"> 4. シビックテック教育</label>
+                    </div>
+                    <button class="show-answer-btn">解答を見る</button>
+                    <div class="answer-explanation">
+                        <p><strong>正解は1番です。</strong>「デジタル・シティズンシップ教育」は、単なる危険回避ではなく、デジタル世界の良き市民として、テクノロジーを創造的に活用する能力を育むことを目的としています。</p>
+                    </div>
+                </div>
+                <div class="quiz-item" data-quiz-id="5-2">
+                    <p class="question-text">問2. オンライン上での書き込みや「いいね」など、共有したすべての情報が手がかりとなって残り、個人を特定できる情報群のことを何と呼ぶか？</p>
+                    <div class="options-container">
+                        <label class="option"><input type="radio" name="q5-2"> 1. デジタルタトゥー</label>
+                        <label class="option"><input type="radio" name="q5-2"> 2. デジタルデバイド</label>
+                        <label class="option" data-correct="true"><input type="radio" name="q5-2"> 3. デジタル・フットプリント</label>
+                        <label class="option"><input type="radio" name="q5-2"> 4. デジタルデトックス</label>
+                    </div>
+                    <button class="show-answer-btn">解答を見る</button>
+                    <div class="answer-explanation">
+                        <p><strong>正解は3番です。</strong>「デジタル・フットプリント」は、オンライン上の活動で残る「足あと」を意味します。これがネガティブな形で半永久的に残ってしまう問題を特に「デジタルタトゥー」と呼びます。</p>
+                    </div>
+                </div>
+                 <div class="quiz-item" data-quiz-id="5-3">
+                    <p class="question-text">問3. 市民（Civic）が主体となってテクノロジー（Technology）を活用し、行政サービスの問題や地域の課題を解決しようとする活動を何と呼ぶか？</p>
+                    <div class="options-container">
+                        <label class="option"><input type="radio" name="q5-3"> 1. インクルージョン</label>
+                        <label class="option"><input type="radio" name="q5-3"> 2. ダイバーシティ</label>
+                        <label class="option"><input type="radio" name="q5-3"> 3. デジタル・シティズンシップ</label>
+                        <label class="option" data-correct="true"><input type="radio" name="q5-3"> 4. シビックテック</label>
+                    </div>
+                    <button class="show-answer-btn">解答を見る</button>
+                    <div class="answer-explanation">
+                        <p><strong>正解は4番です。</strong>「シビックテック」は、市民が当事者としてテクノロジーを使い、より良い社会を目指すムーブメントです。ごみ収集日アプリなどがその代表例です。</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="button-container">
+                <a href="#quiz-set-1" class="nav-button invisible">← 前の講座へ</a>
+                <a href="#quiz-set-2" class="nav-button">次の確認テストへ →</a>
+            </div>
+        </div>
+
+        <!-- === ページセクション 2 (6-10回) === -->
+        <div class="page-section" id="quiz-set-2">
+            <h1 class="section-title">第6〜10回 確認テスト</h1>
+            
+            <div id="quiz6">
+                <h2>第6回 アルゴリズムとプログラミング言語</h2>
+                <div class="quiz-item" data-quiz-id="6-1"><p class="question-text">問1. あらかじめデータが整列されている必要があるが、探す範囲を半分ずつに絞っていくことで高速な探索を可能にするアルゴリズムはどれか？</p><div class="options-container"><label class="option"><input type="radio" name="q6-1"> 1. 線形探索法</label><label class="option" data-correct="true"><input type="radio" name="q6-1"> 2. 二分探索法</label><label class="option"><input type="radio" name="q6-1"> 3. ハッシュ探索法</label><label class="option"><input type="radio" name="q6-1"> 4. 全探索法</label></div><button class="show-answer-btn">解答を見る</button><div class="answer-explanation"><p><strong>正解は2番です。</strong>「二分探索法」は、ソート済みのデータに対して非常に効率的な探索を行えます。データ量が多くなるほど、先頭から順番に探す「線形探索法」との速度差は歴然となります。</p></div></div>
+                <div class="quiz-item" data-quiz-id="6-2"><p class="question-text">問2. 基準となる値（ピボット）を選び、それより大きいグループと小さいグループに分割する、という処理を繰り返すことで高速な整列（ソート）を実現するアルゴリズムはどれか？</p><div class="options-container"><label class="option"><input type="radio" name="q6-2"> 1. バブルソート</label><label class="option"><input type="radio" name="q6-2"> 2. 選択ソート</label><label class="option" data-correct="true"><input type="radio" name="q6-2"> 3. クイックソート</label><label class="option"><input type="radio" name="q6-2"> 4. マージソート</label></div><button class="show-answer-btn">解答を見る</button><div class="answer-explanation"><p><strong>正解は3番です。</strong>「クイックソート」は、分割統治法という考え方に基づいた非常に高速なソートアルゴリズムで、一般的に広く利用されています。</p></div></div>
+                <div class="quiz-item" data-quiz-id="6-3"><p class="question-text">問3. あるプログラムの機能やデータを、他のプログラムから利用するための「窓口」や「呼び出しルール」のことを何と呼ぶか？</p><div class="options-container"><label class="option"><input type="radio" name="q6-3"> 1. ライブラリ</label><label class="option"><input type="radio" name="q6-3"> 2. 関数</label><label class="option" data-correct="true"><input type="radio" name="q6-3"> 3. API</label><label class="option"><input type="radio" name="q6-3"> 4. フレームワーク</label></div><button class="show-answer-btn">解答を見る</button><div class="answer-explanation"><p><strong>正解は3番です。</strong>「API (Application Programming Interface)」を利用することで、開発者はGoogleマップやX(旧Twitter)などの機能を自分のアプリに組み込むことができます。特にWeb経由で利用されるものをWeb APIと呼びます。</p></div></div>
+            </div>
+
+            <div id="quiz7">
+                <h2>第7回 データ構造と2進数</h2>
+                <div class="quiz-item" data-quiz-id="7-1"><p class="question-text">問1. データ構造の一つで、「後入れ先出し」の性質を持つものはどれか？</p><div class="options-container"><label class="option"><input type="radio" name="q7-1"> 1. キュー</label><label class="option"><input type="radio" name="q7-1"> 2. 配列</label><label class="option" data-correct="true"><input type="radio" name="q7-1"> 3. スタック</label><label class="option"><input type="radio" name="q7-1"> 4. リスト</label></div><button class="show-answer-btn">解答を見る</button><div class="answer-explanation"><p><strong>正解は3番です。</strong>「スタック」は後入れ先出し(LIFO)の性質を持ち、ブラウザの「戻る」機能などに使われます。一方、先入れ先出し(FIFO)の性質を持つのが「キュー」です。</p></div></div>
+                <div class="quiz-item" data-quiz-id="7-2"><p class="question-text">問2. 会社の組織図やPCのフォルダ構造のように、階層的な関係を持つデータを表現するのに適したデータ構造は何か？</p><div class="options-container"><label class="option"><input type="radio" name="q7-2"> 1. グラフ構造</label><label class="option"><input type="radio" name="q7-2"> 2. リスト構造</label><label class="option"><input type="radio" name="q7-2"> 3. ハッシュ構造</label><label class="option" data-correct="true"><input type="radio" name="q7-2"> 4. 木構造</label></div><button class="show-answer-btn">解答を見る</button><div class="answer-explanation"><p><strong>正解は4番です。</strong>「木構造(Tree)」は、ルート(根)、ノード(節)、リーフ(葉)といった要素で階層関係を表現します。</p></div></div>
+                <div class="quiz-item" data-quiz-id="7-3"><p class="question-text">問3. コンピューターが引き算を行う際に、負の数を表現するために用いられる考え方は何か？</p><div class="options-container"><label class="option"><input type="radio" name="q7-3"> 1. 浮動小数点数</label><label class="option"><input type="radio" name="q7-3"> 2. ビットシフト</label><label class="option" data-correct="true"><input type="radio" name="q7-3"> 3. 補数</label><label class="option"><input type="radio" name="q7-3"> 4. 論理和</label></div><button class="show-answer-btn">解答を見る</button><div class="answer-explanation"><p><strong>正解は3番です。</strong>「補数」を用いることで、全ての引き算を足し算として処理できるようになり、コンピューターの回路を単純化できます。</p></div></div>
+            </div>
+
+            <div id="quiz8">
+                <h2>第8回 ネットワーク</h2>
+                <div class="quiz-item" data-quiz-id="8-1"><p class="question-text">問1. 通信機能を7つの階層に整理したモデルで、ネットワークの仕組みを理解する上での共通言語となっているものは何か？</p><div class="options-container"><label class="option"><input type="radio" name="q8-1"> 1. TCP/IP階層モデル</label><label class="option" data-correct="true"><input type="radio" name="q8-1"> 2. OSI参照モデル</label><label class="option"><input type="radio" name="q8-1"> 3. イーサネット</label><label class="option"><input type="radio" name="q8-1"> 4. プロトコル</label></div><button class="show-answer-btn">解答を見る</button><div class="answer-explanation"><p><strong>正解は2番です。</strong>「OSI参照モデル」は、通信機能を7つのレイヤー（層）に分割して定義したものです。これをより実践的に4階層に簡略化したものが「TCP/IP階層モデル」です。</p></div></div>
+                <div class="quiz-item" data-quiz-id="8-2"><p class="question-text">問2. データを確実かつ順番通りに届ける「信頼性の高い」通信を実現する、トランスポート層のプロトコルはどれか？</p><div class="options-container"><label class="option"><input type="radio" name="q8-2"> 1. IP</label><label class="option"><input type="radio" name="q8-2"> 2. UDP</label><label class="option" data-correct="true"><input type="radio" name="q8-2"> 3. TCP</label><label class="option"><input type="radio" name="q8-2"> 4. HTTP</label></div><button class="show-answer-btn">解答を見る</button><div class="answer-explanation"><p><strong>正解は3番です。</strong>「TCP」は通信相手と接続を確認してからデータを送るため信頼性が高く、Webページの閲覧やメールで使われます。一方、「UDP」は速度を重視し、動画ストリーミングなどで使われます。</p></div></div>
+                <div class="quiz-item" data-quiz-id="8-3"><p class="question-text">問3. LAN内部でのみ使用できるプライベートIPアドレスを、インターネット上で通用するグローバルIPアドレスに相互変換するルータの機能を何と呼ぶか？</p><div class="options-container"><label class="option"><input type="radio" name="q8-3"> 1. DHCP</label><label class="option" data-correct="true"><input type="radio" name="q8-3"> 2. NAT</label><label class="option"><input type="radio" name="q8-3"> 3. DNS</label><label class="option"><input type="radio" name="q8-3"> 4. IPv6</label></div><button class="show-answer-btn">解答を見る</button><div class="answer-explanation"><p><strong>正解は2番です。</strong>「NAT (Network Address Translation)」またはNAPTという技術により、一つのグローバルIPアドレスを複数の機器で共有でき、IPv4アドレスの枯渇問題に対応しています。</p></div></div>
+            </div>
+
+            <div id="quiz9">
+                <h2>第9回 Wi-Fiと家庭でのネットワーク</h2>
+                <div class="quiz-item" data-quiz-id="9-1"><p class="question-text">問1. Wi-Fiの周波数帯のうち、障害物に強く電波が遠くまで届きやすいが、他の家電製品との電波干渉が起きやすいのはどちらか？</p><div class="options-container"><label class="option" data-correct="true"><input type="radio" name="q9-1"> 1. 2.4GHz帯</label><label class="option"><input type="radio" name="q9-1"> 2. 5GHz帯</label><label class="option"><input type="radio" name="q9-1"> 3. 6GHz帯</label><label class="option"><input type="radio" name="q9-1"> 4. MIMO</label></div><button class="show-answer-btn">解答を見る</button><div class="answer-explanation"><p><strong>正解は1番です。</strong>「2.4GHz帯」は障害物に強い長所がありますが、電子レンジなど多くの機器が利用するため電波干渉が弱点です。一方「5GHz帯」は高速で安定していますが、障害物に弱いという特徴があります。</p></div></div>
+                <div class="quiz-item" data-quiz-id="9-2"><p class="question-text">問2. 複数のWi-Fiアクセスポイントが網の目のように連携し、家全体をカバーする技術を何と呼ぶか？</p><div class="options-container"><label class="option"><input type="radio" name="q9-2"> 1. Wi-Fiダイレクト</label><label class="option"><input type="radio" name="q9-2"> 2. 中継機</label><label class="option" data-correct="true"><input type="radio" name="q9-2"> 3. メッシュWi-Fi</label><label class="option"><input type="radio" name="q9-2"> 4. ハンドオーバー</label></div><button class="show-answer-btn">解答を見る</button><div class="answer-explanation"><p><strong>正解は3番です。</strong>「メッシュWi-Fi」は、広い家や階数の多い家でも、移動しながら最適な電波に自動で接続を切り替え、快適な通信環境を維持できる技術です。</p></div></div>
+                <div class="quiz-item" data-quiz-id="9-3"><p class="question-text">問3. 光回線の通信方式で、従来からあり夜間などに混雑しやすい「PPPoE方式」に対し、より高速で安定した通信が期待できる新しい方式は何か？</p><div class="options-container"><label class="option"><input type="radio" name="q9-3"> 1. FTTH</label><label class="option"><input type="radio" name="q9-3"> 2. ONU</label><label class="option" data-correct="true"><input type="radio" name="q9-3"> 3. IPoE</label><label class="option"><input type="radio" name="q9-3"> 4. VPN</label></div><button class="show-answer-btn">解答を見る</button><div class="answer-explanation"><p><strong>正解は3番です。</strong>「IPoE」方式は、PPPoE方式の混雑ポイントを避けて通信するため、時間帯に左右されにくい安定した高速通信が可能です。現在プロバイダを選ぶ際の重要なポイントとなっています。</p></div></div>
+            </div>
+
+            <div id="quiz10">
+                <h2>第10回 セキュリティ</h2>
+                <div class="quiz-item" data-quiz-id="10-1"><p class="question-text">問1. ソフトウェアの脆弱性が発見されてから、メーカーが修正プログラムを配布するまでの無防備な期間を狙った攻撃を何と呼ぶか？</p><div class="options-container"><label class="option" data-correct="true"><input type="radio" name="q10-1"> 1. ゼロデイ攻撃</label><label class="option"><input type="radio" name="q10-1"> 2. DDoS攻撃</label><label class="option"><input type="radio" name="q10-1"> 3. フィッシング詐欺</label><label class="option"><input type="radio" name="q10-1"> 4. パスワードリスト攻撃</label></div><button class="show-answer-btn">解答を見る</button><div class="answer-explanation"><p><strong>正解は1番です。</strong>対策が存在しない「ゼロデイ（0-day）」を狙うため、防御が非常に困難な攻撃です。日頃からソフトウェアを最新の状態に保つことが基本的な対策となります。</p></div></div>
+                <div class="quiz-item" data-quiz-id="10-2"><p class="question-text">問2. 組織的に情報セキュリティを管理するための仕組みをISMSというが、ISMSが維持すべき「機密性」「完全性」と並ぶ、情報セキュリティの3大要素（CIA）のもう一つは何か？</p><div class="options-container"><label class="option"><input type="radio" name="q10-2"> 1. 信頼性</label><label class="option"><input type="radio" name="q10-2"> 2. 責任追跡性</label><label class="option" data-correct="true"><input type="radio" name="q10-2"> 3. 可用性</label><label class="option"><input type="radio" name="q10-2"> 4. 真正性</label></div><button class="show-answer-btn">解答を見る</button><div class="answer-explanation"><p><strong>正解は3番です。</strong>「可用性 (Availability)」は、必要な時にいつでも情報にアクセスできる状態を指します。この3つを合わせて情報セキュリティのCIAと呼ばれます。</p></div></div>
+                <div class="quiz-item" data-quiz-id="10-3"><p class="question-text">問3. Webサイトの安全性を担保する公開鍵基盤(PKI)において、公開鍵の持ち主が本物であることを保証する「デジタル証明書」を発行する、信頼された第三者機関を何と呼ぶか？</p><div class="options-container"><label class="option"><input type="radio" name="q10-3"> 1. ルート証明書</label><label class="option" data-correct="true"><input type="radio" name="q10-3"> 2. 認証局 (CA)</label><label class="option"><input type="radio" name="q10-3"> 3. CSIRT</label><label class="option"><input type="radio" name="q10-3"> 4. SOC</label></div><button class="show-answer-btn">解答を見る</button><div class="answer-explanation"><p><strong>正解は2番です。</strong>「認証局 (Certification Authority)」が発行するデジタル証明書をブラウザが検証することで、私たちは通信相手のWebサイトが本物であることを確認できます。</p></div></div>
+            </div>
+
+        <!-- === ページセクション 3 (11-15回) === -->
+        <div class="page-section" id="quiz-set-3">
+            <h1 class="section-title">第11〜15回 確認テスト</h1>
+            
+            <div id="quiz11">
+                <h2>第11回 システム開発</h2>
+                <div class="quiz-item" data-quiz-id="11-1"><p class="question-text">問1. システム開発モデルの一つで、短い期間（スプリント）で「計画→設計→開発→テスト」のサイクルを高速で回し、仕様変更に柔軟に対応する現代的な手法は何か？</p><div class="options-container"><label class="option"><input type="radio" name="q11-1"> 1. ウォーターフォールモデル</label><label class="option" data-correct="true"><input type="radio" name="q11-1"> 2. アジャイル開発</label><label class="option"><input type="radio" name="q11-1"> 3. プロトタイピングモデル</label><label class="option"><input type="radio" name="q11-1"> 4. スパイラルモデル</label></div><button class="show-answer-btn">解答を見る</button><div class="answer-explanation"><p><strong>正解は2番です。</strong>「アジャイル（俊敏な）」開発は、変化の速いWebサービス開発などで主流となっています。これに対し、要件定義から順番に工程を進める古典的な手法が「ウォーターフォールモデル」です。</p></div></div>
+                <div class="quiz-item" data-quiz-id="11-2"><p class="question-text">問2. プロジェクトの全作業を、大きなタスクから小さなタスクへと階層的に分解した図で、作業の抜け漏れを防ぐために使われるものは何か？</p><div class="options-container"><label class="option"><input type="radio" name="q11-2"> 1. ガントチャート</label><label class="option"><input type="radio" name="q11-2"> 2. アローダイアグラム</label><label class="option" data-correct="true"><input type="radio" name="q11-2"> 3. WBS</label><label class="option"><input type="radio" name="q11-2"> 4. DFD</label></div><button class="show-answer-btn">解答を見る</button><div class="answer-explanation"><p><strong>正解は3番です。</strong>「WBS (Work Breakdown Structure)」は、プロジェクトの作業範囲（スコープ）を明確にするための基本的なツールです。</p></div></div>
+                <div class="quiz-item" data-quiz-id="11-3"><p class="question-text">問3. ITサービスの運用管理に関するベストプラクティス（成功事例集）を体系的にまとめたもので、サービス品質の合意(SLA)の基盤となるものは何か？</p><div class="options-container"><label class="option"><input type="radio" name="q11-3"> 1. PMBOK</label><label class="option"><input type="radio" name="q11-3"> 2. ISMS</label><label class="option" data-correct="true"><input type="radio" name="q11-3"> 3. ITIL</label><label class="option"><input type="radio" name="q11-3"> 4. BCP</label></div><button class="show-answer-btn">解答を見る</button><div class="answer-explanation"><p><strong>正解は3番です。</strong>「ITIL (Information Technology Infrastructure Library)」は、ITサービスマネジメントのデファクトスタンダードとして世界中で利用されています。</p></div></div>
+            </div>
+
+            <div id="quiz12">
+                <h2>第12回 経営と法律</h2>
+                <div class="quiz-item" data-quiz-id="12-1"><p class="question-text">問1. 企業の社会的責任を意味する「CSR」に対し、2030年までに達成を目指す「貧困をなくそう」など17の国際的な目標を何と呼ぶか？</p><div class="options-container"><label class="option" data-correct="true"><input type="radio" name="q12-1"> 1. SDGs</label><label class="option"><input type="radio" name="q12-1"> 2. BCP</label><label class="option"><input type="radio" name="q12-1"> 3. HRM</label><label class="option"><input type="radio" name="q12-1"> 4. OJT</label></div><button class="show-answer-btn">解答を見る</button><div class="answer-explanation"><p><strong>正解は1番です。</strong>「SDGs (Sustainable Development Goals)」は、持続可能な開発目標のことで、現代の企業活動において重要な指針となっています。</p></div></div>
+                <div class="quiz-item" data-quiz-id="12-2"><p class="question-text">問2. 企業の利益がゼロになる売上高のことで、これを下回ると赤字になる境界点を何と呼ぶか？</p><div class="options-container"><label class="option"><input type="radio" name="q12-2"> 1. 経常利益</label><label class="option"><input type="radio" name="q12-2"> 2. 貸借対照表</label><label class="option"><input type="radio" name="q12-2"> 3. 固定費</label><label class="option" data-correct="true"><input type="radio" name="q12-2"> 4. 損益分岐点</label></div><button class="show-answer-btn">解答を見る</button><div class="answer-explanation"><p><strong>正解は4番です。</strong>「損益分岐点」分析は、事業の採算性を評価するための基本的な会計手法です。</p></div></div>
+                <div class="quiz-item" data-quiz-id="12-3"><p class="question-text">問3. 製品の欠陥によって消費者が損害を被った場合、製造業者が賠償責任を負うことを定めた法律は何か？</p><div class="options-container"><label class="option"><input type="radio" name="q12-3"> 1. 独占禁止法</label><label class="option" data-correct="true"><input type="radio" name="q12-3"> 2. PL法 (製造物責任法)</label><label class="option"><input type="radio" name="q12-3"> 3. 下請法</label><label class="option"><input type="radio" name="q12-3"> 4. 労働基準法</label></div><button class="show-answer-btn">解答を見る</button><div class="answer-explanation"><p><strong>正解は2番です。</strong>「PL法」により、消費者は企業の過失を証明しなくても、製品の欠陥と損害の因果関係を証明できれば、賠償を求めることができます。</p></div></div>
+            </div>
+
+            <div id="quiz13">
+                <h2>第13回 コンピューターのしくみ</h2>
+                <div class="quiz-item" data-quiz-id="13-1"><p class="question-text">問1. コンピューターの5大装置のうち、演算と制御を担う、コンピューターの頭脳にあたる部品は何か？</p><div class="options-container"><label class="option"><input type="radio" name="q13-1"> 1. メモリ</label><label class="option" data-correct="true"><input type="radio" name="q13-1"> 2. CPU</label><label class="option"><input type="radio" name="q13-1"> 3. SSD</label><label class="option"><input type="radio" name="q13-1"> 4. GPU</label></div><button class="show-answer-btn">解答を見る</button><div class="answer-explanation"><p><strong>正解は2番です。</strong>「CPU (中央処理装置)」は、演算装置と制御装置の機能を持ち、コンピューター全体の司令塔として動作します。</p></div></div>
+                <div class="quiz-item" data-quiz-id="13-2"><p class="question-text">問2. CPUと主記憶装置の間に置かれ、データのやり取りを高速化するための小容量で高速なメモリを何と呼ぶか？</p><div class="options-container"><label class="option"><input type="radio" name="q13-2"> 1. レジスタ</label><label class="option"><input type="radio" name="q13-2"> 2. RAM</label><label class="option" data-correct="true"><input type="radio" name="q13-2"> 3. キャッシュメモリ</label><label class="option"><input type="radio" name="q13-2"> 4. フラッシュメモリ</label></div><button class="show-answer-btn">解答を見る</button><div class="answer-explanation"><p><strong>正解は3番です。</strong>「キャッシュメモリ」は、記憶階層構造の中でCPUに非常に近い位置にあり、頻繁に使うデータを一時的に保持することで、システム全体の体感速度を向上させます。</p></div></div>
+                <div class="quiz-item" data-quiz-id="13-3"><p class="question-text">問1. 複数のコンピューターで処理を分担する分散処理形態の一つで、サービスを提供する「サーバ」とそれを要求する「クライアント」に役割を分けるシステムを何と呼ぶか？</p><div class="options-container"><label class="option" data-correct="true"><input type="radio" name="q13-3"> 1. クライアントサーバシステム</label><label class="option"><input type="radio" name="q13-3"> 2. P2Pシステム</label><label class="option"><input type="radio" name="q13-3"> 3. デュアルシステム</label><label class="option"><input type="radio" name="q13-3"> 4. クラスタシステム</label></div><button class="show-answer-btn">解答を見る</button><div class="answer-explanation"><p><strong>正解は1番です。</strong>「クライアントサーバシステム」は、Webサイトの閲覧やオンラインゲームなど、現代の多くのネットワークサービスの基本的な構成です。</p></div></div>
+            </div>
+
+            <div id="quiz14">
+                <h2>第14回 ソフトウェア</h2>
+                <div class="quiz-item" data-quiz-id="14-1"><p class="question-text">問1. メモリに置かれたプログラムをCPUが順番に読み込んで実行するという、現在のコンピューターの基本設計を何と呼ぶか？</p><div class="options-container"><label class="option"><input type="radio" name="q14-1"> 1. プログラム内蔵方式</label><label class="option" data-correct="true"><input type="radio" name="q14-1"> 2. ノイマン型アーキテクチャ</label><label class="option"><input type="radio" name="q14-1"> 3. ブートストラッピング</label><label class="option"><input type="radio" name="q14-1"> 4. プラグアンドプレイ</label></div><button class="show-answer-btn">解答を見る</button><div class="answer-explanation"><p><strong>正解は2番です。</strong>「ノイマン型アーキテクチャ」は、数学者フォン・ノイマンが提唱した「プログラム内蔵方式」のことで、現代のコンピューターの基礎となっています。1も間違いではありませんが、2がより一般的な呼称です。</p></div></div>
+                <div class="quiz-item" data-quiz-id="14-2"><p class="question-text">問2. WindowsやmacOSのように、ハードウェアを管理し、アプリケーションが動くための土台となるソフトウェアを何と呼ぶか？</p><div class="options-container"><label class="option"><input type="radio" name="q14-2"> 1. アプリケーションソフトウェア</label><label class="option" data-correct="true"><input type="radio" name="q14-2"> 2. オペレーティングシステム(OS)</label><label class="option"><input type="radio" name="q14-2"> 3. ミドルウェア</label><label class="option"><input type="radio" name="q14-2"> 4. デバイスドライバ</label></div><button class="show-answer-btn">解答を見る</button><div class="answer-explanation"><p><strong>正解は2番です。</strong>「オペレーティングシステム(OS)」は、基本ソフトウェアとも呼ばれ、コンピューター全体を管理する最も重要なソフトウェアです。</p></div></div>
+                <div class="quiz-item" data-quiz-id="14-3"><p class="question-text">問3. ソースコードが公開され、誰でも自由に利用、改変、再配布できるソフトウェアをOSSという。OSSを改変して作ったソフトウェアもOSSとして配布しなければならない、という制約を持つライセンスの考え方を何と呼ぶか？</p><div class="options-container"><label class="option"><input type="radio" name="q14-3"> 1. 非コピーレフト</label><label class="option" data-correct="true"><input type="radio" name="q14-3"> 2. コピーレフト</label><label class="option"><input type="radio" name="q14-3"> 3. サブスクリプション</label><label class="option"><input type="radio" name="q14-3"> 4. フリーミアム</label></div><button class="show-answer-btn">解答を見る</button><div class="answer-explanation"><p><strong>正解は2番です。</strong>「コピーレフト」は、ソフトウェアの自由な利用を保証する著作権(Copyright)の考え方を逆手に取り、自由の連鎖を守るための仕組みです。代表的なライセンスにGPLがあります。</p></div></div>
+            </div>
+
+            <div id="quiz15">
+                <h2>第15回 データベース</h2>
+                <div class="quiz-item" data-quiz-id="15-1"><p class="question-text">問1. リレーショナルデータベース(RDB)において、テーブル内の各行（レコード）を一意に識別するための、重複しない値が設定されるフィールドを何と呼ぶか？</p><div class="options-container"><label class="option"><input type="radio" name="q15-1"> 1. 外部キー</label><label class="option"><input type="radio" name="q15-1"> 2. フィールド</label><label class="option" data-correct="true"><input type="radio" name="q15-1"> 3. 主キー</label><label class="option"><input type="radio" name="q15-1"> 4. インデックス</label></div><button class="show-answer-btn">解答を見る</button><div class="answer-explanation"><p><strong>正解は3番です。</strong>「主キー (Primary Key)」は、レコードを特定するための最も重要な目印です。これに対し、他のテーブルの主キーを参照するのが「外部キー」です。</p></div></div>
+                <div class="quiz-item" data-quiz-id="15-2"><p class="question-text">問2. 銀行の振込のように、一連の処理が「すべて成功する」か「すべて失敗（元の状態に戻る）」かのどちらかになることを保証する、データベースの処理単位を何と呼ぶか？</p><div class="options-container"><label class="option" data-correct="true"><input type="radio" name="q15-2"> 1. トランザクション</label><label class="option"><input type="radio" name="q15-2"> 2. SQL</label><label class="option"><input type="radio" name="q15-2"> 3. 正規化</label><label class="option"><input type="radio" name="q15-2"> 4. CRUD</label></div><button class="show-answer-btn">解答を見る</button><div class="answer-explanation"><p><strong>正解は1番です。</strong>「トランザクション」処理は、ACID特性（原子性、一貫性、独立性、耐久性）によってデータの整合性を保つ、データベースの非常に重要な機能です。</p></div></div>
+                <div class="quiz-item" data-quiz-id="15-3"><p class="question-text">問3. データベースのテーブル設計において、データの重複（冗長性）をなくし、一貫性を保つためにテーブルを整理・分割するプロセスを何と呼ぶか？</p><div class="options-container"><label class="option"><input type="radio" name="q15-3"> 1. インデックス作成</label><label class="option"><input type="radio" name="q15-3"> 2. E-R図作成</label><label class="option" data-correct="true"><input type="radio" name="q15-3"> 3. 正規化</label><label class="option"><input type="radio" name="q15-3"> 4. 排他制御</label></div><button class="show-answer-btn">解答を見る</button><div class="answer-explanation"><p><strong>正解は3番です。</strong>「正規化」を行うことで、データの更新時に矛盾が生じにくくなり、メンテナンス性の高いデータベースを設計することができます。</p></div></div>
+            </div>
+
+            <div class="button-container">
+                <a href="#quiz-set-2" class="nav-button">← 前の講座へ</a>
+                <a href="#" class="nav-button invisible">次の確認テストへ →</a>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const quizItems = document.querySelectorAll('.quiz-item');
+
+            quizItems.forEach(item => {
+                const answerButton = item.querySelector('.show-answer-btn');
+                const answerExplanation = item.querySelector('.answer-explanation');
+                const radioButtons = item.querySelectorAll('input[type="radio"]');
+                const options = item.querySelectorAll('.option');
+
+                answerButton.addEventListener('click', function() {
+                    let answered = false;
+                    radioButtons.forEach(radio => {
+                        if (radio.checked) {
+                            answered = true;
+                            const parentLabel = radio.parentElement;
+                            if (parentLabel.dataset.correct === 'true') {
+                                parentLabel.classList.add('correct');
+                            } else {
+                                parentLabel.classList.add('incorrect');
+                            }
+                        }
+                    });
+
+                    // 正解の選択肢を常にハイライト
+                    options.forEach(opt => {
+                        if (opt.dataset.correct === 'true') {
+                            opt.classList.add('correct');
+                        }
+                    });
+
+                    // 解説を表示
+                    answerExplanation.style.display = 'block';
+
+                    // ボタンとラジオボタンを無効化
+                    answerButton.disabled = true;
+                    radioButtons.forEach(radio => {
+                        radio.disabled = true;
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>

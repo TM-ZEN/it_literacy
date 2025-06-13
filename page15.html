@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ITリテラシー入門 第15回 データベース</title>
+    <style>
+        :root {
+            --primary-color: #0d47a1; /* 濃い青 */
+            --secondary-color: #1976d2; /* 青 */
+            --accent-color: #d32f2f; /* 赤系のアクセント */
+            --background-color: #f5f8fa; /* 薄いグレーがかった背景 */
+            --text-color: #333;
+            --white-color: #ffffff;
+            --marker-yellow: #fff59d; /* 黄色のマーカー */
+            --confirm-green-bg: #e8f5e9;
+            --action-blue-bg: #e3f2fd;
+            --problem-red-bg: #fbe9e7;
+            --confirm-green-text: #2e7d32;
+            --action-blue-text: var(--secondary-color);
+            --problem-red-text: var(--accent-color);
+        }
+
+        body {
+            font-family: 'Yu Gothic UI', 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+            line-height: 1.8;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: var(--white-color);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        .page {
+            border: 1px solid #ddd;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .page-number {
+            position: absolute;
+            bottom: 10px;
+            right: 20px;
+            color: #aaa;
+            font-size: 0.9em;
+        }
+
+        h1 {
+            font-size: 2.2em;
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--secondary-color);
+            padding-bottom: 10px;
+            margin-bottom: 5px;
+            position: relative;
+        }
+        
+        h1::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -3px;
+            width: 70px;
+            border-bottom: 3px solid var(--primary-color);
+        }
+        
+        .lecturer {
+            font-size: 1.1em;
+            color: var(--secondary-color);
+            text-align: right;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            color: var(--primary-color);
+            border-left: 5px solid var(--secondary-color);
+            padding-left: 15px;
+            margin-top: 40px;
+        }
+
+        h3 {
+            font-size: 1.4em;
+            color: var(--secondary-color);
+            border-bottom: 1px dashed var(--secondary-color);
+            padding-bottom: 5px;
+            margin-top: 30px;
+        }
+
+        p { margin-bottom: 1.2em; }
+        strong, b { color: var(--primary-color); }
+        .marker { background: linear-gradient(transparent 60%, var(--marker-yellow) 60%); }
+        .text-confirm { color: var(--confirm-green-text); font-weight: bold; }
+        .text-action { color: var(--action-blue-text); font-weight: bold; }
+        .text-problem { color: var(--problem-red-text); font-weight: bold; }
+
+        .toc {
+            background-color: #f8fafd;
+            border: 1px solid var(--secondary-color);
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+        }
+        .toc h2 { margin-top: 0; border-left: none; padding-left: 0; border-bottom: 2px solid var(--secondary-color); }
+        .toc ul { list-style-type: none; padding-left: 0; }
+        .toc ul ul { padding-left: 20px; }
+        .toc a { text-decoration: none; color: var(--primary-color); }
+        .toc a:hover { text-decoration: underline; }
+
+        .question-box {
+            border: 2px solid var(--accent-color);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            background-color: var(--problem-red-bg);
+        }
+
+        .fill-in {
+            font-weight: bold;
+            color: var(--accent-color);
+            border-bottom: 2px dotted var(--accent-color);
+            cursor: pointer;
+            padding: 0 5px;
+        }
+
+        .answer {
+            display: none;
+            background-color: var(--marker-yellow);
+            padding: 2px 5px;
+            border-radius: 3px;
+            margin: 0 5px;
+        }
+        .answer.visible { display: inline-block; }
+
+        .card {
+            background-color: #f9f9f9;
+            border-left: 5px solid var(--primary-color);
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .card-header {
+            font-weight: bold;
+            font-size: 1.2em;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        table {
+            width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.95em;
+        }
+        th, td { border: 1px solid #ccc; padding: 12px; text-align: left; }
+        th { background-color: var(--primary-color); color: var(--white-color); font-weight: bold; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+        
+        .references { margin-top: 40px; padding-top: 20px; border-top: 1px solid #ccc; }
+        .references ul { list-style: none; padding: 0; }
+        .references li { margin-bottom: 10px; font-size: 0.9em; }
+        
+        .button-container { text-align: center; margin: 40px 0; display: flex; justify-content: space-between; }
+        .nav-button {
+            display: inline-block; padding: 10px 20px; background-color: var(--primary-color);
+            color: var(--white-color); text-decoration: none; border-radius: 5px;
+            font-weight: bold; transition: background-color 0.3s;
+        }
+        .nav-button:hover { background-color: var(--secondary-color); }
+        .nav-button.confirm { background-color: var(--confirm-green-text); }
+        .nav-button.confirm:hover { background-color: #388e3c; }
+        
+        .footnote { font-size: 0.8em; color: #666; margin-top: 1em; }
+        
+        .diagram-container {
+            border: 1px solid #ccc; padding: 20px; margin: 20px 0; border-radius: 8px;
+            background-color: #f9f9f9; text-align: center;
+        }
+
+        .er-diagram {
+            display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 20px;
+            padding: 20px;
+        }
+        .entity {
+            border: 2px solid var(--primary-color); border-radius: 8px; padding: 10px 15px;
+            background-color: var(--action-blue-bg); text-align: left; min-width: 150px;
+        }
+        .entity h4 { margin: 0 0 10px; padding-bottom: 5px; border-bottom: 1px solid var(--secondary-color); color: var(--primary-color); }
+        .entity ul { list-style: none; padding: 0; margin: 0; }
+        .entity li .pk, .entity li .fk { display: inline-block; width: 25px; text-align: center; background-color: var(--accent-color); color: white; font-size: 0.7em; border-radius: 3px; margin-right: 5px; font-weight: bold; }
+        .entity li .fk { background-color: var(--confirm-green-text); }
+        .relationship { display: flex; flex-direction: column; align-items: center; text-align: center; min-width: 100px; }
+        .relationship .line { width: 100%; height: 2px; background-color: #333; position: relative; }
+        .relationship .line::before, .relationship .line::after {
+            content: ''; position: absolute; top: -7px; height: 16px; width: 2px; background-color: #333;
+        }
+        .relationship .line::before { left: 0; }
+        .relationship .line::after { right: 0; transform: rotate(45deg); right: 2px; top: -3px; border-right: 2px solid #333; border-bottom: 2px solid #333; width: 8px; height: 8px; background: none; }
+        .rel-label { font-size: 0.9em; margin-top: 5px; }
+
+        .sql-code {
+            background-color: #2d2d2d; color: #f8f8f2; padding: 15px; border-radius: 5px;
+            font-family: 'Consolas', 'Monaco', monospace; white-space: pre-wrap;
+            word-wrap: break-word; font-size: 0.9em;
+        }
+        .sql-code .keyword { color: #ff79c6; }
+        .sql-code .function { color: #50fa7b; }
+        .sql-code .string { color: #f1fa8c; }
+        .sql-code .number { color: #bd93f9; }
+        .sql-code .comment { color: #6272a4; }
+
+        @media (max-width: 768px) {
+            .container { padding: 10px; }
+            .page { padding: 1rem; }
+            h1 { font-size: 1.8em; }
+            h2 { font-size: 1.5em; }
+            h3 { font-size: 1.2em; }
+            .er-diagram { flex-direction: column; }
+            .relationship .line { width: 2px; height: 50px; }
+            .relationship .line::before, .relationship .line::after { left: -7px; top: auto; }
+            .relationship .line::before { top: 0; }
+            .relationship .line::after { bottom: -8px; transform: rotate(135deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ITリテラシー入門 第15回 データベース</h1>
+        <p class="lecturer">講師：ZEN大学 講師陣</p>
+
+        <nav class="toc">
+            <h2>目次</h2>
+            <ul>
+                <li><a href="#chap1">1. データベースの基本</a>
+                    <ul>
+                        <li><a href="#sec1_1">1.1 データベースとは？</a></li>
+                        <li><a href="#sec1_2">1.2 データベースとファイルの違い</a></li>
+                        <li><a href="#sec1_3">1.3 データベースの歴史</a></li>
+                    </ul>
+                </li>
+                <li><a href="#chap2">2. DBMSとデータベースの方式</a>
+                    <ul>
+                        <li><a href="#sec2_1">2.1 DBMSの4つの機能</a></li>
+                        <li><a href="#sec2_2">2.2 リレーショナルデータベース(RDB)</a></li>
+                        <li><a href="#sec2_3">2.3 NoSQLデータベース</a></li>
+                    </ul>
+                </li>
+                <li><a href="#chap3">3. リレーショナルデータベースの構造</a>
+                    <ul>
+                        <li><a href="#sec3_1">3.1 テーブル・レコード・フィールド</a></li>
+                        <li><a href="#sec3_2">3.2 主キーと外部キー</a></li>
+                        <li><a href="#sec3_3">3.3 インデックス</a></li>
+                    </ul>
+                </li>
+                <li><a href="#chap4">4. データベース設計の基礎</a>
+                    <ul>
+                        <li><a href="#sec4_1">4.1 E-R図</a></li>
+                        <li><a href="#sec4_2">4.2 正規化</a></li>
+                    </ul>
+                </li>
+                <li><a href="#chap5">5. データベースの操作</a>
+                    <ul>
+                        <li><a href="#sec5_1">5.1 SQLによるデータ操作</a></li>
+                        <li><a href="#sec5_2">5.2 トランザクション処理とACID特性</a></li>
+                        <li><a href="#sec5_3">5.3 排他制御とロック</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+        
+        <div class="page">
+            <span class="page-number">1 / 5</span>
+            <h2 id="chap1">1. データベースの基本</h2>
+            <p>大量の情報を効率よく整理し、必要な時にサッと取り出せる魔法の箱、それがデータベースです。この章では、データベースの正体と、私たちの身近な情報システムでどのように活躍しているのかを探ります。</p>
+            
+            <h3 id="sec1_1">1.1 データベースとは？</h3>
+            <p>データベース(DB)とは、<b class="marker">一定の規則に従って整理・蓄積されたデータの集まり</b>のことです。単なるデータの羅列ではなく、意味のある情報として活用するための土台となります。電話帳や住所録も、紙媒体ではありますが立派なデータベースの一種です。</p>
+            <p>そして、このデータの集まりであるDBを管理・操作するためのソフトウェアを<b class="text-action">データベース管理システム(DBMS)</b>と呼びます。一般的に「データベース」という言葉は、このDBMSを含んだ意味で使われることも多いです。</p>
+
+            <h3 id="sec1_2">1.2 データベースとファイルの違い</h3>
+            <p>データを保存するならOS標準の「ファイル」で十分では？と思うかもしれません。しかし、両者には決定的な違いがあります。</p>
+            <ul>
+                <li><b>ファイル</b>: 特定のアプリケーションに属し、基本的に<b class="text-problem">一つのプログラムからしか同時に読み書きできない</b>。</li>
+                <li><b>データベース</b>: 複数のプログラムやユーザーから<b class="text-confirm">同時にアクセス・編集できる高度な機能</b>を持つ。</li>
+            </ul>
+            <p>例えば、Googleスプレッドシートで複数人が同時に編集できるのは、裏側でデータベースが動いているからです。これがExcelファイルだと、「他の人が編集中です」というメッセージが表示されてしまいますよね。</p>
+
+            <h3 id="sec1_3">1.3 データベースの歴史</h3>
+            <p>データベースの歴史は、より効率的にデータを扱うためのモデルの進化の歴史でもあります。</p>
+            <ol>
+                <li><b>ネットワーク型/階層型 (1960年代)</b>: 初期のモデル。データをネットワーク状や木構造で表現しましたが、構造が複雑でした。</li>
+                <li><b class="text-action">リレーショナル型 (1970年〜)</b>: IBMのエドガー・F・コッド博士が提案。データを表形式で管理するモデルで、数学的な理論に基づき直感的で分かりやすいのが特徴。これが大成功し、<b class="marker">現在のデータベースの主流</b>となっています。</li>
+            </ol>
+            <p>コッド博士はこの功績で、コンピューター科学のノーベル賞といわれる「チューリング賞」を受賞しました。</p>
+
+            <div class="card">
+                <div class="card-header">事例：スマホゲームのセーブデータはどう管理されてる？</div>
+                <p>「よし、今日のログインボーナスゲット！」ってスマホゲームを開いたら、セーブデータが消えててレベル1からに…なんて悪夢、考えたくもないよな？</p>
+                <p>君のアカウント情報、キャラクター、アイテム、クリア状況…そういった膨大なデータはすべて、ゲーム会社のサーバーにある<b class="text-action">巨大なデータベース</b>に保存されているんだ。だから、君がスマホを買い替えたり、間違ってアプリを消しちゃったりしても、アカウント連携さえしておけばデータは安全！ これがただのファイル保存だったら、スマホが壊れた瞬間に全ての冒険が水の泡になってしまうかもしれないんだぜ。</p>
+            </div>
+
+            <div class="question-box">
+                <h4>問題1</h4>
+                <p>一定の規則で整理されたデータの集まりを<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">データベース(DB)</span></span>といい、それを管理するソフトウェアを<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">DBMS</span></span>という。現在主流の、データを表形式で管理するモデルを<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">リレーショナル型</span></span>データベースという。</p>
+            </div>
+        </div>
+
+        <div class="page">
+            <span class="page-number">2 / 5</span>
+            <h2 id="chap2">2. DBMSとデータベースの方式</h2>
+            <p>データベースを安全かつ便利に使うための司令塔、それがDBMSです。この章では、DBMSが持つ重要な機能と、用途によって使い分けられる様々なデータベースの方式について見ていきましょう。</p>
+            
+            <h3 id="sec2_1">2.1 DBMSの4つの機能</h3>
+            <p>DBMSは、データベースをスムーズかつ安全に利用できるよう、主に以下の4つの機能を提供しています。</p>
+            <table>
+                <thead><tr><th>機能</th><th>説明</th></tr></thead>
+                <tbody>
+                    <tr><td><b>データ操作</b></td><td>データの追加(Create)、読み出し(Read)、更新(Update)、削除(Delete)を行う。頭文字を取って<b class="text-action">CRUD(クラッド)</b>と呼ばれる。</td></tr>
+                    <tr><td><b>アクセス制御</b></td><td>ユーザーごとに権限を設定し、「閲覧のみ」「編集も可」など、不正なアクセスを防ぐ。</td></tr>
+                    <tr><td><b>同時実行制御</b></td><td>複数人が同時に同じデータを更新しようとしても、データの矛盾が起きないように調整する（排他制御）。</td></tr>
+                    <tr><td><b>障害回復</b></td><td>システム障害や人為的ミスが起きても、バックアップやログからデータを障害発生前の状態に復旧する。</td></tr>
+                </tbody>
+            </table>
+
+            <h3 id="sec2_2">2.2 リレーショナルデータベース(RDB)</h3>
+            <p>現在最も普及しているのが、<b class="text-action">リレーショナルデータベース(RDB)</b>です。これは、データをExcelのシートのような二次元の「表(テーブル)」形式で管理する方式です。</p>
+            <p>この「表」は、数学の集合論をベースにした<b class="marker">リレーショナルモデル</b>という考え方に基づいています。トランプのカードを例にすると、「スート（マーク）」と「数字」という2つの集合の組み合わせで、52枚すべてのカードを表現できるのと同じです。この直感的な分かりやすさと、理論的な堅牢さが、RDBが広く受け入れられた理由です。</p>
+
+            <h3 id="sec2_3">2.3 NoSQLデータベース</h3>
+            <p>一方で、RDBの「何でもきっちり表で管理する」という特徴が、逆に扱いにくいケースも出てきました。そこで登場したのが、<b class="text-action">NoSQL (Not only SQL)</b> と呼ばれる、RDB以外のデータベースの総称です。</p>
+            <ul>
+                <li><b>キーバリュー型</b>: 「キー（名前）」と「バリュー（値）」のシンプルなペアでデータを保存。高速な動作が求められるWebサービスで多用されます。(例: Redis)</li>
+                <li><b>ドキュメント指向型</b>: JSONやXMLといった柔軟な構造の文書（ドキュメント）形式でデータを保存。階層構造を持つ複雑なデータも扱いやすい。(例: MongoDB)</li>
+                <li><b>グラフ指向型</b>: データ同士の「つながり」を表現するのが得意。SNSの友達関係などを管理するのに適しています。(例: Neo4j)</li>
+            </ul>
+
+            <div class="card">
+                <div class="card-header">事例：フォートナイトのサーバーは落ちない？RDBとNoSQLの使い分け</div>
+                <p>何百万人ものプレイヤーが同時にアクセスする「フォートナイト」のような大規模オンラインゲーム。プレイヤーのIDや課金情報のような<b class="text-problem">絶対に間違えられないデータ</b>は、信頼性の高いRDBで厳重に管理されているんだ。</p>
+                <p>でも、プレイヤーの位置情報やチャットのログみたいに、<b class="text-confirm">ものすごい速さで大量に発生するデータ</b>を全部RDBで処理しようとすると、サーバーがパンクしちまう。そこで、高速処理が得意なNoSQLデータベースを併用して、負荷を分散させているんだ。まさに適材適所！この賢い使い分けのおかげで、俺たちは快適にビクロイを目指せるってわけだ！</p>
+            </div>
+            
+            <div class="question-box">
+                <h4>問題2</h4>
+                <p>データの追加、読み出し、更新、削除を総称して<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">CRUD</span></span>操作という。現在最も普及しているデータベース方式は<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">リレーショナルデータベース(RDB)</span></span>である。RDB以外のデータベースの総称を<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">NoSQL</span></span>という。</p>
+            </div>
+        </div>
+
+        <div class="page">
+            <span class="page-number">3 / 5</span>
+            <h2 id="chap3">3. リレーショナルデータベースの構造</h2>
+            <p>RDBの心臓部である「テーブル」。この章では、テーブルがどのように構成されているのか、そしてテーブル同士がどのように関係を結んでいるのか、その仕組みを解き明かしていきます。</p>
+            
+            <h3 id="sec3_1">3.1 テーブル・レコード・フィールド</h3>
+            <p>RDBのデータは、<b>テーブル（表）</b>という形で管理されます。テーブルは、<b>レコード（行）</b>と<b>フィールド（列）</b>で構成されています。</p>
+            <ul>
+                <li><b>テーブル (Table, 表)</b>: データを格納する全体の入れ物。「顧客テーブル」「商品テーブル」のように、特定のテーマのデータの集まり。</li>
+                <li><b>レコード (Record, 行)</b>: テーブル内の一件一件のデータ。顧客テーブルなら、顧客一人ひとりの情報が1レコードにあたる。</li>
+                <li><b>フィールド (Field, 列)</b>: データの項目。「氏名」「住所」「電話番号」など、レコードが持つ属性を表す。<b>カラム(Column)</b>とも呼ばれる。</li>
+            </ul>
+            
+            <h3 id="sec3_2">3.2 主キーと外部キー</h3>
+            <p>テーブル内の大量のレコードから、目的の1件を正確に見つけ出すために不可欠なのが「キー」です。</p>
+            <ul>
+                <li><b class="text-action">主キー (Primary Key, PK)</b>: 各レコードを<b class="marker">一意に識別するためのフィールド</b>。「顧客ID」や「商品コード」のように、絶対に重複しない値が設定される。レコードを更新・削除する際の目印となる。</li>
+                <li><b class="text-confirm">外部キー (Foreign Key, FK)</b>: <b class="marker">他のテーブルの主キーを参照するフィールド</b>。これにより、テーブル同士を関連付けることができる。例えば、「注文テーブル」に「顧客ID」という外部キーを持たせることで、どの顧客からの注文なのかを紐づける。</li>
+            </ul>
+            <p>DBMSには、外部キーに存在しない主キーの値を設定できないようにする<b class="text-problem">参照整合性制約</b>という機能があり、データの矛盾を防いでいます。</p>
+
+            <h3 id="sec3_3">3.3 インデックス</h3>
+            <p>レコード数が数百万件にもなると、目的のデータを探すのに時間がかかってしまいます。そこで活躍するのが<b>インデックス（索引）</b>です。</p>
+            <p>これは、分厚い本の巻末にある索引と同じで、特定のフィールドの値と、そのデータがどこにあるかの位置情報をまとめたものです。インデックスを設定することで、<b class="text-action">データの検索速度を劇的に向上</b>させることができます。ただし、データの更新・削除時にはインデックスも更新する必要があるため、逆に処理が少し遅くなるという側面もあります。</p>
+
+            <div class="card">
+                <div class="card-header">事例：最強パーティー編成！テーブルとキーでキャラクターデータを管理しよう</div>
+                <p>RPGで、君だけの最強パーティーを組む時を想像してみよう。まず、ゲームには「キャラクターテーブル」がある。ここには、キャラクター一人ひとりのデータ（レコード）が、<b class="text-action">キャラクターID（主キー）</b>で管理されている。</p>
+                <p>次に、君が組んだパーティーの情報を入れる「パーティーテーブル」を作る。このテーブルには、パーティーメンバー1〜4の欄に、それぞれの<b class="text-confirm">キャラクターID（外部キー）</b>を記録するんだ。こうすることで、「パーティーテーブル」を見れば、どのキャラクターがメンバーなのかが「キャラクターテーブル」と連携して一発で分かる！これがキーを使ったデータベースの連携術だぜ！</p>
+            </div>
+            
+            <div class="question-box">
+                <h4>問題3</h4>
+                <p>テーブルの各行を<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">レコード</span></span>、各列を<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">フィールド(カラム)</span></span>という。レコードを一意に識別するフィールドを<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">主キー(PK)</span></span>、他のテーブルの主キーを参照するフィールドを<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">外部キー(FK)</span></span>という。検索を高速化する仕組みを<span class="fill-in" onclick="toggleAnswer(this)">(5)<span class="answer">インデックス</span></span>という。</p>
+            </div>
+        </div>
+        
+        <div class="page">
+            <span class="page-number">4 / 5</span>
+            <h2 id="chap4">4. データベース設計の基礎</h2>
+            <p>使いやすく、無駄のないデータベースを作るには、しっかりとした「設計図」が必要です。この章では、データベースの設計図である「E-R図」と、データを整理整頓する技術「正規化」について学びます。</p>
+
+            <h3 id="sec4_1">4.1 E-R図</h3>
+            <p><b class="text-action">E-R図（Entity-Relationship Diagram, 実体関連図）</b>は、データベースの構造を図で表現した設計図です。これにより、テーブル（エンティティ）同士がどのような関係（リレーションシップ）にあるのかを視覚的に理解できます。</p>
+            <div class="diagram-container">
+                <h4>E-R図の例（ユーザーと投稿の関係）</h4>
+                <div class="er-diagram">
+                    <div class="entity">
+                        <h4>ユーザー</h4>
+                        <ul>
+                            <li><span class="pk">PK</span> ユーザーID</li>
+                            <li>名前</li>
+                        </ul>
+                    </div>
+                    <div class="relationship">
+                        <div class="line"></div>
+                        <div class="rel-label">投稿する</div>
+                    </div>
+                    <div class="entity">
+                        <h4>投稿</h4>
+                        <ul>
+                            <li><span class="pk">PK</span> 投稿ID</li>
+                            <li><span class="fk">FK</span> ユーザーID</li>
+                            <li>タイトル</li>
+                        </ul>
+                    </div>
+                </div>
+                <p class="footnote">この図は「1人のユーザーは複数の投稿をできる（1対多）」という関係を表しています。</p>
+            </div>
+            <p>E-R図を使うことで、システムの全体像を把握しやすくなり、開発者間の認識のズレを防ぐことができます。</p>
+
+            <h3 id="sec4_2">4.2 正規化</h3>
+            <p><b class="text-action">正規化</b>とは、テーブルを分割・整理して、<b class="marker">データの重複（冗長性）をなくし、一貫性を保つ</b>ためのプロセスです。正規化を行うことで、データの更新時に矛盾が生じにくくなります。一般的に、第三正規化まで行うのが良い設計とされています。</p>
+            <ul>
+                <li><b>第一正規化</b>: 繰り返しの項目をなくし、1つのセルに1つの値だけが入るようにする。</li>
+                <li><b>第二正規化</b>: 主キーの一部だけで決まる項目を別のテーブルに切り出す。（複合主キーの場合に適用）</li>
+                <li><b>第三正規化</b>: 主キー以外の項目から特定できる項目を別のテーブルに切り出す。</li>
+            </ul>
+            <p>例えば、注文情報テーブルに顧客の氏名や住所まで含めてしまうと、同じ顧客が何度も注文するたびに氏名や住所が重複してしまいます。これを「注文テーブル」と「顧客テーブル」に分け、外部キーで関連付けるのが正規化の基本的な考え方です。</p>
+
+            <div class="card">
+                <div class="card-header">事例：最強装備のデータ重複を防げ！データベース設計の奥義「正規化」</div>
+                <p>もし君がゲーム開発者で、キャラクターの装備情報を管理するテーブルを作るとしよう。一つのテーブルにキャラクター情報と装備情報を全部詰め込むとどうなる？</p>
+                <p>同じ「伝説の剣」を複数のキャラが装備するたびに、「伝説の剣、攻撃力+100、特殊効果…」というデータが何度も記録されて、データがパンパンに膨れ上がっちまう！これぞ<b class="text-problem">データの冗長性</b>だ。</p>
+                <p>ここで「正規化」の出番だ！「キャラクターテーブル」と「装備品テーブル」を分けて、どのキャラが何を装備しているかだけを記録する「装備中テーブル」を別に作るんだ。こうすれば、データの無駄がなくなって、ゲームの動作もサクサクになるぞ！</p>
+            </div>
+            
+            <div class="question-box">
+                <h4>問題4</h4>
+                <p>データベースの構造を図で表現した設計図を<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">E-R図</span></span>という。データの重複をなくし、一貫性を保つためにテーブルを整理するプロセスを<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">正規化</span></span>という。一般的に<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">第三正規化</span></span>まで行うのが良い設計とされる。</p>
+            </div>
+        </div>
+
+        <div class="page">
+            <span class="page-number">5 / 5</span>
+            <h2 id="chap5">5. データベースの操作</h2>
+            <p>データベースの真価は、蓄積したデータを自在に操れることにあります。この章では、データベースと対話するための言語「SQL」と、データの安全性を守るための重要な仕組み「トランザクション処理」について学びます。</p>
+
+            <h3 id="sec5_1">5.1 SQLによるデータ操作</h3>
+            <p>リレーショナルデータベースを操作するためには、<b class="text-action">SQL (Structured Query Language)</b> という専門の言語を使います。SQLを使えば、データの選択、挿入、更新、削除といった様々な操作が可能です。</p>
+            <div class="sql-code">
+                <span class="keyword">SELECT</span> "名前", "登録日時" <span class="keyword">FROM</span> "ユーザテーブル" <span class="keyword">WHERE</span> "ユーザID" = <span class="number">1</span>;
+                <br>
+                <span class="comment">-- ユーザテーブルから、IDが1のユーザの名前と登録日時を取り出す</span>
+            </div>
+            <p>この例のように、SQLは英語に近い構文で、どのテーブルから、どの条件で、どのフィールドのデータを取り出すかを指定します。</p>
+
+            <h3 id="sec5_2">5.2 トランザクション処理とACID特性</h3>
+            <p><b class="text-action">トランザクション</b>とは、<b class="marker">一連の処理をひとまとめにした単位</b>のことです。例えば銀行の振込は、「Aさんの口座から1万円引く」処理と「Bさんの口座に1万円足す」処理がセットになっています。このどちらか一方だけが実行されてしまうと大問題です。</p>
+            <p>トランザクション処理は、この一連の処理が「<b class="text-confirm">すべて成功する</b>」か「<b class="text-problem">すべて失敗（元の状態に戻る）</b>」かのどちらかになることを保証します。この信頼性を支える重要な特性を<b class="text-action">ACID特性</b>と呼びます。</p>
+            <ul>
+                <li><b>Atomicity (原子性)</b>: 処理は全部実行されるか、全く実行されないかのどちらか。</li>
+                <li><b>Consistency (一貫性)</b>: 処理の前後でデータの矛盾が生じない。</li>
+                <li><b>Isolation (独立性)</b>: 複数の処理が同時に実行されても、互いに影響を与えない。</li>
+                <li><b>Durability (耐久性)</b>: 一度完了した処理結果は、障害が起きても失われない。</li>
+            </ul>
+            <p>処理を確定させることを<b class="text-confirm">コミット</b>、取り消して元に戻すことを<b class="text-problem">ロールバック</b>といいます。</p>
+
+            <h3 id="sec5_3">5.3 排他制御とロック</h3>
+            <p>複数のユーザーが同時に同じデータを更新しようとすると、データの整合性が崩れる危険があります。これを防ぐのが<b class="text-action">排他制御</b>です。</p>
+            <p>多くのDBMSでは、誰かがデータを更新しようとすると、そのデータに<b class="marker">ロック</b>をかける仕組みがあります。ロックがかかっている間、他のユーザーは同じデータを更新できなくなり、処理の順番待ちになります。これにより、データの整合性を保っています。しかし、お互いが相手のロック解除を待ち続けてしまい、処理が止まってしまう<b class="text-problem">デッドロック</b>という問題が発生することもあります。</p>
+
+            <div class="card">
+                <div class="card-header">事例：チートは許さない！トランザクション処理でアイテム増殖を防ぐ仕組み</div>
+                <p>もし、オンラインゲームのアイテム交換にトランザクション処理がなかったら？君が友達にレアアイテムを渡すために「渡す」ボタンを押した瞬間、通信エラーが発生！君のアイテムは消えたのに、友達には届いていない…。最悪だろ？</p>
+                <p>トランザクション処理があれば、こういう事故は起こらない。「君のアイテムを減らす」処理と「友達のアイテムを増やす」処理が<b class="text-confirm">セット（トランザクション）</b>になっているから、途中でエラーが起きても<b class="text-problem">ロールバック</b>されて、すべてが元通りになるんだ。この仕組みが、ゲーム内の経済と平和を守っているんだぜ！</p>
+            </div>
+            
+            <div class="question-box">
+                <h4>問題5</h4>
+                <p>RDBを操作するための言語を<span class="fill-in" onclick="toggleAnswer(this)">(1)<span class="answer">SQL</span></span>という。一連の処理をひとまとめにした単位を<span class="fill-in" onclick="toggleAnswer(this)">(2)<span class="answer">トランザクション</span></span>といい、その信頼性を支える特性を<span class="fill-in" onclick="toggleAnswer(this)">(3)<span class="answer">ACID特性</span></span>という。処理を確定させることを<span class="fill-in" onclick="toggleAnswer(this)">(4)<span class="answer">コミット</span></span>、取り消すことを<span class="fill-in" onclick="toggleAnswer(this)">(5)<span class="answer">ロールバック</span></span>という。</p>
+            </div>
+        </div>
+        
+        <div class="button-container">
+            <a href="page14.html" class="nav-button">← 前の講座へ</a>
+            <a href="page16.html" class="nav-button confirm">確認テストへ →</a>
+        </div>
+        
+        <div id="references" class="references">
+            <h3>参考文献・リンク</h3>
+            <ul>
+                <li>本教材は、ZEN大学（仮称・設置認可申請中）が提供する講義「ITリテラシー入門 第15回 データベース」（講師：ZEN大学 講師陣）のテキストおよび講義内容を元に作成されました。</li>
+                <li>Codd, E. F. (1970). A relational model of data for large shared data banks. Communications of the ACM, 13(6), 377-387.</li>
+            </ul>
+        </div>
+    </div>
+    <script>
+        function toggleAnswer(element) {
+            const answer = element.querySelector('.answer');
+            if (answer) {
+                answer.classList.toggle('visible');
+            }
+        }
+    </script>
+</body>
+</html>
